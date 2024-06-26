@@ -1,1 +1,1 @@
-let arr
+let arr = [1,2]
