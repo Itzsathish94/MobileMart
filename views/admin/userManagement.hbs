@@ -55,10 +55,10 @@
         </header>
         <section class="content-main">
             <div class="content-header">
-                <h2 class="content-title">Sellers list</h2>
-                <div>
+                <h2 class="content-title">Users list</h2>
+                {{!-- <div>
                     <a href="#" class="btn btn-primary"><i class="material-icons md-plus"></i> Create new</a>
-                </div>
+                </div> --}}
             </div>
             <div class="card mb-4">
                 <header class="card-header">
@@ -120,13 +120,13 @@
                                     <td width="20%">08.07.2020</td>
                                     <td width="20%">
                                         {{#if this.isBlocked}}
-                                        <a id="button1" class="btn btn-sm font-sm btn-primary flex-end" href="/admin/blockuser/{{this._id}}"
-                                            onclick="return confirm ('Are you sure want to Unblock?')">
+                                        <a id="blockuser" data-user-id="{{this._id}}" class="btn btn-sm font-sm btn-primary flex-end" href="/admin/blockuser"
+                                            >
                                             Unblock
                                         </a>
                                         {{else}}
-                                        <a id="button1" class="btn btn-sm font-sm btn-primary" href="/admin/blockuser/{{this._id}}"
-                                            onclick="return confirm ('Are you sure want to Block?')">
+                                        <a id="blockuser" data-user-id="{{this._id}}" class="btn btn-sm font-sm btn-primary" href="/admin/blockuser"
+                                           >
                                             Block
                                         </a>
                                         {{/if}}
@@ -157,7 +157,7 @@
                 <div class="col-sm-6">
                     <script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
                     document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
+                    </script> ©, MobileMart - HTML Ecommerce Template .
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end">
@@ -167,3 +167,59 @@
             </div>
         </footer>
     </main>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $(document).on('click','#blockuser',function(e){
+            e.preventDefault();
+            var id = $(this).data('user-id');
+            //var wishId = $(this).data('whishlist-id'); // Corrected variable name to wishId
+
+            // Store reference to $(this) in a variable for use inside AJAX success and error callbacks
+            var $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+               // text: "Do you want to block the Product?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/admin/blockuser',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            console.log("ProductBlocked");
+                 
+      
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing product from wishlist:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Done!",
+    
+                        icon: "success"
+                    }).then((confirm) => {
+                                    if (confirm.isConfirmed) {
+                                        window.location.reload();
+                                    }
+                                });;
+                }
+            });
+
+
+        });
+    });
+
+</script>

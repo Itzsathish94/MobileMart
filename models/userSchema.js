@@ -30,7 +30,7 @@ const userSchema=new Schema({
         type:Array,
     }
 
-})
+},{timestamps:true})
 const User=mongoose.model('user',userSchema);
 module.exports={
     User

@@ -1,11 +1,10 @@
 const { User } = require('../../models/userSchema')
 const { Category } = require('../../models/categorySchema')
 const { Product } = require('../../models/productsSchema')
-// const Cart=require('../../models/cart')
 const userHelper = require('../../helpers/user_helper')
 const argon2 = require('argon2')
-// const Wishlist = require('../../models/wishlist')
 const mongoose = require('mongoose')
+const ObjectId=mongoose.Types.ObjectId
 
 let otp
 let userotp
@@ -16,26 +15,12 @@ let userData
 
 
 const gethome = async (req, res) => {
-
     try {
         userData = req.session.user
         let id
         if (userData) { id = userData._id }
         else { id = 0 }
-        // console.log(id, userData)
-
-        // const WishListCt=await Wishlist.findOne({user:id}).lean()
-        // console.log(WishListCt)
-
-        // const wishlist = await Wishlist.findOne({ user: new mongoose.Types.ObjectId(id) });
-        // const wishlistCount = wishlist ? (wishlist.productId ? wishlist.productId.length : 0) : 0;
-
-        // console.log(wishlistcount[0].count)
-
-
         const catagories = await Category.find({ isListed: true }).lean()
-        //   console.log(catagories)
-
         const products = await Product.aggregate([
             {
                 $match: {
@@ -55,10 +40,9 @@ const gethome = async (req, res) => {
                 $unwind: '$category'
             }
         ])
-        //   console.log(produts)
+          console.log(products)
         res.render('user/index', { products, catagories, userData, layout: 'layout' })
-        //   res.render('landing_page',{products,catagories,userData})
-        // res.render('user/productsdetails')
+
 
     } catch (error) {
         console.log(error)
@@ -72,8 +56,6 @@ const showloginpage = async (req, res) => {
     let mailErr = 'Incorrect email or password..!!'
     let newpasMsg = 'Your password reseted successfuly..!!'
     message2 = false
-
-
     try {
         if (req.session.mailErr) {
             res.render('user/login', { mailErr })
@@ -210,9 +192,6 @@ const doLogout = async (req, res) => {
             res.redirect("/login");
         })
         userData = null
-        // req.session.LoggedIn = false
-        // res.redirect('/login')
-
     } catch (error) {
         console.log(error.message);
     }
@@ -229,7 +208,7 @@ const showsigninpage = async (req, res) => {
 
 const dosignup = async (req, res) => {
     try {
-        let msg = 'User already exists'
+        
         hashedPassword = await userHelper.hashpassword(req.body.password)
         usermail = req.body.email
         userRegestData = req.body
@@ -239,7 +218,7 @@ const dosignup = async (req, res) => {
             otp = await userHelper.verifyEmail(usermail)
             res.redirect('/submit_otp')
         } else {
-            res.redirect('/login')
+            res.render('user/login', {msg: "User already Exists"})
         }
 
     } catch (error) {
@@ -251,14 +230,16 @@ const dosignup = async (req, res) => {
 const getotppage = async (req, res) => {
     try {
         res.render('user/sotp')
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
     }
 }
 
 //verify otp and add user data to DB
 const submitotp = async (req, res) => {
     userotp = req.body.otp
+    console.log(userotp)
 
     if (userotp == otp) {
         const user = new User({
@@ -270,11 +251,11 @@ const submitotp = async (req, res) => {
         })
         await user.save()
         req.session.regSuccessMsg = true
-
-        console.log(user)
+        
         res.redirect('/login')
     } else {
         res.redirect('/submit_otp')
+        //res.json({ status: false })
     }
 
 }
@@ -284,43 +265,57 @@ const resendOtp = async (req, res) => {
         res.redirect('/submit_otp')
 
     } catch (error) {
-        console.log(error)
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
     }
 }
 
+
+
+
 ////detailed product view
 const getproducts = async (req, res) => {
-    userData=req.session.user
+   
     try {
-        const item = req.params.id
+        userData=req.session.user
+        const item = new ObjectId(req.params.id)
         console.log(item)
         
-
         const product = await Product.findById(item).lean()
-    //   let ProductExistInCart
-    //   let outOfStock
-        // const ProductExist= await Cart.find({
-        //     userId:userData._id ,
-        //      product_Id:item
-        //     })
-        //     console.log(ProductExist)
-        //     if(ProductExist.length===0){
-        //         ProductExistInCart=false
-        //     }else{
-        //         ProductExistInCart=true
-        //     }
-        //     if(product.stock===0){
-        //         outOfStock=true
+        let outOfStock = true;
 
-        //     }
-        // console.log(ProductExistInCart)
-        // if(ProductExist.length>0){
-        //     return res.json({
-        //         success: false,
-        //         message: 'Product already exist in cart'
-        //     })
-        // }
-        res.render('user/productDetails', { product,outOfStock, ProductExistInCart,userData, layout: 'layout' })
+        if(product.stock){
+            outOfStock = false
+        }
+
+        console.log(product , "productttttttttttt")
+        const catId = new ObjectId(product.category)
+        const relatedProducts = await Product.aggregate([
+            {
+                $match: {
+                    
+                }
+
+            },
+            {
+                $lookup: {
+                    from: 'category',
+                    localField: 'category',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            {
+                $unwind: '$category'
+            },
+            {
+                $limit:4
+            }
+        ])
+
+        console.log(relatedProducts, "RELATED PRODUCTSSSSSS")
+
+         res.render('user/productDetails', { product , relatedProducts , outOfStock , userData, layout: 'layout' })
 
     } catch (error) {
         console.log(error)
@@ -328,6 +323,26 @@ const getproducts = async (req, res) => {
     }
 }
 
+const googleCallback = async (req, res) => {
+    try {
+        // Add the user's name to the database
+        userData = await User.findOneAndUpdate(
+            { email: req.user.email },
+            { $set: { name: req.user.displayName, isVerified: true} },
+            { upsert: true, new: true }
+        );
+        console.log(userData)
+
+        // Set the user session
+        req.session.LoggedIn = true
+        req.session.user = userData
+        // Redirect to the homepage
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/login');
+    }
+}
 
 ///////////////////////other pages
 
@@ -353,6 +368,7 @@ module.exports = {
     doLogout,
     gethome,
     getproducts,
+    googleCallback,
 
     //////// other pages //////
     aboutpage

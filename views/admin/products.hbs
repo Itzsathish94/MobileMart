@@ -133,21 +133,21 @@
                                 <td width="20%">{{stock}}</td>
                                 <td width="20%">
                                     {{#if this.isBlocked}}
-                                    <a id="button1" class="btn btn-sm font-sm btn-light flex-end"
-                                        href="/admin/blockProduct/{{this._id}}"
-                                        onclick="return confirm ('Are you sure want to Unblock?')">
+                                    <a id="blockProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light flex-end"
+                                        
+                                       >
                                         Unblock
                                     </a>
                                     {{else}}
-                                    <a id="button1" class="btn btn-sm font-sm btn-light" href="/admin/blockProduct/{{this._id}}"
-                                        onclick="return confirm ('Are you sure want to Block?')">
+                                    <a id="blockProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light"
+                                        >
                                         Block
                                     </a>
                                     {{/if}}
                                     <a href="/admin/edit_product/{{_id}}" class="btn btn-sm font-sm rounded btn-brand">
                                         <i class="material-icons md-edit"></i> Edit
                                     </a>
-                                    <a href="/admin/delete_product/{{_id}}" class="btn btn-sm font-sm btn-light rounded" onclick="return confirm ('Are you sure want to Delete?')">
+                                    <a id="deleteProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light rounded">
                                         <i class="material-icons md-delete_forever" ></i> Delete
                                     </a>
                                 </td>
@@ -181,7 +181,7 @@
                     src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
                 <script>
                     document.write(new Date().getFullYear())
-                </script> ©, Evara - HTML Ecommerce Template .
+                </script> ©, MobileMart- HTML Ecommerce Template .
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end">
@@ -191,3 +191,110 @@
         </div>
     </footer>
 </main>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $(document).on('click','#blockProduct',function(e){
+            e.preventDefault();
+            let id = $(this).data('product-id');
+            //var wishId = $(this).data('whishlist-id'); // Corrected variable name to wishId
+
+            // Store reference to $(this) in a variable for use inside AJAX success and error callbacks
+            let $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+               // text: "Do you want to block the Product?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/admin/blockProduct',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            console.log("ProductBlocked");
+                 
+      
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing product from wishlist:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Done!",
+    
+                        icon: "success"
+                    }).then((confirm) => {
+                                    if (confirm.isConfirmed) {
+                                        window.location.reload();
+                                    }
+                                });;
+                }
+            });
+
+
+        });
+    });
+
+
+    $(document).ready(function () {
+        $(document).on('click','#deleteProduct',function(e){
+            e.preventDefault();
+            let id = $(this).data('product-id');
+            
+            //var wishId = $(this).data('whishlist-id'); // Corrected variable name to wishId
+
+            // Store reference to $(this) in a variable for use inside AJAX success and error callbacks
+            let $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+               // text: "Do you want to block the Product?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/admin/delete_product',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            console.log("ProductBlocked");
+                 
+      
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing product from wishlist:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Done!",
+    
+                        icon: "success"
+                    }).then((confirm) => {
+                                    if (confirm.isConfirmed) {
+                                        window.location.reload();
+                                    }
+                                });;
+                }
+            });
+
+
+        });
+    });
+</script>

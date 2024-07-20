@@ -13,35 +13,25 @@ const usersPage = async (req, res) => {
 
 const blockUser = async (req, res) => {
     try {
-        const userId = req.params.id
-        const user = await User.findById(userId)
+        const {id} = req.body
+        console.log(req.body,"aaaaaaaaaaaaaaaaaaaaa")
+        const user = await User.findById(id)
         const newBlock = user.isBlocked
 
 
         await User.findByIdAndUpdate(
-            userId, {
+            id, {
             $set: {
                 isBlocked: !newBlock
             }
         })
-        res.redirect('/admin/users')
+        res.json({
+            success:true
+        })
     } catch (error) {
         console.log(error)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 module.exports = {

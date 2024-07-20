@@ -91,8 +91,6 @@ const resetPasswordPage=async(req,res)=>{
 }
 const resetPassword=async(req,res)=>{
     try {
-        // const newPassword  = req.body.password
-        // const hashedPassword = await userHelper.hashPassword(newPassword)
         hashedPassword = await userHelper.hashpassword(req.body.password);
 
         await User.updateOne({ email: email }, { $set: { password: hashedPassword } });

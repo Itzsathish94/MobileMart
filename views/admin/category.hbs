@@ -57,11 +57,10 @@
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Category List</h2>
-                    <p>Lorem ipsum dolor sit amet.</p>
                 </div>
                 <div>
-                    <a href="#" class="btn btn-light rounded font-md">Export</a>
-                    <a href="#" class="btn btn-light rounded  font-md">Import</a>
+                    {{!-- <a href="#" class="btn btn-light rounded font-md">Export</a>
+                    <a href="#" class="btn btn-light rounded  font-md">Import</a> --}}
                     <a href="/admin/addCategory" class="btn btn-primary btn-sm rounded">Create new</a>
                 </div>
             </div>
@@ -131,26 +130,26 @@
                             {{/if}}
                             </div>
                             <div class="col-lg-1 col-sm-1 col-1 col-date text-end">
-                                <a href="/admin/editCategory/{{this._id}}" onclick="return confirm ('Are you sure want to edit?')" class="btn btn-pill font-sm rounded btn-brand">
+                                <a href="/admin/editCategory/{{this._id}}" class="btn btn-pill font-sm rounded btn-brand">
                                     <i class="material-icons md-edit"></i> Edit
                                 </a>
                             </div>
                             {{#if isListed}}
                             <div class="col-lg-1 col-sm-1 col-1 col-date text-end">
-                                <a href="/admin/unlistCategory/{{this._id}}" onclick="return confirm ('Are you sure want to edit?')" class="btn btn-pill font-sm rounded btn-brand">
+                                <a id="listunlistrod" data-product-id="{{this._id}}" class="btn btn-pill font-sm rounded btn-brand">
                                     <i class="material-icons md-edit"></i>UnList
                                 </a>
                             </div>
                             {{else}}
                             <div class="col-lg-1 col-sm-1 col-1 col-date text-end">
-                                <a href="/admin/unlistCategory/{{this._id}}" onclick="return confirm ('Are you sure want to edit?')" class="btn btn-pill font-sm rounded btn-brand">
+                                <a id="listunlistrod" data-product-id="{{this._id}}" class="btn btn-pill font-sm rounded btn-brand">
                                     <i class="material-icons md-edit"></i> List
                                 </a>
                             </div>
                             {{/if}}
                             <div class="col-lg-2 col-sm-2 col-4 col-action ">
                                 
-                                <a href="/admin/delete_category/{{this._id}}"  onclick="return confirm ('Are you sure want to delete?')" class="btn btn font-sm btn-light rounded">
+                                <a id="deleteCategory" data-product-id="{{this._id}}" class="btn btn font-sm btn-light rounded">
                                     <i class="material-icons md-delete_forever"></i> Delete
                                 </a>
                             </div>
@@ -181,7 +180,7 @@
                 <div class="col-sm-6">
                     <script>
                     document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
+                    </script> ©, MobileMart- HTML Ecommerce Template .
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end">
@@ -191,3 +190,123 @@
             </div>
         </footer>
     </main>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    ////////////delete category
+    $(document).ready(function () {
+        $(document).on('click', '#deleteCategory', function (e) {
+            e.preventDefault();
+            var id = $(this).data('product-id');
+            //var wishId = $(this).data('whishlist-id'); // Corrected variable name to wishId
+
+            // Store reference to $(this) in a variable for use inside AJAX success and error callbacks
+            var $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/delete_category',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            console.log("Category removed successfully");
+                            // If you want to remove the row from the table upon successful removal
+                            $this.closest('article').remove(); // Use $this instead of $(this)
+                            // swal("Removed from wishlist", "The product has been removed from your wishlist.", "success");
+                            {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: 'Category removed successfully!',
+                                    icon: 'success',
+                                    confirmButtonText: 'Cool'
+                                })
+                            }
+
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing category:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                }
+            });
+                });
+    });
+
+////unlist Category
+
+             $(document).ready(function () {
+        $(document).on('click', '#listunlistrod', function (e) {
+            e.preventDefault();
+            let id = $(this).data('product-id');
+            //var wishId = $(this).data('whishlist-id'); // Corrected variable name to wishId
+
+            // Store reference to $(this) in a variable for use inside AJAX success and error callbacks
+            let $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+                // text: "Do you want to block the Product?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/unlistCategory',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            console.log("ProductBlocked");
+
+
+                            {
+                                Swal.fire({
+                                    title: 'Done!',
+                                    //text: 'Product Succesfully Blocked!!!',
+                                    icon: 'success',
+                                    confirmButtonText: 'Cool'
+                                }).then(() => window.location.reload())
+                            }
+
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing product from wishlist:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Done!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                }
+            });
+
+
+        });
+    });
+
+
+    
+</script>

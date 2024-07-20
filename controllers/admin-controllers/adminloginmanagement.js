@@ -1,9 +1,9 @@
 /////////////////////////////////////////
 
-let AdminEmail="admin@gmail.com"
-let AdminPassword ="admin@123"
+const adminEmail="admin@gmail.com"
+const adminPassword ="admin@123"
 
-let Adata
+
 
 ///////////////////////////////////
 
@@ -20,15 +20,9 @@ const adminlogin = async (req, res) => {
 
 const doAdminLogin=async (req,res)=>{
     try {
-        // const {email,password}=req.body
-        Adata=req.body
-        let Email=req.body.email
-        console.log(Email)
-        let Password=req.body.password
-        console.log(Password)
-
-        if(Email==AdminEmail && Password==AdminPassword){
-            req.session.admin=Adata
+        const {email,password}=req.body
+        if(email==adminEmail && password==adminPassword){
+            req.session.admin = req.body
             res.redirect('/admin/products')
         }else{
             res.redirect('/admin/adminlogin')
@@ -42,7 +36,6 @@ const doAdminLogin=async (req,res)=>{
 const doLogout=async(req,res)=>{
     try {
         req.session.destroy()
-        Adata=null
         res.redirect('/admin/adminlogin')
         
     } catch (error) {

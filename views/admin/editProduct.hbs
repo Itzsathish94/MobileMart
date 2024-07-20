@@ -115,11 +115,16 @@
                                 <div class="col-lg-4">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
+                                        <option value="{{this._id}}" selected>{{product.category.category}}</option>
+
                                         {{#each category}}
+                                        {{#if (Noteq this.category ../product.category.category)}}
                                         <option value="{{this._id}}">{{this.category}}</option>
+                                        {{/if}}
                                         {{/each}}
                                     </select>
                                 </div>
+
 
 
                                 {{!-- <div class="col-lg-3">
@@ -137,21 +142,24 @@
 
                             </div>
                             <div class="form-group">
-        <label for="productImage">Product Image:</label>
-        <div class="d-flex border p-10 m-tb-10">
-          <input name="product-id" type="hidden" value="{{product._id}}">
-          {{#each product.image}}
-          <div class="image-container" onclick="deleteProImg()">
-            <div  class="badge rounded-pill alert-danger "><p  class="close-button" data-image-index="{{@index}}"
-              style="text-decoration: none;">×</p></div>
-            <img src="/images/products/{{this}}" alt="images" style="width: 80px; height: auto;" class="m-2 pro-image"
-              data-image-index="{{@index}}">
-          </div>
+                                <label for="productImage">Product Image:</label>
+                                <div class="d-flex border p-10 m-tb-10">
+                                    <input name="product-id" type="hidden" value="{{product._id}}">
+                                    {{#each product.image}}
+                                    <div class="image-container" onclick="deleteProImg()">
+                                        <div class="badge rounded-pill alert-danger ">
+                                            <p class="close-button" data-image-index="{{@index}}"
+                                                style="text-decoration: none;">×</p>
+                                        </div>
+                                        <img src="/images/products/{{this}}"  alt="images"
+                                            style="width: 80px; height: auto;" class="m-2 pro-image"
+                                            data-image-index="{{@index}}">
+                                    </div>
 
-          {{/each}}
-        </div>
-        <input type="file" class="form-control-file" id="productImage" multiple name="image">
-      </div>
+                                    {{/each}}
+                                </div>
+                                <input type="file" class="form-control-file" id="productImage" multiple name="image">
+                            </div>
 
                             <div class="d-flex g-2">
                                 <div class="m-2">
@@ -159,7 +167,7 @@
 
                                 </div>
                                 <div class="m-2">
-                                    <a href="/admin/products" type="button" class="btn btn-primary">back</a>
+                                    <a id="backButton" type="button" class="btn btn-primary">back</a>
 
                                 </div>
 
@@ -186,7 +194,7 @@
             <div class="col-sm-6">
                 <script>
                     document.write(new Date().getFullYear())
-                </script> ©, Evara - HTML Ecommerce Template .
+                </script> ©, MobileMart - HTML Ecommerce Template .
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end">
@@ -198,44 +206,44 @@
 </main>
 
 <script>
- const deleteImage = async (productId, imageIndex) => {
-    try {
-      const response = await fetch(`/admin/product_img_delete?id=${productId}&?image=${imageIndex}`, {
-        method: 'DELETE'
-      });
+    const deleteImage = async (productId, imageIndex) => {
+        try {
+            const response = await fetch(`/admin/product_img_delete?id=${productId}&?image=${imageIndex}`, {
+                method: 'DELETE'
+            });
 
-      const data = await response.json();
-      console.log(data.message);
+            const data = await response.json();
+            console.log(data.message);
 
-      if (data) {
-        const imageElem = document.querySelector(`.pro-image[data-image-index="${imageIndex}"]`);
-        if (imageElem) {
+            if (data) {
+                const imageElem = document.querySelector(`.pro-image[data-image-index="${imageIndex}"]`);
+                if (imageElem) {
 
-          console.log(imageElem, 'htttttttttttttttttttttt')
-          // or
-          imageElem.remove(); // remove the image element completely
+                    console.log(imageElem, 'htttttttttttttttttttttt')
+                    // or
+                    imageElem.remove(); // remove the image element completely
+                }
+            }
+
+        } catch (error) {
+            console.error(error);
         }
-      }
+    };
 
-    } catch (error) {
-      console.error(error);
+
+    const deleteProImg = () => {
+
+        const deleteButtons = document.querySelectorAll('.close-button')
+        const productId = document.getElementsByName('product-id')[0].value
+
+        deleteButtons.forEach((button) => {
+            button.addEventListener('click', async (event) => {
+                const imageIndex = event.target.dataset.imageIndex;
+                deleteImage(productId, imageIndex);
+            });
+        });
+
     }
-  };
-
-
-  const deleteProImg = () => {
-
-    const deleteButtons = document.querySelectorAll('.close-button')
-    const productId = document.getElementsByName('product-id')[0].value
-
-    deleteButtons.forEach((button )=> {
-      button.addEventListener('click', async (event) => {
-        const imageIndex = event.target.dataset.imageIndex;
-        deleteImage(productId, imageIndex);
-      });
-    });
-
-  }
 
 
 
@@ -248,7 +256,7 @@
 
 
 
- 
+
 
 
 
@@ -258,7 +266,7 @@
 
     function Validation() {
 
-       
+
         let productName = document.getElementById("productName").value;
 
         let longdescription = document.getElementById("longdescription").value;
@@ -304,7 +312,34 @@
 
     }
 
-    
 
-   
+
+
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script> ////////////back
+    $(document).ready(function () {
+        $('#backButton').click(function (e) {
+            e.preventDefault();
+
+
+            Swal.fire({
+                title: "Leave the page?",
+                text: "The Data will not be saved",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/admin/products";
+
+                }
+            });
+
+
+        });
+    })</script>

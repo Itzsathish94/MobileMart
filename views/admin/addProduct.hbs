@@ -224,20 +224,13 @@
 
                                 </div>
                                 <div class="m-2">
-                                    <a href="/admin/products" type="button" class="btn btn-primary">back</a>
+                                    <a id='backbutton' type="button" class="btn btn-primary">back</a>
 
                                 </div>
 
 
                             </div>
-                            {{!-- <div class="mb-4">
-                                <label class="form-label">Tax rate</label>
-                                <input type="text" placeholder="%" class="form-control" id="product_name">
-                            </div>
-                            <label class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" value="">
-                                <span class="form-check-label"> Make a template </span>
-                            </label> --}}
+                            
                         </form>
                     </div>
                 </div> <!-- card end// -->
@@ -251,7 +244,7 @@
             <div class="col-sm-6">
                 <script>
                     document.write(new Date().getFullYear())
-                </script> ©, Evara - HTML Ecommerce Template .
+                </script> ©, MobileMart - HTML Ecommerce Template .
             </div>
             <div class="col-sm-6">
                 <div class="text-sm-end">
@@ -262,34 +255,49 @@
     </footer>
 </main>
 
+<div id="cropperModal" class="modal fade" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <img id="imageToCrop" src="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/>
+<script src="https://unpkg.com/cropperjs/dist/cropper.js"></script>
+
+
 <script>
     function Validation() {
-
         var fileInput = document.getElementById('file-1');
         var previewImage = document.getElementById('file-1-preview').querySelector('img');
 
         let productName = document.getElementById("productName").value;
-
         let longdescription = document.getElementById("longdescription").value;
         let Qty = document.getElementById("Qty").value;
         let price = document.getElementById("price").value;
 
-
-
         let productNameRegex = /^\s*.*\S.*\s*$/;
         let number = /^[1-9]\d*$/;
-        let descriptionRegex = /^(?!\s*$)[\s\S]{1,100}$/
-
-
-
+        let descriptionRegex = /^(?!\s*$)[\s\S]{1,100}$/;
 
         let productNameAlert = document.getElementById("productNameAlert");
         let qtyAlert = document.getElementById("qtyAlert");
         let priceAlert = document.getElementById("priceAlert");
-
-
         let longAlert = document.getElementById("longAlert");
-        let imgAlert = document.getElementById('imgAlert')
+        let imgAlert = document.getElementById('imgAlert');
 
         if (!productName.match(productNameRegex)) {
             productNameAlert.innerHTML = "Name Not Valid";
@@ -300,20 +308,15 @@
         } else if (!price.match(number)) {
             priceAlert.innerHTML = "Please Check Price Again";
             return false;
-        }
-
-        else if (!longdescription.match(descriptionRegex)) {
-            longAlert.innerHTML = "Please Check about Again";
+        } else if (!longdescription.match(descriptionRegex)) {
+            longAlert.innerHTML = "Please Check Description Again";
             return false;
         } else if (fileInput.files.length === 0) {
-            imgAlert.innerHTML = "Please chose image"
+            imgAlert.innerHTML = "Please choose an image";
             return false;
-        }
-
-        else {
+        } else {
             return true;
         }
-
     }
 
     function previewBeforeUpload(id) {
@@ -322,6 +325,22 @@
                 return;
             }
             let file = e.target.files[0];
+
+            // File validation
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                alert("File size exceeds the maximum limit of 5MB.");
+                e.target.value = ""; // Clear the file input
+                return;
+            }
+
+            const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
+            if (!allowedExtensions.test(file.name)) {
+                alert('Please upload file having extensions .jpeg/.jpg/.png/.gif only.');
+                e.target.value = ""; // Clear the file input
+                return;
+            }
+
             let url = URL.createObjectURL(file);
             document.querySelector("#" + id + "-preview div").innerText = file.name;
             document.querySelector("#" + id + "-preview img").src = url;
@@ -333,62 +352,125 @@
     previewBeforeUpload("file-3");
     previewBeforeUpload("file-4");
     previewBeforeUpload("file-5");
-</script>
-{{!-- 
-<script>
+
     var productForm = document.getElementById('product_form');
-    var productNameInput = document.getElementById('product_name');
-    var validationMessage = document.getElementById('name-validation-message');
-    var priceName = document.getElementById('price');
-    var priceMsg = document.getElementById('priceAlert')
-    
-    
+    var productNameInput = document.getElementById('productName');
+    var validationMessage = document.getElementById('productNameAlert');
+    var priceInput = document.getElementById('price');
+    var priceMsg = document.getElementById('priceAlert');
+
     function validateProductName() {
         var productName = productNameInput.value.trim();
         var pattern = /^[a-zA-Z\s]{3,20}$/;
-        
-       
-        if(!pattern.test(productName)){
+
+        if (!pattern.test(productName)) {
             validationMessage.textContent = 'Product title is invalid';
             return false;
-        }
-        else {
+        } else {
             validationMessage.textContent = '';
             return true;
         }
-        
-         if (productName === '' ) {
+
+        if (productName === '') {
             validationMessage.textContent = 'Product title is required';
             return false;
         }
     }
 
-   function validatePrice(){
-        var price = priceName
-        if( price <= 0){
-            priceMsg.textContent = "invalid"
+    function validatePrice() {
+        var price = priceInput.value;
+        if (price <= 0) {
+            priceMsg.textContent = "Invalid price";
             return false;
-        }
-        else{
+        } else {
             priceMsg.textContent = "";
             return true;
         }
-   }
+    }
 
     function handleSubmit(event) {
-        if (!validateProductName()) {
-            event.preventDefault(); 
-        }
-        if(!validatePrice()){
+        if (!validateProductName() || !validatePrice()) {
             event.preventDefault();
         }
     }
 
     productNameInput.addEventListener('blur', validateProductName);
+    productForm.addEventListener('submit', handleSubmit);
 
-   
-    productForm.addEventListener('submit','input', validateProductName);
+    let cropper;
+    const inputElements = ["file-1", "file-2", "file-3", "file-4", "file-5"];
+    let currentInput;
 
-     productForm.addEventListener('submit', handleSubmit);
+    inputElements.forEach((id) => {
+        document.getElementById(id).addEventListener('change', function (e) {
+            if (e.target.files.length > 0) {
+                currentInput = id;
+                const file = e.target.files[0];
+                const url = URL.createObjectURL(file);
+                document.getElementById('imageToCrop').src = url;
+                const modal = new bootstrap.Modal(document.getElementById('cropperModal'));
+                modal.show();
+            }
+        });
+    });
 
-</script> --}}
+    document.getElementById('cropperModal').addEventListener('shown.bs.modal', function () {
+        const image = document.getElementById('imageToCrop');
+        cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 3
+        });
+    });
+
+    document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function () {
+        const canvas = cropper.getCroppedCanvas({
+            width: 250,
+            height: 250,
+        });
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const preview = document.querySelector(`#${currentInput}-preview img`);
+            preview.src = url;
+            const fileInput = document.getElementById(currentInput);
+            const dataTransfer = new DataTransfer();
+            const file = new File([blob], `${currentInput}.jpg`, { type: 'image/jpeg' });
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+        });
+        const modal = bootstrap.Modal.getInstance(document.getElementById('cropperModal'));
+        modal.hide();
+    });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+      $(document).ready(function () {
+        $('#backbutton').click(function (e) {
+            e.preventDefault();
+
+
+            Swal.fire({
+                title: "Leave the page?",
+                text: "The Data will not be saved",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/admin/products";
+
+                }
+            });
+
+
+        });
+    });
+</script>

@@ -1,5 +1,6 @@
 const { Product } = require('../../models/productsSchema') ////proper import of model from schema is needed /// npm i -D handlebars@4.5.0
-const { Category } = require('../../models/categorySchema')
+const { Category } = require('../../models/categorySchema');
+const { default: mongoose } = require('mongoose');
 
 
 
@@ -26,22 +27,6 @@ const showproductslist = async (req, res) => {
   }
 }
 
-// const showproductslist=async (req,res)=>{
-
-
-//     try {
-
-//         const products= await Product.find()
-//         console.log(products)
-//         res.render('admin/products',{ products,admin:true})
-
-//     } catch (error) {
-//         console.log("smtg wrong", error);
-
-//     }
-
-// }
-
 ///add products to the products list
 const addproduct_page = async (req, res) => {
 
@@ -57,10 +42,6 @@ const addproduct_page = async (req, res) => {
   }
 }
 const addproduct = async (req, res) => {
-  // const name=req.body.name
-  // const category=req.body.category
-  // const description=req.body.description
-  // const image=req.body.image
   try {
     const files = req.files
     const images = []
@@ -68,14 +49,13 @@ const addproduct = async (req, res) => {
       const image = file.filename;
       images.push(image);
     });
-    // images.push(req.files.filename)
+  
     const newProduct = new Product({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       category: req.body.category,
       stock: req.body.stock,
-      //Image: req.body.image
       image: images
     });
     await newProduct.save().then(result => {
@@ -92,18 +72,19 @@ const addproduct = async (req, res) => {
 
 const deleteproduct = async (req, res) => {
   try {
-    let productId = req.params.id;
-    const productdata = await Product.findById(productId)
+    const {id} = req.body
+    console.log(req.body);
+    const productdata = await Product.findById(id)
     const isBlocked = productdata.is_blocked;
     console.log(isBlocked)
     await Product.findByIdAndUpdate(
-      productId,
+      id,
       {
         $set: {
           is_blocked: !isBlocked,
         },
       })
-    res.redirect('/admin/products')
+    res.json({success:true})
   } catch (error) {
     console.log(error)
 
@@ -112,9 +93,9 @@ const deleteproduct = async (req, res) => {
 /////complete delte of product
 const fullDeleteProd=async(req,res)=>{
   try {
-    let productId = req.params.id;
-    await Product.findByIdAndDelete(productId)
-    res.redirect('/admin/products')
+    let {id}=req.body
+    await Product.findByIdAndDelete(id)
+    res.json({success:true})
     
   } catch (error) {
     console.log(error)
@@ -128,7 +109,7 @@ const showeditprodpage = async (req, res) => {
 
     const prodid = req.params.id
     console.log(prodid)
-    const product = await Product.findById({_id:prodid}).lean()
+    const product = await Product.findById({_id:prodid}).populate('category','category').lean()
     console.log(product)
     const category = await Category.find().lean()
     console.log(category)
@@ -145,13 +126,9 @@ const editProduct=async(req,res)=>{
     const product = await Product.findById(prodid).lean()
     const extimages=product.image
     let updImages=[]
-    // Files.forEach((file)=>{
-    //   images.push(file)
-    // })
     if(Files && Files.length>0){
       const newImages = req.files.map((file) => file.filename);
       updImages = [...extimages, ...newImages];
-      // product.image = updImages;
       
     }
     else{
@@ -199,12 +176,13 @@ const deleteProdImage =  async (req, res) => {
 
 const blockProducts=async(req,res)=>{
   try {
-    const prodId=req.params.id
-    const product=await Product.findById(prodId)
+    const {id}=req.body
+    console.log(req.body)
+    const product=await Product.findById(id)
     let newisBlocked=!product.isBlocked
 
-    await Product.findByIdAndUpdate(prodId,{isBlocked:newisBlocked})
-    res.redirect('/admin/products')
+    await Product.findByIdAndUpdate(id,{isBlocked:newisBlocked})
+    res.json({success:true})
     
   } catch (error) {
     console.log(error)
@@ -226,4 +204,3 @@ module.exports = {
 
 }
 
-// "hbs": "^4.2.0"

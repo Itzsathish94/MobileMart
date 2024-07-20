@@ -1,5 +1,4 @@
 const mongoose=require("mongoose");
-// const { array } = require('../multer/product_control')
 
 const Schema=mongoose.Schema
 
@@ -19,7 +18,7 @@ const productSchema=new Schema({
    
     category:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Category',
+        ref:'category',
         required: true
 
     },
@@ -47,7 +46,7 @@ const productSchema=new Schema({
         type: Boolean,
         default: false,
     }
-})
+},{timestamps:true})
 
 //model name "product" will turn into collection name in DB
 const Product = mongoose.model("product",productSchema);

@@ -16,9 +16,10 @@
                                     </div>
 
                                     <!-- Display error messages -->
+                                    {{#if msg}}
+                                    <h5 class="text-center alert alert-danger" style="color: red;">{{msg}}</h5>
+                                    {{/if}}
 
-                                    {{!-- <h5 class="text-center alert alert-danger" style="color: red;">{{msg}}</h5>
-                                    --}}
                                    {{#if blockMsg}}
                                     <div class="alert alert-danger mt-3 alert-dismissible fade {{#if blockMsg}}show{{/if}}"
                                         role="alert">
@@ -100,6 +101,9 @@
                                     <!-- Register link -->
                                     <div class="text-muted text-center">Have an account? <a href="/signup">
                                             Signup</a>
+                                    </div>
+                                    <div class="text-muted text-center">Google<a href="/auth/google">
+                                            Sign in</a>
                                     </div>
                                 </div>
                             </div>

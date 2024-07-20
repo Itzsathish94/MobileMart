@@ -15,7 +15,7 @@ const CategorySchema=new Schema({
         type:Boolean,
         default:true
     }
-},{ collection:'category'})
+},{ collection:'category'},{timestamps:true})
 
 const Category=mongoose.model('category',CategorySchema)
 
