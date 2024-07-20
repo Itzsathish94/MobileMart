@@ -138,8 +138,8 @@
                                                                 <th width="40%">Product</th>
                                                                 <th width="20%">Unit Price</th>
                                                                 <th width="20%">Quantity</th>
-                                                                <th width="20%">Total</th>
-                                                                <th width="20%" class="text-end">Cancel</th>
+                                                                <th width="20%" class="text-end">Total</th>
+                                                                {{!-- <th width="20%" >Cancel</th> --}}
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -160,30 +160,9 @@
                                                                 <td class="text-end">₹{{multiply this.product.quantity
                                                                     this.product.price }}</td>
 
-                                                                <td class="text-end">
-                                                                    {{!-- {{#singlestatuchecker ../myOrderDetails.product}}
-                                                                    {{#if this.product.isReturned}}
-                                                                    <span
-                                                                        class="badge rounded-pill alert-info text-info">Returned</span>
-                                                                    {{else}}
-                                                                    <button id="returnnow-btn"
-                                                                        class="btn btn-primary btn-sm return-btn"
-                                                                        data-order-id="{{../myOrderDetails._id}}"
-                                                                        data-prod-id="{{this.product._id}}">Return</button>
-                                                                    {{/if}}
-                                                                    {{else}}
-                                                                    {{#if this.product.isCancelled}}
-                                                                    <span
-                                                                        class="badge rounded-pill alert-danger text-danger">Cancelled</span>
-                                                                    {{else}}
-                                                                    <button id="cancel-btn"
-                                                                        class="btn btn-primary btn-sm cancel-btn"
-                                                                        data-order-id="{{../myOrderDetails._id}}"
-                                                                        data-prod-id="{{this.product._id}}">Cancel</button>
-                                                                    {{/if}} 
+                                                                {{!-- <td class="text-end">
                                                                    
-                                                                    
-                                                                    {{/singlestatuchecker}} --}}
+                                                                     
                                                                     {{#singlestatuchecker this.product}}
                                                                         {{#ifCond ../myOrderDetails.status '==' 'Delivered'}}
                                                                             <button id="returnnow-btn" class="btn btn-primary btn-sm return-btn" data-order-id="{{../myOrderDetails._id}}" data-prod-id="{{this.product._id}}">Return</button>
@@ -191,7 +170,7 @@
                                                                             <button id="cancel-btn" class="btn btn-primary btn-sm cancel-btn" data-order-id="{{../myOrderDetails._id}}" data-prod-id="{{this.product._id}}">Cancel</button>
                                                                         {{/ifCond}}
                                                                     {{/singlestatuchecker}}
-                                                                </td>
+                                                                </td> --}}
                                                             </tr>
                                                             {{/each}}
                                                             <tr>

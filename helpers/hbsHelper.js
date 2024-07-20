@@ -72,7 +72,7 @@ function isCancelled(Handlebars) {
     
         if (value.status === "Delivered") {
             return new Handlebars.SafeString(`
-                <button id="returnOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Return Entire Order</button>
+                <button id="returnOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Return Order</button>
             `);
         } else if (value.status == "Returned") {
             return new Handlebars.SafeString('<span class="badge rounded-pill alert-info text-info">Order Returned</span>');
@@ -83,7 +83,7 @@ function isCancelled(Handlebars) {
                 return new Handlebars.SafeString('<span class="badge rounded-pill alert-info text-info">Order Returned</span>');
             } else {
                 return new Handlebars.SafeString(`
-                    <button id="cancelOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Cancel Entire Order</button>
+                    <button id="cancelOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Cancel Order</button>
                 `);
             }
         }

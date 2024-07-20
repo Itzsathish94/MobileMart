@@ -84,38 +84,27 @@
                             {{#if userData}}
                             <div class="header-action-icon-2">
                                 <li class="dropdown nav-item">
+
                                     <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
-                                        aria-expanded="false">
-                                        <img class="img-xs rounded-circle mr-2" style="width: 50px;"
-                                            src="/images/users/profile.jpg" alt="User">
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount"
-                                        style="font-family: 'Times New Roman', Times, serif;">
-                                        <a class="dropdown-item" href="/profile">
-                                            <i class="fa-solid fa-lg fa-circle-user" style="margin-right: 10px;"></i> Account
-                                        </a>
-                                        <a class="dropdown-item" href="/my_orders">
-                                            <i class="fa-brands fa-lg fa-shopify" style="margin-right: 10px;"></i> Orders
-                                        </a>
-                                        <a class="dropdown-item" href="/wallet">
-                                            <i class="fa-solid fa-lg fa-wallet " style="margin-right: 10px;"></i> Wallet
-                                        </a>
-                                        <a class="dropdown-item" href="/wishlist?id={{userData._id}}">
-                                            <i class="fa-solid fa-lg fa-heart" style="margin-right: 10px;"></i> Favorites
-                                        </a>
-                                        
-                                        <a class="dropdown-item" href="#">
-                                            <i class="fa-solid fa-lg fa-circle-info " style="margin-right: 10px;"></i> Help center
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item text-danger"  id="logoutbtn" href="/logout">
-                                            <i class="fa-solid fa-right-from-bracket" style="margin-right: 10px;"></i> Logout
-                                        </a>
+                                        aria-expanded="false"> <img class="img-md rounded-circle" style="width:50px"
+                                            src="/images/users/{{userData.image.[0]}}" alt="user image"
+                                            onerror="src='/assetsAdmin/imgs/people/avatar1.jpg'"></a>
+
+
+
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                                        <a class="dropdown-item" href="/profile"><i
+                                                class="material-icons md-perm_identity"></i>Edit Profile</a>
+                                        <a class="dropdown-item" href="/myorders"><i
+                                                class="material-icons md-settings"></i>Orders</a>
+                                        <a class="dropdown-item text-danger" id="logoutbtn" href="/logout"><i
+                                                class="material-icons md-exit_to_app"></i>Logout</a>
                                     </div>
                                 </li>
                             </div>
 
-                           {{/if}}
+                            {{/if}}
 
                         </div>
                     </div>

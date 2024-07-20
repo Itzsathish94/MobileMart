@@ -5,6 +5,7 @@ const userHelper = require('../../helpers/user_helper')
 const argon2 = require('argon2')
 const mongoose = require('mongoose')
 const ObjectId=mongoose.Types.ObjectId
+const Cart=require('../../models/cart')
 
 let otp
 let userotp
@@ -278,14 +279,27 @@ const getproducts = async (req, res) => {
    
     try {
         userData=req.session.user
+        console.log(userData)
         const item = new ObjectId(req.params.id)
         console.log(item)
+        let ProductExistInCart
+       
         
         const product = await Product.findById(item).lean()
         let outOfStock = true;
 
         if(product.stock){
             outOfStock = false
+        }
+        const ProductExist = await Cart.find({
+            userId: userData._id,
+            product_Id: item
+        })
+        console.log(ProductExist)
+        if (ProductExist.length === 0) {
+            ProductExistInCart = false
+        } else {
+            ProductExistInCart = true
         }
 
         console.log(product , "productttttttttttt")
@@ -315,7 +329,7 @@ const getproducts = async (req, res) => {
 
         console.log(relatedProducts, "RELATED PRODUCTSSSSSS")
 
-         res.render('user/productDetails', { product , relatedProducts , outOfStock , userData, layout: 'layout' })
+         res.render('user/productDetails', { product ,ProductExistInCart, relatedProducts , outOfStock , userData, layout: 'layout' })
 
     } catch (error) {
         console.log(error)

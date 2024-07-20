@@ -81,6 +81,7 @@ const loadCartPage = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         let userData = req.session.user;
+        let {prodId}=req.body
         if (!userData) {
             console.log("userdata..............")
             return res.status(401).json({ success: false, message: "Login Required" });
@@ -91,6 +92,12 @@ const addToCart = async (req, res) => {
         console.log("Request Body:", data);
         const quantity = parseInt(req.body.quantity, 10);
         console.log("Quantity:", quantity);
+        // let prodQuantity=await Product.findById({prodId},{stock:1}).lean()
+        // console.log(prodQuantity,"qqqqqqqqqqqqqqqqqqqqqq");
+
+        // if (quantity >= prodQuantity) {
+        //     return res.json({ success: false, message: 'Stock Limit reached!!!' });
+        // }
 
         if (!data.prodId) {
             return res.status(400).json({ success: false, message: 'Invalid product ID' });
@@ -181,7 +188,7 @@ const updateCart = async (req, res) => {
         let cartquant=await Product.findOne({_id:oldCart.product_Id},{stock:1,_id:0}).lean()
         console.log(cartquant.stock,"cartquant--------------------------------------------------------------")
         
-        if(cartquant.stock-1<=req.body.newValue){
+        if(cartquant.stock<=req.body.newValue){
             return res.json({
                 success: false,
                 message: 'Product stock limit reached!'
