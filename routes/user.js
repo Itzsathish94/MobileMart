@@ -25,11 +25,6 @@ const {
     changepassword,
     changepass,
     cancelorder,
-   // cancelOneProduct,
-    
-   // returnOrder,
-   
-    
 } = require('../controllers/user-controllers/profile.js')
 const { cancelOrder,returnOrder, cancelOneProduct , returnOneProduct,getInvoice}= require('../controllers/user-controllers/ordercontroller')
 
@@ -49,14 +44,11 @@ router.get('/',  gethome);
 router.get('/productDetails/:id',   getproducts)
 
 ///login and logout
-
 router.get('/login', logedout, showloginpage)
 router.post('/login', dologin)
 router.get('/logout', doLogout)
-
 router.get('/signup', logedout, showsigninpage)
 router.post('/signup', logedout, dosignup)
-
 router.get('/submit_otp', logedout, getotppage)
 router.post('/submit_otp', logedout, submitotp)
 router.get('/resend_otp', logedout, resendOtp)
@@ -68,13 +60,12 @@ router.get('/resetPassword', logedout, resetPasswordPage)
 router.post('/resetPassword', resetPassword)
 
 /////////profile
-// router.get('/profile',logedin,viewUserProfile)
 router.get('/profile', logedin, isBlocked, viewUserProfile)
 router.get('/edit_profile', logedin, isBlocked, EditUserProfile)
 router.post('/edit_profile/:id', logedin, isBlocked, Upload.single('image'), updateUserProfile)
 
 
-///adress
+///address
 router.get('/addresses', logedin, isBlocked, manageAddress)
 router.get('/add_address', logedin, isBlocked, addAddress)
 router.post('/add_address', logedin, isBlocked, addAddressPost)
@@ -87,17 +78,13 @@ router.get('/changepassword', logedin, isBlocked, changepassword)
 router.post('/changepass', logedin, isBlocked, changepass)
 
 
-
 /////order
 router.post('/placeorder', placeorder)
 router.get('/orderPlaced', logedin, isBlocked, orderSuccess)
 router.get('/orderDetails/:id', logedin, isBlocked, orderDetails)
 router.post('/cancelorder/:id', cancelorder)
 
-
-// router.post('/returnorder/:id',returnOrder)
-router.post('/cancelOneProduct', cancelOneProduct)
-
+//Invoice
 router.get('/get_invoice', logedin, isBlocked, getInvoice)
 
 ////userOrder related
@@ -107,7 +94,6 @@ router.get('/myorders', logedin, isBlocked, myorders)
 router.get('/cart', logedin, isBlocked, loadCartPage)
 router.post('/addtocart/:id', logedin, isBlocked, addToCart)
 router.post('/removeFromCart', logedin, isBlocked, removeFromCart)
-
 router.post('/updatecart', updateCart)
 
 
@@ -117,14 +103,11 @@ router.get('/cart/checkout', logedin, isBlocked, loadCheckoutPage)
 
 // /////// shop
  router.get('/shop',shopPage)
-
  router.post('/search',searchAndSort)
  router.put('/cancel-order/:id', cancelOrder);
-
  router.put('/return-order/:id', returnOrder);
- 
  router.put('/cancel-one-product', cancelOneProduct);
- 
  router.put('/return-one-product', returnOneProduct);
+ router.post('/cancelOneProduct', cancelOneProduct)
 
 module.exports = router;

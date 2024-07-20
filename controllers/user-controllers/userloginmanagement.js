@@ -271,9 +271,6 @@ const resendOtp = async (req, res) => {
     }
 }
 
-
-
-
 ////detailed product view
 const getproducts = async (req, res) => {
    
@@ -377,13 +374,11 @@ module.exports = {
     dosignup,
     submitotp,
     resendOtp,
-
     dologin,
     doLogout,
     gethome,
     getproducts,
     googleCallback,
-
     //////// other pages //////
     aboutpage
 

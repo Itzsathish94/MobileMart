@@ -8,8 +8,6 @@ const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
 
 
-
-
 const loadCheckoutPage = async (req, res) => {
     try {
         let userData = await User.findById(req.session.user._id).lean()
@@ -194,10 +192,6 @@ const placeorder = async (req, res) => {
                 const ordered = await order.save()
                 console.log(ordered, "ordersaved DATAAAA with coupon")
                 
-
-
-
-
             } else {
                 const order = new Order({
                     userId: ID,
@@ -212,11 +206,6 @@ const placeorder = async (req, res) => {
                 console.log(ordered, "ordersaved DATAAAA")
 
             }
-
-
-
-
-
 
             productDet.forEach(async (product) => {
                 await Product.updateMany({ _id: product._id }, { $inc: { stock: -product.quantity ,bestSelling:1} });
@@ -249,8 +238,6 @@ const placeorder = async (req, res) => {
                     })
 
                 }
-
-
             }
 
             if (payMethod === 'razorpay') {
@@ -278,7 +265,6 @@ const placeorder = async (req, res) => {
             }
 
             /// payment method wallet function
-
 
             if (payMethod === 'wallet') {
                 const newWallet = req.body.updateWallet

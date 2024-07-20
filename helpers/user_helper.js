@@ -69,7 +69,6 @@ const hashpassword = async (password) => {
 }
 
 
-
 module.exports = {
     verifyEmail,
     generateOtp,

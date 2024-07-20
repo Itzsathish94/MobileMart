@@ -1,4 +1,4 @@
-const { Product } = require('../../models/productsSchema') ////proper import of model from schema is needed /// npm i -D handlebars@4.5.0
+const { Product } = require('../../models/productsSchema') 
 const { Category } = require('../../models/categorySchema')
 const { User } = require('../../models/userSchema')
 const mongoose = require('mongoose')

@@ -92,13 +92,6 @@ const addToCart = async (req, res) => {
         console.log("Request Body:", data);
         const quantity = parseInt(req.body.quantity, 10);
         console.log("Quantity:", quantity);
-        // let prodQuantity=await Product.findById({prodId},{stock:1}).lean()
-        // console.log(prodQuantity,"qqqqqqqqqqqqqqqqqqqqqq");
-
-        // if (quantity >= prodQuantity) {
-        //     return res.json({ success: false, message: 'Stock Limit reached!!!' });
-        // }
-
         if (!data.prodId) {
             return res.status(400).json({ success: false, message: 'Invalid product ID' });
         }
@@ -196,8 +189,6 @@ const updateCart = async (req, res) => {
         }
 
         
-
-
         const updatedcartvalue = await Cart.updateOne(
             { _id: req.body.cartIdForUpdate },
             { $set: { quantity: req.body.newValue, value: newValue } }
@@ -229,10 +220,6 @@ const updateCart = async (req, res) => {
 
         const newData = [];
 
-
-
-
-
         updatedCart.forEach(data => {
 
             const newDataItem = { ...data }; // Create a copy of the original object
@@ -260,10 +247,7 @@ const updateCart = async (req, res) => {
         }
         )
 
-
         console.log(newData[0].totalAmount)
-
-      
 
     } catch (error) {
        console.log(error.message);

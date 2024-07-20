@@ -1,9 +1,6 @@
-const { Product } = require('../../models/productsSchema') ////proper import of model from schema is needed /// npm i -D handlebars@4.5.0
+const { Product } = require('../../models/productsSchema') 
 const { Category } = require('../../models/categorySchema');
 const { default: mongoose } = require('mongoose');
-
-
-
 
 ////render products list page in admin page
 const showproductslist = async (req, res) => {
@@ -19,7 +16,6 @@ const showproductslist = async (req, res) => {
       }},
       {$unwind:'$category'},
     ])
-    // console.log(products);
     res.render('admin/products', { products, admin: true ,layout:'adminlayout'});
   } catch (error) {
     console.log("Something went wrong", error);
@@ -29,8 +25,6 @@ const showproductslist = async (req, res) => {
 
 ///add products to the products list
 const addproduct_page = async (req, res) => {
-
-
   try {
     const categories = await Category.find().lean()
     //console.log(categories)
@@ -90,7 +84,8 @@ const deleteproduct = async (req, res) => {
 
   }
 }
-/////complete delte of product
+
+/////complete delete of product
 const fullDeleteProd=async(req,res)=>{
   try {
     let {id}=req.body
@@ -195,7 +190,6 @@ module.exports = {
   addproduct_page,
   addproduct,
   blockProducts,
-  
   deleteproduct,
   showeditprodpage,
   editProduct,

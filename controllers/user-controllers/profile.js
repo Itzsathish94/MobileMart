@@ -4,10 +4,7 @@ const { User } = require('../../models/userSchema')
 const { Address } = require('../../models/addressSchema')
 const Cart = require('../../models/cart')
 const Order = require('../../models/order')
-
 const userHelper = require('../../helpers/user_helper')
-
-
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
 
@@ -77,8 +74,6 @@ const updateUserProfile = async (req, res) => {
 
 /// To get manage address page ///
 
-
-
 const manageAddress = async (req, res) => {
     try {
         const user = req.session.user;
@@ -99,9 +94,6 @@ const manageAddress = async (req, res) => {
         res.status(500).send("Internal Server Error");;
     }
 }
-
-
-
 
 const addAddress = async (req, res) => {
     try {
@@ -155,10 +147,6 @@ const editAddressPost = async (req, res) => {
         }, { new: true })
 
         res.redirect('/addresses')
-
-        // Find user addresses
-        // const userAddresses = await Address.find({ userId: id }).lean();
-        // res.render('user/editAddress')
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");;
@@ -169,11 +157,8 @@ const editAddress = async (req, res) => {
     try {
 
         const id = req.params.id
-
         const address = await Address.findById(id).lean();
-        // const addressObject = address.toObject();
         console.log(address)
-
         res.render('user/editAddress', { address })
     } catch (error) {
         console.log(error.message);
@@ -201,7 +186,6 @@ const myorders = async (req, res) => {
         const user = req.session.user
         const id = user._id
         const userData = await User.findById(id).lean();
-        // const userDataObject = userData.toObject();
         var page = 1;
         if (req.query.page) {
             page = req.query.page;
@@ -210,7 +194,6 @@ const myorders = async (req, res) => {
         const skip = (page - 1) * limit;
 
         console.log(userData, "userdata")
-        // const Id
         const myOrders = await Order.aggregate([
             {
                 $match:{
@@ -270,9 +253,6 @@ const orderDetails = async (req, res) => {
 
         // Retrieve order details including populated address
         const myOrderDetails = await Order.findById(orderId).populate('address').lean();
-        // let hasReturnedItems = myOrderDetails.product.some(product => product.isReturned);
-        // let allCancelled = myOrderDetails.product.every(product => product.isCancelled);
-        // let allReturned = myOrderDetails.product.every(product => product.isReturned);
         await myOrderDetails.product.forEach((product) => {
             if (product.isReturned) {
                 ct++
@@ -297,9 +277,6 @@ const orderDetails = async (req, res) => {
                 myOrderDetails.status = "Cancelled";
             }
         }
-
-       // myOrderDetails.allCancelled = allCancelled;
-       // myOrderDetails.allReturned = allReturned;
 
         if (!myOrderDetails) {
             return res.status(404).send("Order not found");
@@ -332,7 +309,6 @@ const orderDetails = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
 
 
 const changepassword = async (req, res) => {
@@ -387,7 +363,6 @@ const changepass = async (req, res) => {
 }
 
 
-
 const cancelorder = async (req, res) => {
     try {
         let notcancelledAmt = 0
@@ -407,7 +382,6 @@ const cancelorder = async (req, res) => {
         if (canceledorder.paymentMethod === 'wallet' || canceledorder.paymentMethod === 'razorpay') {
             for (const data of canceledorder.product) {
 
-                // arr.push(data._id);
                 await Product.updateMany({ _id: data._id }, { $inc: { stock: data.quantity } });
 
                 await User.updateMany(
@@ -442,9 +416,6 @@ const cancelorder = async (req, res) => {
 
     }
 }
-
-
-
 
 const cancelOneProduct = async (req, res) => {
     try {
@@ -492,15 +463,6 @@ const cancelOneProduct = async (req, res) => {
             }
         )
         console.log(n)
-
-        // const check=await Product.findOne(
-        //         {_id:PRODID},
-
-
-        //     ).lean()
-        // console.log(check,"checkcheckcheck")
-
-
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -522,14 +484,11 @@ module.exports = {
     editAddress,
     editAddressPost,
     deleteAddress,
-
-
     //////orders
     myorders,
     orderDetails,
     cancelorder,
     cancelOneProduct,
-
     ////change password
     changepassword,
     changepass,

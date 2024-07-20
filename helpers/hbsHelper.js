@@ -1,6 +1,3 @@
-
-
-
 const moment = require('moment');
 
 function incHelper(Handlebars) {
@@ -41,11 +38,6 @@ function isCancelled(Handlebars) {
 }
 function signleIsCancelled(Handlebars) {
     Handlebars.registerHelper('singlestatuchecker', function (value, options) {
-       // let allCancelled = value.product.every(product => product.isCancelled);
-        
-        //let allReturned = value.product.every(product => product.isReturned);
-       // console.log(value.product,"value.product",allCancelled,allReturned)
-
         if ( value.status == 'Delivered') {
             return options.fn(this)
         }else  {
@@ -66,10 +58,6 @@ function isCancelled(Handlebars) {
 
         let allCancelled = value.product.every(product => product.isCancelled);
         let allReturned = value.product.every(product => product.isReturned);
-        // if(ct>0 && value.status!=="Returned"){
-        //    let change=   Order.findByIdAndUpdate(value._id, { $set: { status: 'Returned' } }, { new: true });
-        // }
-    
         if (value.status === "Delivered") {
             return new Handlebars.SafeString(`
                 <button id="returnOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Return Order</button>

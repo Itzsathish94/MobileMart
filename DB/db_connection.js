@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-////MobileMartis the data base name
+////MobileMart is the data base name
 const dbconnect = mongoose.connect(process.env.MONGODB);
 
 dbconnect
