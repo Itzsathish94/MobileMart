@@ -221,12 +221,15 @@
                         </div>
                         <h2><a href="/productDetails/${product._id}">${product.name}</a>
                         </h2>
-                        <div class="rating-result" title="90%">
+                        {{!-- <div class="rating-result" title="90%">
                             <span><span>90%</span></span>
-                        </div>
+                        </div> --}}
                         <div class="product-price">
                             <span>₹${product.price}</span>
-                            <span class="old-price">₹245.8</span>
+                            {{!-- <span class="old-price">₹245.8</span> --}}
+                        </div>
+                        <div >
+                            <span><span>Available in stock : ${product.stock} </span></span>
                         </div>
                         <div class="product-action-1 show">
                                             <span>

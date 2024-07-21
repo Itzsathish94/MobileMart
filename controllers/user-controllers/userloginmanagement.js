@@ -277,7 +277,7 @@ const getproducts = async (req, res) => {
     try {
         userData=req.session.user
         console.log(userData)
-        const item = new ObjectId(req.params.id)
+        const item = req.params.id
         console.log(item)
         let ProductExistInCart
        

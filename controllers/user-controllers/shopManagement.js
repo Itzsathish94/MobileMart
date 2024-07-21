@@ -120,7 +120,7 @@ const searchAndSort= async (req, res) => {
         skipStage,
         limitStage
     ]);
-    console.log(products)
+   // console.log(products)
 
     const totalProducts = await Product.countDocuments(matchStage.$match);
 

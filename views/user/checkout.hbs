@@ -101,7 +101,10 @@
                             </div> --}}
                             <div class="col-lg-4">
 
-                                {{!-- <button type="button" class="btn btn-fill-out btn-block " data-bs-toggle="collapse" data-bs-target="#couponList" aria-expanded="false" aria-controls="couponList"> <i class="fi-rs-label mr-10"></i> Show Available Coupons</button> --}}
+                                {{!-- <button type="button" class="btn btn-fill-out btn-block "
+                                    data-bs-toggle="collapse" data-bs-target="#couponList" aria-expanded="false"
+                                    aria-controls="couponList"> <i class="fi-rs-label mr-10"></i> Show Available
+                                    Coupons</button> --}}
 
                                 <div class="panel-collapse1 collapse coupon_form " id="couponList">
                                     <div class="panel-body">
@@ -160,7 +163,7 @@
                             <div class="payment_option">
                                 <div class="custome-radio">
                                     <input class="form-check-input" required="" type="radio" name="payment_option"
-                                        id="cash-on-delivery"  value="cash-on-delivery">
+                                        id="cash-on-delivery" value="cash-on-delivery">
                                     <label class="form-check-label" for="cash-on-delivery" data-bs-toggle="collapse"
                                         data-target="#bankTranfer" aria-controls="bankTranfer">Cash On Delivery</label>
                                 </div>
@@ -172,7 +175,7 @@
                                 </div> --}}
                                 {{!-- <div class="custome-radio">
                                     <input class="form-check-input" required="" type="radio" name="payment_option"
-                                        value="wallet" id="wallet" >
+                                        value="wallet" id="wallet">
                                     <label class="form-check-label" for="wallet" data-bs-toggle="collapse"
                                         data-target="#paypal" aria-controls="paypal"> Wallet</label>
                                 </div> --}}
@@ -201,6 +204,13 @@
                             <option value="{{this._id}}">{{this.addressLine1}}</option>
                             {{/each}}
                         </select>
+                    </div>
+                    <div id="selectedAddressDetails" class="mt-4">
+                        <h4>Selected Address Details</h4>
+                        <p><strong>Name:</strong> <span id="displayName"></span></p>
+                        <p><strong>Phone:</strong> <span id="displayMobile"></span></p>
+                        <p><strong>Address Line 1:</strong> <span id="displayAddress1"></span></p>
+                        <p><strong>City:</strong> <span id="displayCity"></span></p>
                     </div>
                     <div class="toggle_info1">
                         <button type="button" class="btn btn-fill btn-block mt-20 col-md-12" data-bs-toggle="collapse"
@@ -263,9 +273,6 @@
 
                         </div>
                     </div>
-
-
-
                 </div>
 
 
@@ -290,7 +297,7 @@
     let newTotal
     let subTotal
     let updateWallet
-    let ct=0
+    let ct = 0
 
 
     const paymentOption = document.querySelectorAll('input[name="payment_option"]');
@@ -355,7 +362,7 @@
 
     const Cod = async () => {
         const selectAddress = document.querySelector('#selectedAddress').value
-        const subTotal = Number(document.getElementsByName('subTotal')[0].value) 
+        const subTotal = Number(document.getElementsByName('subTotal')[0].value)
 
         const datas = await fetch('/placeorder', {
             method: 'POST',
@@ -395,17 +402,17 @@
     }
 
     const online = () => {
-        if(ct===0) {
+        if (ct === 0) {
             subTotal = Number(document.getElementsByName('subTotal')[0].value) + 50
-        }else{
-            subTotal = Number(document.getElementsByName('subTotal')[0].value) 
+        } else {
+            subTotal = Number(document.getElementsByName('subTotal')[0].value)
         }
-        
+
 
 
         var options = {
             "key": "rzp_test_OsDtnewxAfAwm0", // Enter the Key ID generated from the Dashboard
-            "amount": (subTotal)* 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "amount": (subTotal) * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             "currency": "INR",
             "image": "/images/logo/Logo_CH.png",
 
@@ -413,91 +420,51 @@
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",*/
 
-            "order_id":  undefined, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "order_id": undefined, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": function (response) {
                 //console.log(response.razorpayOrder, status);
-              //  verifyPayment(response.razorpayOrder, status, response.razorpayOrder.id, response.orderId);
+                //  verifyPayment(response.razorpayOrder, status, response.razorpayOrder.id, response.orderId);
                 Cod()
             },
 
         };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-        // Handle errors
-         rzp1.on('payment.failed', function (response) {
-            console.error('Payment failed:', response.error.code, response.error.description);
-            // Handle payment failure here
-            $.ajax({
-                url: '/handle-failure',
-                method: 'post',
-                data: {
-                    error: response.error,
-                    payment_method: paymentMethod,
-                    order_id: options.order_id // Make sure to pass the correct order ID
-                },
-                success: (result) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Payment Failed',
-                        text: 'Payment has failed. Please try again.'
-                    }).then(function () {
-                        window.location.href = '/orderFailed'; // Redirect to an order failed page
-                    });
-                }
-            });
-        });
-
 
     }
-    const useWallet = () => {
-        const wallet = document.getElementsByName('wallet')[0].value
-        const subTotal = Number(document.getElementsByName('subTotal')[0].value)
-        console.log(wallet, 'walletttttttttttt', subTotal)
 
-        if (wallet > subTotal) {
-            updateWallet = wallet - subTotal
-
-            console.log(updateWallet, 'my name is update wallet...........')
-            Cod()
-        } else {
-            alertify.set('notifier', 'position', 'bottom-center');
-            alertify.success('you dont have sufficient balance in ur wallet choose another payment method')
-        }
-    }
 
 
     let couponStatus
-    let originalSubTotal = Number(document.getElementsByName('subTotal')[0].value) ;
+    let originalSubTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-const validateCoupon = async () => {
-    couponEl = document.getElementById('copon').value;
-    subTotal = Number(document.getElementsByName('subTotal')[0].value);
+    const validateCoupon = async () => {
+        couponEl = document.getElementById('copon').value;
+        subTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-    console.log(couponEl);
-    console.log('heloooo from validate coupon...............');
-    const response = await fetch('/validate_coupon', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            couponVal: couponEl,
-            subTotal: subTotal
-        })
-    });
+        console.log(couponEl);
+        console.log('heloooo from validate coupon...............');
+        const response = await fetch('/validate_coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                couponVal: couponEl,
+                subTotal: subTotal
+            })
+        });
 
-    console.log('hiiiii from coupon status........;;;;;;');
-    couponData = await response.json();
-    console.log(couponData);
+        console.log('hiiiii from coupon status........;;;;;;');
+        couponData = await response.json();
+        console.log(couponData);
 
-    
-};
+
+    };
     const toggleCoupon = async () => {
-        ct+=1
-        console.log(ct,"ctttttttttttttttttttttttttttt")
-         couponEl = document.getElementById('copon').value;
-         currentStatus = document.getElementById('couponBtn').innerText.trim();
-         endpoint = currentStatus === 'Apply' ? '/apply_coupon' : '/remove_coupon';
+        ct += 1
+        console.log(ct, "ctttttttttttttttttttttttttttt")
+        couponEl = document.getElementById('copon').value;
+        currentStatus = document.getElementById('couponBtn').innerText.trim();
+        endpoint = currentStatus === 'Apply' ? '/apply_coupon' : '/remove_coupon';
 
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -507,7 +474,7 @@ const validateCoupon = async () => {
             body: JSON.stringify({ couponVal: couponEl, subTotal: originalSubTotal })
         });
 
-         couponData = await response.json();
+        couponData = await response.json();
 
         const setCouponStatus = (msg, element) => {
             element.innerHTML = `<p>${msg}</p>`;
@@ -521,19 +488,19 @@ const validateCoupon = async () => {
         const sCoponMsg = document.getElementById('sCoponMsg');
 
         if (couponData.status === 'invalid') {
-            ct=0
+            ct = 0
             setCouponStatus('Invalid coupon', couponMsg);
         } else if (couponData.status === 'expired') {
-            ct=0
+            ct = 0
             setCouponStatus('Coupon has expired!', couponMsg);
         } else if (couponData.status === 'already_used') {
-            ct=0
+            ct = 0
             setCouponStatus('Coupon already used!', couponMsg);
         } else if (couponData.status === 'not_used') {
-            ct=0
+            ct = 0
             setCouponStatus('Coupon not used yet!', couponMsg);
         } else if (couponData.status === 'removed') {
-            
+
             setCouponStatus('Coupon removed successfully', couponMsg);
             document.getElementById('couponBtn').innerHTML = '<i class="fi-rs-label mr-10"></i>Apply';
         } else if (couponData.status === 'applied') {
@@ -551,33 +518,33 @@ const validateCoupon = async () => {
 
 
 
-        function verifyPayment(response, order) {
+    function verifyPayment(response, order) {
 
-            $.ajax({
-                url: '/verify-payment',
-                method: 'post',
-                data: {
-                    order,
-                    response,
-                    from: "wallet"
-                }, success: (response) => {
-                    if (response) {
-                        Swal.fire({
-                            title: "Success",
-                            text: "Payment has been succeed",
-                            icon: "success",
+        $.ajax({
+            url: '/verify-payment',
+            method: 'post',
+            data: {
+                order,
+                response,
+                from: "wallet"
+            }, success: (response) => {
+                if (response) {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Payment has been succeed",
+                        icon: "success",
 
-                        }).then(function () {
-                            location.reload()
-                        });
-                    } else {
-                        Swal.fire("PAYMENT ERROR!", "Something wrong occured while processing the payment.", "error");
+                    }).then(function () {
                         location.reload()
-                    }
-
+                    });
+                } else {
+                    Swal.fire("PAYMENT ERROR!", "Something wrong occured while processing the payment.", "error");
+                    location.reload()
                 }
-            })
-        }
+
+            }
+        })
+    }
 
 
 
@@ -664,6 +631,14 @@ const validateCoupon = async () => {
         }
     });
 </script>
-
+<script>
+    document.getElementById('selectedAddress').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('displayName').textContent = selectedOption.getAttribute('name');
+        document.getElementById('displayMobile').textContent = selectedOption.getAttribute('data-mobile');
+        document.getElementById('displayAddress1').textContent = selectedOption.getAttribute('data-address1');
+        document.getElementById('displayCity').textContent = selectedOption.getAttribute('data-city');
+    });
+</script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
