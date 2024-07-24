@@ -199,89 +199,94 @@
                     <div class="toggle_info">
                         <select id="selectedAddress" class="form-select form-select-lg p-3"
                             aria-label=".form-select-lg example">
-
                             {{#each addressData}}
-                            <option value="{{this._id}}">{{this.addressLine1}}</option>
+                            <option value="{{this._id}}" data-name="{{this.name}}" data-mobile="{{this.mobile}}"
+                                data-address-line1="{{this.addressLine1}}" data-city="{{this.city}}" {{#if
+                                this.default}}selected{{/if}}>
+                                {{this.addressLine1}}
+                            </option>
                             {{/each}}
                         </select>
-                    </div>
-                    <div id="selectedAddressDetails" class="mt-4">
-                        <h4>Selected Address Details</h4>
-                        <p><strong>Name:</strong> <span id="displayName"></span></p>
-                        <p><strong>Phone:</strong> <span id="displayMobile"></span></p>
-                        <p><strong>Address Line 1:</strong> <span id="displayAddress1"></span></p>
-                        <p><strong>City:</strong> <span id="displayCity"></span></p>
-                    </div>
-                    <div class="toggle_info1">
-                        <button type="button" class="btn btn-fill btn-block mt-20 col-md-12" data-bs-toggle="collapse"
-                            data-bs-target="#coupon" aria-expanded="false" aria-controls="coupon"> <i
-                                class="fi-rs-label mr-10"></i> Add new Address </button>
-                    </div>
-                    <div class="panel-collapse collapse coupon_form " id="coupon">
-                        <div class="panel-body">
-                            <div class="mb-25">
-                                <h4>Address Form</h4>
-                            </div>
-                            <form action="/add_address" method="post">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="row gx-3">
-                                            <div class="col-12 mb-3">
-                                                <label class="form-label">Name</label>
-                                                <input class="form-control" type="text" placeholder="Enter your name"
-                                                    name="name" id="name">
-                                                <p id="nameError" style="color: red;"></p>
-                                            </div>
-                                            <div class="col-lg-12 mb-3">
-                                                <label class="form-label">Phone</label>
-                                                <input class="form-control" type="tel"
-                                                    placeholder="Enter your phone number" name="mobile" id="mobile">
-                                                <p id="mobileError" style="color: red;"></p>
-                                            </div>
-                                            <div class="col-lg-12 mb-3">
-                                                <label class="form-label">Address line 1</label>
-                                                <input class="form-control" type="text" placeholder="Enter your address"
-                                                    name="address1" id="address1">
-                                                <p id="address1Error" style="color: red;"></p>
-                                            </div>
-                                            <div class="col-lg-12 mb-3">
-                                                <label class="form-label">City</label>
-                                                <input class="form-control" type="text" placeholder="Enter your City"
-                                                    name="city" id="city">
-                                                <p id="cityError" style="color: red;"></p>
-                                            </div>
-                                            <div class="col-lg-12 mb-3">
-                                                <label class="form-label">State</label>
-                                                <input class="form-control" type="text" placeholder="Enter your State"
-                                                    name="state" id="state">
-                                                <p id="stateError" style="color: red;"></p>
+
+                        <div id="selectedAddressDetails" class="mt-4">
+                            <h4>Selected Address Details</h4>
+                            <p><strong>Name:</strong> <span id="displayName"></span></p>
+                            <p><strong>Phone:</strong> <span id="displayMobile"></span></p>
+                            <p><strong>Address Line 1:</strong> <span id="displayAddress1"></span></p>
+                            <p><strong>City:</strong> <span id="displayCity"></span></p>
+                        </div>
+
+
+                        <div class="toggle_info1">
+                            <button type="button" class="btn btn-fill btn-block mt-20 col-md-12"
+                                data-bs-toggle="collapse" data-bs-target="#coupon" aria-expanded="false"
+                                aria-controls="coupon"> <i class="fi-rs-label mr-10"></i> Add new Address </button>
+                        </div>
+                        <div class="panel-collapse collapse coupon_form " id="coupon">
+                            <div class="panel-body">
+                                <div class="mb-25">
+                                    <h4>Address Form</h4>
+                                </div>
+                                <form action="/add_address" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="row gx-3">
+                                                <div class="col-12 mb-3">
+                                                    <label class="form-label">Name</label>
+                                                    <input class="form-control" type="text"
+                                                        placeholder="Enter your name" name="name" id="name">
+                                                    <p id="nameError" style="color: red;"></p>
+                                                </div>
                                                 <div class="col-lg-12 mb-3">
-                                                    <label class="form-label">Pincode</label>
+                                                    <label class="form-label">Phone</label>
                                                     <input class="form-control" type="tel"
-                                                        placeholder="Enter your Pincode" name="pin" id="pincode">
-                                                    <p id="pincodeError" style="color: red;"></p>
+                                                        placeholder="Enter your phone number" name="mobile" id="mobile">
+                                                    <p id="mobileError" style="color: red;"></p>
+                                                </div>
+                                                <div class="col-lg-12 mb-3">
+                                                    <label class="form-label">Address line 1</label>
+                                                    <input class="form-control" type="text"
+                                                        placeholder="Enter your address" name="address1" id="address1">
+                                                    <p id="address1Error" style="color: red;"></p>
+                                                </div>
+                                                <div class="col-lg-12 mb-3">
+                                                    <label class="form-label">City</label>
+                                                    <input class="form-control" type="text"
+                                                        placeholder="Enter your City" name="city" id="city">
+                                                    <p id="cityError" style="color: red;"></p>
+                                                </div>
+                                                <div class="col-lg-12 mb-3">
+                                                    <label class="form-label">State</label>
+                                                    <input class="form-control" type="text"
+                                                        placeholder="Enter your State" name="state" id="state">
+                                                    <p id="stateError" style="color: red;"></p>
+                                                    <div class="col-lg-12 mb-3">
+                                                        <label class="form-label">Pincode</label>
+                                                        <input class="form-control" type="tel"
+                                                            placeholder="Enter your Pincode" name="pin" id="pincode">
+                                                        <p id="pincodeError" style="color: red;"></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <br>
-                                    <button class="btn btn-primary" type="submit" id="submitButton">Save
-                                        Address</button>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="collapse"
-                                        data-bs-target="#coupon">Close</button>
-                            </form>
+                                        <br>
+                                        <button class="btn btn-primary" type="submit" id="submitButton">Save
+                                            Address</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="collapse"
+                                            data-bs-target="#coupon">Close</button>
+                                </form>
 
+                            </div>
                         </div>
                     </div>
+
+
+
+
+
+
                 </div>
-
-
-
-
-
-
             </div>
-        </div>
 
     </section>
 </main>
@@ -640,5 +645,34 @@
         document.getElementById('displayCity').textContent = selectedOption.getAttribute('data-city');
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+    function updateAddressDetails() {
+        var selectedOption = $('#selectedAddress').find(':selected');
+
+        var name = selectedOption.data('name');
+        var mobile = selectedOption.data('mobile');
+        var addressLine1 = selectedOption.data('address-line1');
+        var city = selectedOption.data('city');
+
+        $('#displayName').text(name || 'N/A');
+        $('#displayMobile').text(mobile || 'N/A');
+        $('#displayAddress1').text(addressLine1 || 'N/A');
+        $('#displayCity').text(city || 'N/A');
+    }
+
+    // Initialize details based on the default selected option
+    updateAddressDetails();
+
+    // Update details when a new address is selected
+    $('#selectedAddress').on('change', function() {
+        updateAddressDetails();
+    });
+});
+
+
+</script>
+
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

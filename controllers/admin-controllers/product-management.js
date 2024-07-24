@@ -1,6 +1,8 @@
 const { Product } = require('../../models/productsSchema') 
 const { Category } = require('../../models/categorySchema');
-const { default: mongoose } = require('mongoose');
+const mongoose = require('mongoose')
+const ObjectId = require('mongoose')
+
 
 ////render products list page in admin page
 const showproductslist = async (req, res) => {
@@ -117,8 +119,11 @@ const showeditprodpage = async (req, res) => {
 const editProduct=async(req,res)=>{
   try {
     const Files=req.files
-    const prodid = req.params.id
+    // const catdata=req.params
+    const prodid = new mongoose.Types.ObjectId(req.params.id)
+    console.log(prodid,'qweqweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
     const product = await Product.findById(prodid).lean()
+    console.log(product,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     const extimages=product.image
     let updImages=[]
     if(Files && Files.length>0){
@@ -129,7 +134,9 @@ const editProduct=async(req,res)=>{
     else{
       updImages=extimages
     }
+    console.log(req.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
     const { name, price, description, category, stock } = req.body
+  
 
       await Product.findByIdAndUpdate(prodid,
       {

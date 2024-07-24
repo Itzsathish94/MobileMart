@@ -229,7 +229,12 @@
                             {{!-- <span class="old-price">₹245.8</span> --}}
                         </div>
                         <div >
-                            <span><span>Available in stock : ${product.stock} </span></span>
+                            ${
+                        product.stock > 1
+                        ? `<span><span>Available in stock: ${product.stock}</span></span>`
+                        : `<span><span>Out of Stock</span></span>`
+                    }
+
                         </div>
                         <div class="product-action-1 show">
                                             <span>

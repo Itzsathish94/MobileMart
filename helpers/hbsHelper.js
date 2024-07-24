@@ -131,12 +131,25 @@ function statushelper(Handlebars){
 function formatDate(Handlebars) {
 
     Handlebars.registerHelper('formatDate', function (isoDate) {
-        const monthYear = moment(isoDate).format('DD-MM-YYYY HH:mm:ss');
+        const monthYear = moment(isoDate).format('DD-MM-YYYY ');
 
     
         return `${monthYear}`;
     });
 }
+
+function formatTime(Handlebars) {
+
+    Handlebars.registerHelper('formatTime', function (isoDate) {
+        const time = moment(isoDate).format('HH:mm:ss');
+
+    
+        return `${time}`;
+    });
+}
+
+
+
 function length(Handlebars) {
 
     Handlebars.registerHelper('length', function (value,options) {
@@ -148,11 +161,20 @@ function length(Handlebars) {
         }
     });
 }
+
 function isequal(Handlebars) {
     Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
         return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
     });
 }
+
+function isGreaterThanZero(Handlebars) {
+    Handlebars.registerHelper('isGreaterThanZero', function (value, options) {
+        console.log('Stock value:', value);
+        return value > 0 ? options.fn(this) : options.inverse(this);
+    });
+}
+
  function ifCondition(Handlebars){
     Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
         switch (operator) {
@@ -196,4 +218,6 @@ module.exports = {
     ifCondition,
     singleIsCancelled,eq,
     Noteq,
+    formatTime,
+    isGreaterThanZero
 }

@@ -81,7 +81,8 @@ const loadCartPage = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         let userData = req.session.user;
-        let {prodId}=req.body
+        let prodId=req.params.id
+        console.log(prodId,'wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww')
         if (!userData) {
             console.log("userdata..............")
             return res.status(401).json({ success: false, message: "Login Required" });

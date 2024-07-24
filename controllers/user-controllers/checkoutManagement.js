@@ -101,11 +101,8 @@ const placeorder = async (req, res) => {
 
         const productInCart = await Cart.aggregate([
             {
-                $match: {
-                    userId: ID
-                }
+                $match: { userId: ID }
             },
-
             {
                 $lookup: {
                     from: 'products',
@@ -113,6 +110,14 @@ const placeorder = async (req, res) => {
                     localField: 'product_Id',
                     as: 'productData'
                 }
+            },
+            {
+                $addFields: {
+                    productDataExists: { $gt: [{ $size: "$productData" }, 0] }
+                }
+            },
+            {
+                $match: { productDataExists: true }
             },
             {
                 $project: {
@@ -124,11 +129,14 @@ const placeorder = async (req, res) => {
                     price: { $arrayElemAt: ["$productData.price", 0] },
                     productDescription: { $arrayElemAt: ["$productData.description", 0] },
                     image: { $arrayElemAt: ["$productData.image", 0] }
-
                 }
             }
-
-        ])
+        ]);
+        
+        if (!productInCart.length) {
+            return res.status(404).json({ success: false, message: 'No products found in cart' });
+        }
+        
 
         const SampproductInCart = await Cart.aggregate([
             {

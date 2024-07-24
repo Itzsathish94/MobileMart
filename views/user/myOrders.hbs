@@ -97,6 +97,7 @@
                                                         <tr>
                                                             <th>Order</th>
                                                             <th>Date</th>
+                                                            <th>Time</th>
                                                             <th>Status</th>
                                                             <th>Total</th>
                                                             <th>Actions</th>
@@ -107,7 +108,8 @@
                                                         {{#each myOrders}}
                                                         <tr>
                                                             <td>#{{this.orderId}}</td>
-                                                            <td>{{  this.date}}</td>
+                                                            <td>{{ formatDate this.date}}</td>
+                                                            <td>{{formatTime this.date}}</td>
                                                             <td>{{this.status}}</td>
                                                             {{#if this.couponUsed}}
                                                             <td>₹{{this.amountAfterDscnt}}</td>

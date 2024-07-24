@@ -100,14 +100,14 @@ const returnOrder = async (req, res) => {
 // Cancel one product in an order
 const cancelOneProduct = async (req, res) => {
     try {
-        const { _id, prodId } = req.body;
-        console.log(__dirname_id, prodId)
+        const { id, prodId } = req.body;
+        console.log(id, prodId)
 
-        if (!mongoose.Types.ObjectId.isValid(_id) || !mongoose.Types.ObjectId.isValid(prodId)) {
+        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(prodId)) {
             return res.status(400).json({ error: 'Invalid order or product ID' });
         }
 
-        const ID = new mongoose.Types.ObjectId(_id);
+        const ID = new mongoose.Types.ObjectId(id);
         const PRODID = new mongoose.Types.ObjectId(prodId);
 
         const updatedOrder = await Order.findOneAndUpdate(

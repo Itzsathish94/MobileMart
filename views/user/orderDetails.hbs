@@ -138,8 +138,8 @@
                                                                 <th width="40%">Product</th>
                                                                 <th width="20%">Unit Price</th>
                                                                 <th width="20%">Quantity</th>
-                                                                <th width="20%" class="text-end">Total</th>
-                                                                {{!-- <th width="20%" >Cancel</th> --}}
+                                                                <th width="20%" >Total</th>
+                                                                <th width="20%" class="text-end" >Cancel</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -160,7 +160,7 @@
                                                                 <td class="text-end">₹{{multiply this.product.quantity
                                                                     this.product.price }}</td>
 
-                                                                {{!-- <td class="text-end">
+                                                                <td class="text-end">
                                                                    
                                                                      
                                                                     {{#singlestatuchecker this.product}}
@@ -170,7 +170,7 @@
                                                                             <button id="cancel-btn" class="btn btn-primary btn-sm cancel-btn" data-order-id="{{../myOrderDetails._id}}" data-prod-id="{{this.product._id}}">Cancel</button>
                                                                         {{/ifCond}}
                                                                     {{/singlestatuchecker}}
-                                                                </td> --}}
+                                                                </td>
                                                             </tr>
                                                             {{/each}}
                                                             <tr>
@@ -288,11 +288,22 @@
         }
 
         // Event listener for canceling individual products
-        $('body').on('click', '.cancel-btn', function () {
-            const orderId = $(this).data('order-id');
-            const productId = $(this).data('prod-id');
+       $('body').on('click', '.cancel-btn', function () {
+    const orderId = $(this).data('order-id');
+    const productId = $(this).data('prod-id');
 
-            if (orderId && productId) {
+    if (orderId && productId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to cancel this product?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 $.ajax({
                     type: 'PUT',
                     url: '/cancel-one-product',
@@ -300,56 +311,102 @@
                     data: JSON.stringify({ id: orderId, prodId: productId }),
                     success: function (response) {
                         if (response.success) {
-                             Swal.fire({
-                            icon: 'success',
-                            title: 'Cancelled product',
-                            text: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(()=>{window.location.reload();})
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancelled product',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.reload();
+                            });
                         }
                     },
                     error: function (error) {
                         console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred. Please try again.',
+                            confirmButtonText: 'Ok'
+                        });
                     }
                 });
-            } else {
-                alert('Invalid order or product ID.');
             }
         });
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Invalid IDs',
+            text: 'Invalid order or product ID.',
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+
 
         // Event listener for canceling the entire order
-        $('#cancelOrder').on('click', function () {
-            const orderId = $(this).data('order-id');
+       $('#cancelOrder').on('click', function () {
+    const orderId = $(this).data('order-id');
 
-            if (orderId) {
+    if (orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to cancel this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 $.ajax({
                     type: 'PUT',
                     url: `/cancel-order/${orderId}`,
                     contentType: 'application/json',
                     success: function (response) {
                         if (response.success) {
-                             Swal.fire({
-                            icon: 'success',
-                            title: 'Cancelled Order',
-                            text: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(()=>{window.location.reload();})
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancelled Order',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.reload();
+                            });
                         } else {
-                            alert(response.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message,
+                                confirmButtonText: 'Ok'
+                            });
                         }
                     },
                     error: function (error) {
                         console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'An error occurred. Please try again.',
+                            confirmButtonText: 'Ok'
+                        });
                     }
                 });
-            } else {
-                alert('Invalid order ID.');
             }
         });
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Invalid ID',
+            text: 'Invalid order ID.',
+            confirmButtonText: 'Ok'
+        });
+    }
+});
+
         // Event listener for returning individual products
         $('body').on('click', '.return-btn', function () {
             const orderId = $(this).data('order-id');

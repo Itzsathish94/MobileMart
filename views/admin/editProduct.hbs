@@ -115,7 +115,7 @@
                                 <div class="col-lg-4">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
-                                        <option value="{{this._id}}" selected>{{product.category.category}}</option>
+                                        <option value="{{product.category._id}}" selected>{{product.category.category}}</option>
 
                                         {{#each category}}
                                         {{#if (Noteq this.category ../product.category.category)}}
