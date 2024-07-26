@@ -9,8 +9,12 @@ const {usersPage,blockUser}=require('../controllers/admin-controllers/user-manag
 const { isLogin, isLogout } = require('../middleware/adminAuth');
 const { adminlogin, doAdminLogin,doLogout}=require('../controllers/admin-controllers/adminloginmanagement')
 const { ordersPage, orderDetails, changeStatus } = require('../controllers/admin-controllers/ordersManagement')
-router.get('/',isLogin ,adminlogin)
+const { couponPage, addCouponPage , addCouponPost , deleteCoupon}=require('../controllers/admin-controllers/couponManagement')
+const {  getSales,loadDashboard,
+    getChartData,generateSalesReportPDF}=require('../controllers/admin-controllers/dashBoards')
 
+// router.get('/',isLogin ,adminlogin)
+router.get('/', isLogin, loadDashboard)
 
 ///admin login routing
 router.get('/adminlogin' ,isLogout,adminlogin)
@@ -46,5 +50,15 @@ router.put('/blockuser',blockUser)
 router.get('/orders', isLogin, ordersPage)
 router.get('/order_details/:id', isLogin, orderDetails)
 router.post('/change_status/:id',isLogin, changeStatus)
+
+/// coupon
+router.get('/coupons',isLogin,couponPage)
+router.get('/addcoupon',isLogin,addCouponPage)
+router.post('/add_coupon',isLogin, addCouponPost)
+router.delete('/delete_coupon',isLogin,deleteCoupon)
+
+// ///chart
+router.get('/get_sales',isLogin, getSales)
+router.get('/get_chart_data',isLogin, getChartData)
 
 module.exports = router;

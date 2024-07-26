@@ -23,7 +23,7 @@ const doAdminLogin=async (req,res)=>{
         const {email,password}=req.body
         if(email==adminEmail && password==adminPassword){
             req.session.admin = req.body
-            res.redirect('/admin/products')
+            res.redirect('/admin')
         }else{
             res.redirect('/admin/adminlogin')
         }
