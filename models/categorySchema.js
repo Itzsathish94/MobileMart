@@ -14,8 +14,12 @@ const CategorySchema=new Schema({
     isListed:{
         type:Boolean,
         default:true
+    },
+    bestSelling:{
+        type:Number,
+        default:0
     }
-},{ collection:'category'},{timestamps:true})
+},{ collection:'category'})
 
 const Category=mongoose.model('category',CategorySchema)
 

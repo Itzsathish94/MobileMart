@@ -469,7 +469,73 @@ const cancelOneProduct = async (req, res) => {
     }
 }
 
+const walletpage = async (req, res) => {
+    try {
+        const user = req.session.user;
+        const id = user._id;
+        const userData = await User.findById(id).lean();
 
+
+        console.log(userData);
+
+        var page = 1;
+        if (req.query.page) {
+            page = req.query.page;
+        }
+        let limit = 5;
+        const skip = (page - 1) * limit;
+
+        const historyData = await User.aggregate([
+            {
+                $match: {
+                    _id: userData._id
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    history: 1
+                }
+            },
+            {
+                $unwind: "$history"
+            },
+            {
+                $sort: { "history.date": -1 } // Sort the history array by date in descending order
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    history: { $push: "$history" }
+                }
+            },
+            {
+                $project: {
+                    history: { $slice: ["$history", skip, limit] }
+                }
+            }
+        ]);
+
+        const count = await User.aggregate([
+            { $match: { _id: userData._id } },
+            { $project: { historyCount: { $size: "$history" } } }
+        ]);
+
+        const totalItems = count[0] ? count[0].historyCount : 0;
+        const totalPages = Math.ceil(totalItems / limit);
+        const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+        const history = historyData[0] ? historyData[0].history : [];
+
+        console.log(history);
+
+        res.render('user/wallet', { userData,pages,history });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+}
 
 
 
@@ -492,5 +558,7 @@ module.exports = {
     ////change password
     changepassword,
     changepass,
+    /////Wallet
+    walletpage
 
 }

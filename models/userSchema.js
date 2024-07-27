@@ -28,9 +28,20 @@ const userSchema=new Schema({
     ,
     image:{
         type:Array,
-    }
+    },
+    wallet: {
+        type: Number,
+        default: 0
+    },
+    history: {
+        type: Array
+    },
+    registeredOn: {
+        type:Date,
+        default:  Date.now
+    },
 
-},{timestamps:true})
+})
 const User=mongoose.model('user',userSchema);
 module.exports={
     User

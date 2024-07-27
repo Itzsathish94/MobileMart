@@ -6,6 +6,8 @@ const Cart = require('../../models/cart')
 const Order = require('../../models/order')
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
+const Coupon = require('../../models/couponSchema')
+const Razorpay = require('razorpay')
 
 
 const loadCheckoutPage = async (req, res) => {
@@ -16,6 +18,7 @@ const loadCheckoutPage = async (req, res) => {
 
         console.log(userData._id)
         const addressData = await Address.find({ userId: userData._id }).lean()
+        let coupon= await Coupon.find().lean()
         console.log(addressData)
 
         ///subtotal
@@ -77,6 +80,7 @@ const loadCheckoutPage = async (req, res) => {
             addressData,
             subTotal: subTotal[0].total,
             cart,
+            coupon
         })
 
     } catch (error) {
@@ -84,6 +88,7 @@ const loadCheckoutPage = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 }
+
 
 const placeorder = async (req, res) => {
     try {
@@ -253,14 +258,14 @@ const placeorder = async (req, res) => {
                 const amount = req.body.amount 
 
                 let instance = new Razorpay({
-                    key_id: "rzp_test_OsDtnewxAfAwm0",
-                    key_secret: "DMYU2HQhHPmK1pRRsRklpioi"
+                    key_id: process.env.RAZORPAY_ID,
+                    key_secret: process.env.RAZORPAY_SECRET
 
                 })
                 const order = await instance.orders.create({
                     amount: amount * 100 ,
                     currency: 'INR',
-                    receipt: 'Harish',
+                    receipt: 'Sathish',
 
                 })
                 await saveOrder()
@@ -342,10 +347,124 @@ const orderSuccess = async (req, res) => {
         res.status(500).send("Internal Server Error");;
     }
 };
+const validateCoupon = async (req, res) => {
+    try {
+        const { couponVal, subTotal } = req.body;
+        console.log(couponVal, subTotal)
+        const coupon = await Coupon.findOne({ code: couponVal });
+
+        if (!coupon) {
+            res.json('invalid');
+        } else if (coupon.expiryDate < new Date()) {
+            res.json('expired');
+        }else if (subTotal < coupon.minPurchase) {
+            res.json('Minimum Amount Required');
+        } else {
+            const couponId = coupon._id;
+            const discount = coupon.discount;
+            const userId = req.session.user._id;
+
+            const isCpnAlredyUsed = await Coupon.findOne({ _id: couponId, usedBy: { $in: [userId] } });
+
+            if (isCpnAlredyUsed) {
+                res.json('already used');
+            } else {
+                //await Coupon.updateOne({ _id: couponId }, { $push: { usedBy: userId } });
+
+                const discnt = Number(discount);
+                const discountAmt = (subTotal * discnt) / 100;
+                const newTotal = subTotal - discountAmt;
+
+                const user = User.findById(userId);
+
+                res.json({
+                    discountAmt,
+                    newTotal,
+                    discount,
+                    succes: 'succes'
+                });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+const applyCoupon = async (req, res) => {
+    try {
+        const { couponVal, subTotal } = req.body;
+        const coupon = await Coupon.findOne({ code: couponVal });
+        const userId = req.session.user._id;
+
+        if (!coupon) {
+            return res.json({ status: 'invalid' });
+        } else if (coupon.expiryDate < new Date()) {
+            return res.json({ status: 'expired' });
+        } else if (coupon.usedBy.includes(userId)) {
+            return res.json({ status: 'already_used' });
+        } else if (subTotal < coupon.minPurchase) {
+            return res.json({ status: 'min_purchase_not_met' });
+        } else {
+            // Add user ID to usedBy array
+            await Coupon.updateOne({ _id: coupon._id }, { $push: { usedBy: userId } });
+
+            // Calculate the new total by subtracting the discount amount
+            let discountAmt = (subTotal * coupon.discount) / 100;
+            if (discountAmt > coupon.maxDiscount) {
+                discountAmt = coupon.maxDiscount;
+            }
+            const newTotal = subTotal - discountAmt;
+
+            return res.json({
+                discountAmt,
+                newTotal,
+                discount: coupon.discount,
+                status: 'applied'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ status: 'error', error });
+    }
+};
+
+
+const removeCoupon = async (req, res) => {
+    try {
+        const { couponVal, subTotal } = req.body;
+        const coupon = await Coupon.findOne({ code: couponVal });
+        const userId = req.session.user._id;
+
+        if (!coupon) {
+            return res.json({ status: 'invalid' });
+        } else if (!coupon.usedBy.includes(userId)) {
+            return res.json({ status: 'not_used' });
+        } else {
+            // Remove user ID from usedBy array
+            await Coupon.updateOne({ _id: coupon._id }, { $pull: { usedBy: userId } });
+
+            // Calculate the new total by adding back the discount amount correctly
+            const discountAmt = 0;
+            const newTotal = subTotal;
+
+            return res.json({
+                discountAmt,
+                newTotal,
+                discount: coupon.discount,
+                status: 'removed'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ status: 'error', error });
+    }
+};
 
 
 module.exports = {
     loadCheckoutPage,
     placeorder,
     orderSuccess,
+    validateCoupon,
+    applyCoupon,
+    removeCoupon
 }

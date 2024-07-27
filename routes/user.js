@@ -1,14 +1,10 @@
 var express = require('express');
 require('../middleware/googleAuth')
 const passport = require('passport');
-
 const {loadProfile } = require('../controllers/user-controllers/profile')
-
 const { logedout, logedin, isBlocked } = require('../middleware/usersAuth')
-
 const { resendOtp, gethome, showloginpage, dologin, getotppage, dosignup, showsigninpage, submitotp, getproducts, doLogout, aboutpage,googleCallback } = require('../controllers/user-controllers/userloginmanagement')
 const { submitMail, submitMailPost, forgotOtppage, forgotOtpSubmit, resetPasswordPage, resetPassword } = require('../controllers/user-controllers/forgotPassword')
-
 const { shopPage,searchAndSort } = require('../controllers/user-controllers/shopManagement')
 const {
     viewUserProfile,
@@ -25,15 +21,17 @@ const {
     changepassword,
     changepass,
     cancelorder,
+    walletpage
 } = require('../controllers/user-controllers/profile.js')
 const { cancelOrder,returnOrder, cancelOneProduct , returnOneProduct,getInvoice}= require('../controllers/user-controllers/ordercontroller')
-
-
 const { loadCartPage, addToCart, removeFromCart, updateCart } = require('../controllers/user-controllers/cart')
+const { loadCheckoutPage, placeorder, orderSuccess , validateCoupon , removeCoupon , applyCoupon} = require('../controllers/user-controllers/checkoutManagement')
+const { addMoneyToWallet , verifyPayment }= require('../controllers/user-controllers/walletController')
+const { showWishlistPage, addToWishList, removeFromWishList } = require('../controllers/user-controllers/wishlistManagement')
 
-const { loadCheckoutPage, placeorder, orderSuccess ,} = require('../controllers/user-controllers/checkoutManagement')
 var router = express.Router();
 const Upload=require("../multer/user_multer")
+
 router.get('/auth/google', passport.authenticate('google', { scope: ['email', 'profile'] }))
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), googleCallback)
 
@@ -77,12 +75,19 @@ router.get('/delete_address/:id', logedin, isBlocked, deleteAddress)
 router.get('/changepassword', logedin, isBlocked, changepassword)
 router.post('/changepass', logedin, isBlocked, changepass)
 
+//wallet
+router.get('/wallet', logedin, isBlocked,walletpage)
+router.post('/addmoneytowallet', logedin, isBlocked,addMoneyToWallet)
+router.post('/verify_Payment', logedin, isBlocked,verifyPayment)
 
 /////order
 router.post('/placeorder', placeorder)
 router.get('/orderPlaced', logedin, isBlocked, orderSuccess)
 router.get('/orderDetails/:id', logedin, isBlocked, orderDetails)
 router.post('/cancelorder/:id', cancelorder)
+router.post('/validate_coupon', logedin, isBlocked, validateCoupon)
+router.post('/apply_coupon',applyCoupon)
+router.post('/remove_coupon',removeCoupon)
 
 //Invoice
 router.get('/get_invoice', logedin, isBlocked, getInvoice)
@@ -109,5 +114,16 @@ router.get('/cart/checkout', logedin, isBlocked, loadCheckoutPage)
  router.put('/cancel-one-product', cancelOneProduct);
  router.put('/return-one-product', returnOneProduct);
  router.post('/cancelOneProduct', cancelOneProduct)
+
+ //// wishlist
+router.get('/wishlist', logedin, isBlocked, showWishlistPage)
+router.post('/addtowishlist', logedin, isBlocked, addToWishList)
+router.post('/removeFromWishList', logedin, isBlocked, removeFromWishList)
+
+ router.get('/trigger-500', (req, res, next) => {
+    const error = new Error('This is a simulated 500 error.');
+    error.status = 500;
+    next(error);
+});
 
 module.exports = router;

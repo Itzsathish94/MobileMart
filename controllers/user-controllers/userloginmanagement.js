@@ -248,7 +248,8 @@ const submitotp = async (req, res) => {
             email: userRegestData.email,
             mobile: userRegestData.phone,
             password: hashedPassword,
-            isBlocked: false
+            isBlocked: false,
+            
         })
         await user.save()
         req.session.regSuccessMsg = true
@@ -288,19 +289,6 @@ const getproducts = async (req, res) => {
         if(product.stock){
             outOfStock = false
         }
-        const ProductExist = await Cart.find({
-            userId: userData._id,
-            product_Id: item
-        })
-        console.log(ProductExist)
-        if (ProductExist.length === 0) {
-            ProductExistInCart = false
-        } else {
-            ProductExistInCart = true
-        }
-
-        console.log(product , "productttttttttttt")
-        const catId = new ObjectId(product.category)
         const relatedProducts = await Product.aggregate([
             {
                 $match: {
@@ -324,9 +312,34 @@ const getproducts = async (req, res) => {
             }
         ])
 
+        if(userData){
+            
+        const ProductExist = await Cart.find({
+            userId: userData._id,
+            product_Id: item
+        })
+        console.log(ProductExist)
+        if (ProductExist.length === 0) {
+            ProductExistInCart = false
+        } else {
+            ProductExistInCart = true
+        }
+
+        console.log(product , "productttttttttttt")
+        const catId = new ObjectId(product.category)
+        
         console.log(relatedProducts, "RELATED PRODUCTSSSSSS")
 
          res.render('user/productDetails', { product ,ProductExistInCart, relatedProducts , outOfStock , userData, layout: 'layout' })
+
+
+        }else{
+            res.render('user/productDetails', { product , relatedProducts , outOfStock , layout: 'layout' })
+
+        }
+
+
+
 
     } catch (error) {
         console.log(error)

@@ -43,6 +43,29 @@ const cancelOrder = async (req, res) => {
 
 
         }
+        if (['wallet', 'razorpay'].includes(canceledOrder.paymentMethod)) {
+            for (const data of canceledOrder.product) {
+                //await Product.updateOne({ _id: data._id }, { $inc: { stock: data.quantity } });
+                await User.updateOne(
+                    { _id: req.session.user._id },
+                    { $inc: { wallet: data.price * data.quantity } }
+                );
+                notCancelledAmt += data.price * data.quantity;
+            }
+
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: notCancelledAmt,
+                            status: 'refund for Order Cancellation',
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+        }
 
        
         res.json({
@@ -84,6 +107,30 @@ const returnOrder = async (req, res) => {
 
 
         }
+        if (['wallet', 'razorpay'].includes(returnedOrder.paymentMethod)) {
+            for (const data of returnedOrder.product) {
+                //await Product.updateOne({ _id: data._id }, { $inc: { stock: data.quantity } });
+                await User.updateOne(
+                    { _id: req.session.user._id },
+                    { $inc: { wallet: data.price * data.quantity } }
+                );
+                notCancelledAmt += data.price * data.quantity;
+            }
+
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: notCancelledAmt,
+                            status: 'refund of Order Return',
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+        }
+        
         
 
         res.json({
@@ -132,6 +179,47 @@ const cancelOneProduct = async (req, res) => {
             { _id: PRODID },
             { $inc: { stock: productQuantity } }
         );
+        if(updatedOrder.couponUsed){
+            const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
+            const discountAmt = (productprice * coupon.discount) / 100;
+            const newTotal = productprice - discountAmt;
+            await User.updateOne(
+                { _id: req.session.user._id },
+                { $inc: { wallet: newTotal } }
+            );
+
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: newTotal,
+                            status: `refund of: ${result.product[0].name}`,
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+
+        }else{
+            await User.updateOne(
+                { _id: req.session.user._id },
+                { $inc: { wallet: productprice } }
+            );
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: productprice,
+                            status: `refund of: ${result.product[0].name}`,
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+        }
+
         res.json({
             success: true,
             message: 'Successfully removed product'
