@@ -219,62 +219,69 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        $('.button.button-add-to-cart').on('click', function (e) {
-            var prodId = $(this).data('product-id')
-            var stockAvail = parseInt($('#stockInput').val(), 10);
-            var quantity = parseInt($('.order__quantity--input').val(), 10);
+$(document).ready(function () {
+    $('.button.button-add-to-cart').on('click', function (e) {
+        var prodId = $(this).data('product-id');
+        var stockAvail = parseInt($('#stockInput').val(), 10);
+        var quantity = parseInt($('.order__quantity--input').val(), 10);
 
-            // Client-side validation
-            if (quantity > 10) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'You can only order a maximum of 10 items.',
-                });
-                return; // Exit early if quantity is greater than 10
-            }
+        // Client-side validation
+        if (quantity > 10) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'You can only order a maximum of 10 items.',
+            }).then(() => {
+                // Reset the quantity input to the maximum allowed quantity
+                $('.order__quantity--input').val(10);
+            });
+            return; // Exit early if quantity is greater than 10
+        }
 
-            if (quantity > stockAvail) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Quantity exceeds available stock.',
-                });
-                return; // Exit early if quantity is greater than available stock
-            }
+        if (quantity > stockAvail) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Quantity exceeds available stock.',
+            });
+            return; // Exit early if quantity is greater than available stock
+        }
 
-            $.ajax({
-                url: '/addtocart/' + prodId,
-                method: 'POST',
-                data: { prodId: prodId, quantity: quantity },
-                success: function (result) {
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Added to cart',
-                            text: result.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        $('#addcart').html('<button id="addcart-btn" onclick="window.location.href=\'/cart\'" class="button button-add-to-cart">Go to cart</button>');
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: result.message || 'An error occurred.',
-                        });
-                    }
-                },
-                error: function (error) {
-                    console.log('Error adding to cart', error);
+        $.ajax({
+            url: '/addtocart/' + prodId,
+            method: 'POST',
+            data: { prodId: prodId, quantity: quantity },
+            success: function (result) {
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to cart',
+                        text: result.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        // Reset the quantity input to zero after successful addition
+                        $('.order__quantity--input').val(0);
+                    });
+                    $('#addcart').html('<button id="addcart-btn" onclick="window.location.href=\'/cart\'" class="button button-add-to-cart">Go to cart</button>');
+                } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
-                        text: 'Error adding to cart. Please try again.',
+                        text: result.message || 'An error occurred.',
                     });
                 }
-            });
+            },
+            error: function (error) {
+                console.log('Error adding to cart', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Error adding to cart. Please try again.',
+                });
+            }
         });
     });
+});
+
 </script>
