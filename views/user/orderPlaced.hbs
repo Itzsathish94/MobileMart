@@ -19,8 +19,8 @@
     margin: 0;
   }
 
-  #tick{
-        color: #9ABC66;
+  #tick {
+    color: #9ABC66;
   }
 
   i {
@@ -37,20 +37,28 @@
     display: inline-block;
     margin: 0 auto;
   }
+
+  #buttons{
+    display: flex;
+    justify-content: center;
+  }
 </style>
-  
+
 
 
 <body>
-  <div class="card" style="margin-top: 130px;" >
+  <div class="card" style="margin-top: 130px;">
     <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
       <i id="tick" class="checkmark">✓</i>
     </div>
     <h1>Success</h1>
     <p>We received your purchase request;<br /> we'll be in touch shortly!</p>
   </div>
-  <div>
-    <a class="btn btn-success m-5" href="/myOrders">View Order</a>
+  <div id="buttons">
+    <a class="btn btn-success m-5" href="/myOrders" style="width: 200px;">View Order</a>
+     <a class="btn btn-success m-5" href="/shop" style="width: 200px;">Continue Shopping</a>
+     {{!-- <a class="btn " href="/shop"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a> --}}
+  </div>
+   
   </div>
 </body>
-
