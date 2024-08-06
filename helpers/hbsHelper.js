@@ -168,6 +168,9 @@ function isequal(Handlebars) {
     });
 }
 
+
+
+
 function isGreaterThanZero(Handlebars) {
     Handlebars.registerHelper('isGreaterThanZero', function (value, options) {
         console.log('Stock value:', value);

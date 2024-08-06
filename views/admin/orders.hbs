@@ -92,14 +92,41 @@
 
                                 <td class="text-center"><span class="badge bg-primary">{{this.status}}</span></td>
                                 <td class="text-center">
+                                    {{#ifEquals this.status "pending"}}
                                     <form action="/admin/change_status/{{this._id}}" method="post"
                                         onsubmit="return submitform(this);" class="order-status-form">
                                         <div class="d-flex w-50 ml-30">
                                             <div class="col-lg-2 col-6 col-md-3 w-100 mr-15">
+                                                
                                                 <select name="status" class="form-select"
                                                     aria-label="Default select example">
                                                     <option selected disabled hidden>Change order status</option>
                                                     <option value="Shipped">Shipped</option>
+                                            
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <button type="submit" id="submitstatus"
+                                                    class="btn btn-primary btn-sm w-100">Submit</button>
+                                                {{!-- <a type="submit" class="btn btn-primary">Submit</a> --}}
+
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                    {{/ifEquals}}
+                                    {{#ifEquals this.status "Shipped"}}
+ 
+                                    <form action="/admin/change_status/{{this._id}}" method="post"
+                                        onsubmit="return submitform(this);" class="order-status-form">
+                                        <div class="d-flex w-50 ml-30">
+                                            <div class="col-lg-2 col-6 col-md-3 w-100 mr-15">
+                                                
+                                                <select name="status" class="form-select"
+                                                    aria-label="Default select example">
+                                                    <option selected disabled hidden>Change order status</option>
+                                                    
                                                     <option value="Delivered">Delivered</option>
                                                 </select>
                                             </div>
@@ -112,6 +139,8 @@
                                             </div>
                                         </div>
                                     </form>
+
+                                    {{/ifEquals}}
                                 </td>
                                 <td class="text-center">
                                     <div>

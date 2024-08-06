@@ -294,63 +294,38 @@
             });
             return allCancelled;
         }
-
-        // Event listener for canceling individual products
+  // Event listener for canceling individual products
         $('body').on('click', '.cancel-btn', function () {
             const orderId = $(this).data('order-id');
             const productId = $(this).data('prod-id');
 
             if (orderId && productId) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Do you really want to cancel this product?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, cancel it!',
-                    cancelButtonText: 'No, keep it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: 'PUT',
-                            url: '/cancel-one-product',
-                            contentType: 'application/json',
-                            data: JSON.stringify({ id: orderId, prodId: productId }),
-                            success: function (response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Cancelled product',
-                                        text: response.message,
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                }
-                            },
-                            error: function (error) {
-                                console.error('Error:', error);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'An error occurred. Please try again.',
-                                    confirmButtonText: 'Ok'
-                                });
-                            }
-                        });
+                $.ajax({
+                    type: 'PUT',
+                    url: '/cancel-one-product',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: orderId, prodId: productId }),
+                    success: function (response) {
+                        if (response.success) {
+                             Swal.fire({
+                            icon: 'success',
+                            title: 'Cancelled product',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(()=>{window.location.reload();})
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
                     }
                 });
             } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Invalid IDs',
-                    text: 'Invalid order or product ID.',
-                    confirmButtonText: 'Ok'
-                });
+                alert('Invalid order or product ID.');
             }
         });
+
 
 
         // Event listener for canceling the entire order
@@ -415,61 +390,38 @@
             }
         });
 
-        // Event listener for returning individual products
+       // Event listener for returning individual products
         $('body').on('click', '.return-btn', function () {
             const orderId = $(this).data('order-id');
             const productId = $(this).data('prod-id');
 
             if (orderId && productId) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Do you really want to return this product?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, return it!',
-                    cancelButtonText: 'No, keep it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: 'PUT',
-                            url: '/return-one-product',
-                            contentType: 'application/json',
-                            data: JSON.stringify({ id: orderId, prodId: productId }),
-                            success: function (response) {
-                                if (response.success) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Returned product',
-                                        text: response.message,
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    }).then(() => { window.location.reload(); })
-                                }
-                            },
-                            error: function (error) {
-                                console.error('Error:', error);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'An error occurred. Please try again.',
-                                    confirmButtonText: 'Ok'
-                                });
-                            }
-                        });
+                $.ajax({
+                    type: 'PUT',
+                    url: '/return-one-product',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ id: orderId, prodId: productId }),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                            icon: 'success',
+                            title: 'Returned product',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(()=>{window.location.reload();})
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
                     }
-                })
-
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Invalid IDs',
-                    text: 'Invalid order or product ID.',
-                    confirmButtonText: 'Ok'
                 });
+            } else {
+                alert('Invalid order or product ID.');
             }
         });
+
 
         // Event listener for return the entire order
         $('#returnOrder').on('click', function () {

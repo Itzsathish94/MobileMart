@@ -1,10 +1,12 @@
-const { Product } = require('../../models/productsSchema') 
+const { Product } = require('../../models/productsSchema')
 const { User } = require('../../models/userSchema')
 const { Address } = require('../../models/addressSchema')
+const Coupon = require('../../models/couponSchema')
 const Order = require('../../models/order')
-const moment  = require('moment')
+const moment = require('moment')
 const easyinvoice = require('easyinvoice');
 const mongoose = require('mongoose')
+
 
 
 
@@ -67,7 +69,7 @@ const cancelOrder = async (req, res) => {
             );
         }
 
-       
+
         res.json({
             success: true,
             message: 'Successfully cancelled Order'
@@ -130,8 +132,8 @@ const returnOrder = async (req, res) => {
                 }
             );
         }
-        
-        
+
+
 
         res.json({
             success: true,
@@ -144,7 +146,6 @@ const returnOrder = async (req, res) => {
     }
 };
 
-// Cancel one product in an order
 const cancelOneProduct = async (req, res) => {
     try {
         const { id, prodId } = req.body;
@@ -179,7 +180,7 @@ const cancelOneProduct = async (req, res) => {
             { _id: PRODID },
             { $inc: { stock: productQuantity } }
         );
-        if(updatedOrder.couponUsed){
+        if (updatedOrder.couponUsed) {
             const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
             const discountAmt = (productprice * coupon.discount) / 100;
             const newTotal = productprice - discountAmt;
@@ -201,7 +202,7 @@ const cancelOneProduct = async (req, res) => {
                 }
             );
 
-        }else{
+        } else {
             await User.updateOne(
                 { _id: req.session.user._id },
                 { $inc: { wallet: productprice } }
@@ -259,6 +260,52 @@ const returnOneProduct = async (req, res) => {
         const productQuantity = result.product[0].quantity;
         const productprice = result.product[0].price * productQuantity
 
+        await Product.findOneAndUpdate(
+            { _id: PRODID },
+            { $inc: { stock: productQuantity } }
+        );
+
+        if (updatedOrder.couponUsed) {
+            const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
+            const discountAmt = (productprice * coupon.discount) / 100;
+            const newTotal = productprice - discountAmt;
+            await User.updateOne(
+                { _id: req.session.user._id },
+                { $inc: { wallet: newTotal } }
+            );
+
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: newTotal,
+                            status: `${result.product[0].name} returned`,
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+
+        } else {
+            await User.updateOne(
+                { _id: req.session.user._id },
+                { $inc: { wallet: productprice } }
+            );
+            await User.updateOne(
+                { _id: req.session.user._id },
+                {
+                    $push: {
+                        history: {
+                            amount: productprice,
+                            status: `${result.product[0].name} returned`,
+                            date: Date.now()
+                        }
+                    }
+                }
+            );
+        }
+
         res.json({
             success: true,
             message: 'Successfully removed product'
@@ -268,6 +315,7 @@ const returnOneProduct = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 }
+
 const getInvoice = async (req, res) => {
     try {
         const orderId = req.query.id;
@@ -287,12 +335,15 @@ const getInvoice = async (req, res) => {
             return res.status(404).send({ message: 'User or address not found' });
         }
 
-        const products = order.product.map((product) => ({
-            quantity: product.quantity.toString(),
-            description: product.name,
-            tax: product.tax,
-            price: product.price,
-        }));
+        const products = order.product
+            .filter(product => !product.isCancelled && !product.isReturned)
+            .map(product => ({
+                quantity: product.quantity.toString(),
+                description: product.name,
+                tax: product.tax,
+                price: product.price,
+            }));
+
 
         const date = moment(order.date).format('MMMM D, YYYY');
         const data = {

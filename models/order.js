@@ -76,6 +76,10 @@ const orderSchema = new Schema({
     default: "pending",
   },
 
+  returnMsg:{
+    type: String
+  },
+  
   date: {
     type: Date,
     default: Date.now,
