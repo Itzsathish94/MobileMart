@@ -22,13 +22,15 @@ function isCancelled(Handlebars) {
         `);
 
 
-        }else{
-
+        }
+        else{
+        
         if (allCancelled || value.status == 'Cancelled') {
             return new Handlebars.SafeString('<span class="badge rounded-pill alert-danger text-danger">Order Cancelled</span>');
         } else if (ct>0) {
             return new Handlebars.SafeString('<span class="badge rounded-pill alert-info text-info">Order Returned</span>');
-        } else {
+        } 
+        else {
             return new Handlebars.SafeString(`
                 <button id="cancelOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Cancel Entire Order</button>
             `);
@@ -64,12 +66,20 @@ function isCancelled(Handlebars) {
             `);
         } else if (value.status == "Returned") {
             return new Handlebars.SafeString('<span class="badge rounded-pill alert-info text-info">Order Returned</span>');
-        } else {
+        } 
+        if(value.status == 'Payment Failed'){
+            return new Handlebars.SafeString(`
+            <button id="retryPayment" data-order-id="${value._id}" class="btn btn-sm btn-primary">Retry Payment</button>
+        `);
+
+
+        }else {
             if (allCancelled || value.status === 'Cancelled') {
                 return new Handlebars.SafeString('<span class="badge rounded-pill alert-danger text-danger">Order Cancelled</span>');
             } else if (ct>0 ) {
                 return new Handlebars.SafeString('<span class="badge rounded-pill alert-info text-info">Order Returned</span>');
-            } else {
+            }
+            else {
                 return new Handlebars.SafeString(`
                     <button id="cancelOrder" data-order-id="${value._id}" class="btn btn-sm btn-primary">Cancel Order</button>
                 `);

@@ -109,6 +109,7 @@
                                                             Shipping: Fargo express <br> Pay method:
                                                             {{myOrderDetails.paymentMethod}} <br> Status:
                                                             {{myOrderDetails.status}}
+                                                            <input type="hidden" name="order_id" value="{{myOrderDetails._id}}">
                                                         </p>
                                                     </div>
                                                 </article>
@@ -161,7 +162,8 @@
                                                                     this.product.price }}</td>
 
                                                                 <td class="text-end">
-
+                                                                    {{!-- ["pending", "Payment Failed", "Shipped",
+                                                                    "Delivered", 'Cancelled', 'Returned'], --}}
 
                                                                     {{#singlestatuchecker this.product}}
                                                                     {{#ifCond ../myOrderDetails.status '=='
@@ -170,12 +172,26 @@
                                                                         class="btn btn-primary btn-sm return-btn"
                                                                         data-order-id="{{../myOrderDetails._id}}"
                                                                         data-prod-id="{{this.product._id}}">Return</button>
-                                                                    {{else}}
+                                                                    {{/ifCond}}
+                                                                    {{#ifCond ../myOrderDetails.status '=='
+                                                                    'pending'}}
                                                                     <button id="cancel-btn"
                                                                         class="btn btn-primary btn-sm cancel-btn"
                                                                         data-order-id="{{../myOrderDetails._id}}"
                                                                         data-prod-id="{{this.product._id}}">Cancel</button>
                                                                     {{/ifCond}}
+                                                                    {{#ifCond ../myOrderDetails.status '=='
+                                                                    'Payment Failed'}}
+
+                                                                    {{/ifCond}}
+                                                                    {{#ifCond ../myOrderDetails.status '=='
+                                                                    'Shipped'}}
+                                                                    <button id="retry-btn"
+                                                                        class="btn btn-primary btn-sm cancel-btn"
+                                                                        data-order-id="{{../myOrderDetails._id}}"
+                                                                        data-prod-id="{{this.product._id}}">Cancel</button>
+                                                                    {{/ifCond}}
+
                                                                     {{/singlestatuchecker}}
                                                                 </td>
                                                             </tr>
@@ -207,11 +223,16 @@
                                                                                 <b class="h5">₹{{
                                                                                     myOrderDetails.amountAfterDscnt
                                                                                     }}</b>
+                                                                                 <input type="hidden" name="Total" value="{{
+                                                                                    myOrderDetails.amountAfterDscnt
+                                                                                    }}">
                                                                             </dd>
                                                                             {{else}}
                                                                             <dd>
                                                                                 <b class="h5">₹{{add
                                                                                     myOrderDetails.total 0}}</b>
+                                                                                <input type="hidden" name="Total" value="{{add
+                                                                                    myOrderDetails.total 0}}">
                                                                             </dd>
 
                                                                             {{/if}}
@@ -221,6 +242,9 @@
                                                                         {{else}}
 
                                                                         {{/statuchecker}}
+
+
+
                                                                     </article>
                                                                 </td>
                                                             </tr>
@@ -247,7 +271,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
+
+    const orderId = document.getElementsByName('order_id')[0].value
     const getInvoice = async (id) => {
         try {
             const response = await fetch(`/get_invoice?id=${id}`, {
@@ -294,7 +322,7 @@
             });
             return allCancelled;
         }
-  // Event listener for canceling individual products
+        // Event listener for canceling individual products
         $('body').on('click', '.cancel-btn', function () {
             const orderId = $(this).data('order-id');
             const productId = $(this).data('prod-id');
@@ -307,13 +335,13 @@
                     data: JSON.stringify({ id: orderId, prodId: productId }),
                     success: function (response) {
                         if (response.success) {
-                             Swal.fire({
-                            icon: 'success',
-                            title: 'Cancelled product',
-                            text: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(()=>{window.location.reload();})
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cancelled product',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => { window.location.reload(); })
                         }
                     },
                     error: function (error) {
@@ -390,7 +418,7 @@
             }
         });
 
-       // Event listener for returning individual products
+        // Event listener for returning individual products
         $('body').on('click', '.return-btn', function () {
             const orderId = $(this).data('order-id');
             const productId = $(this).data('prod-id');
@@ -404,12 +432,12 @@
                     success: function (response) {
                         if (response.success) {
                             Swal.fire({
-                            icon: 'success',
-                            title: 'Returned product',
-                            text: response.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(()=>{window.location.reload();})
+                                icon: 'success',
+                                title: 'Returned product',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => { window.location.reload(); })
                         }
                     },
                     error: function (error) {
@@ -424,6 +452,8 @@
 
 
         // Event listener for return the entire order
+
+
         $('#returnOrder').on('click', function () {
             const orderId = $(this).data('order-id');
 
@@ -484,4 +514,111 @@
             }
         });
     });
+
+
+    $('#retryPayment').on('click', function () {
+        const orderId = $(this).data('order-id');
+
+        if (orderId) {
+            Swal.fire({
+                title: 'Are you sure you want retry payment?',
+                text: "",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                dangerMode: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    payment(orderId)
+                    //Swal.fire("Retry Payment Successfull!");
+                }
+            })
+
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid ID',
+                text: 'Invalid order ID.',
+                confirmButtonText: 'Ok'
+            });
+        }
+    });
+
+    const payment = (id) => {
+
+    
+        subTotal = Number(document.getElementsByName('Total')[0].value)
+
+
+        var options = {
+            "key": "rzp_test_OsDtnewxAfAwm0", // Enter the Key ID generated from the Dashboard
+            "amount": subTotal * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "image": "/images/logo/Logo_CH.png",
+            /*"name": "Acme Corp", //your business name
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",*/
+
+            "order_id": undefined, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": function (response) {
+                retryPayment(orderId, 'pending');
+            },
+
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Failed',
+                text: 'Your payment could not be processed. Please try again later.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload()
+                }
+            });
+
+        })
+        rzp1.open();
+
+    }
+
+
+
+    const retryPayment = async (id, status) => {
+
+        try {
+
+            const response = await fetch(`/retry_payment?id=${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+
+                    status: "pending"
+
+                })
+            });
+
+            const paymentSuccess = await response.json();
+            location.reload()
+            if (true) {
+
+                Swal.fire({
+                    title: 'Payment Successful!',
+                    text: 'Thank you for your purchase.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                })
+
+            }
+
+
+        } catch {
+            console.error('Error changing status:', error);
+        }
+
+    }
+
+
 </script>

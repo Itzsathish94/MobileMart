@@ -1,0 +1,65 @@
+<script>
+
+     $('#returnOrder').on('click', function () {
+            const orderId = $(this).data('order-id');
+
+            if (orderId) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you really want to return this order?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, return it!',
+                    cancelButtonText: 'No, keep it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: 'PUT',
+                            url: `/return-order/${orderId}`,
+                            contentType: 'application/json',
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Returned Order',
+                                        text: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => { window.location.reload(); })
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        confirmButtonText: 'Ok'
+                                    });
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'An error occurred. Please try again.',
+                                    confirmButtonText: 'Ok'
+                                });
+                            }
+                        });
+                    }
+                })
+
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid ID',
+                    text: 'Invalid order ID.',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        });
+    });
+
+</script>
+

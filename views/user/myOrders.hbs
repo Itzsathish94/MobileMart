@@ -106,7 +106,8 @@
                                                             <td>{{ formatDate this.date}}</td>
                                                             <td>{{formatTime this.date}}</td>
                                                             <td>{{this.status}}</td>
-                                                            {{#if this.couponUsed}}
+
+                                                            {{#if this.amountAfterDscnt}}
                                                             <td>₹{{this.amountAfterDscnt}}</td>
                                                             {{else}}
                                                             <td>₹{{this.total}}</td>

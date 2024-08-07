@@ -390,9 +390,27 @@ const getInvoice = async (req, res) => {
 };
 
 
+
+const retryPayment = async(req, res)=>{
+    try {
+        const id = req.query.id
+        await Order.findByIdAndUpdate(id, { $set: { status: 'pending' } }, { new: true });
+
+        res.json({
+            razorPaySucess: true,
+        })
+        
+    } catch (error) {
+        console.error('Error generating invoice:', error);
+        res.sendStatus(500);
+    }
+}
+
+
 module.exports = {
     cancelOrder, cancelOneProduct,
     returnOrder,
     returnOneProduct,
     getInvoice,
+    retryPayment
 }

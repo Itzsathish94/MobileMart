@@ -55,9 +55,9 @@
                                     </tr>
                                     <tr>
                                         <th>Total</th>
-                                         {{!-- <td colspan="2" class="product-subtotal"><span
+                                        {{!-- <td colspan="2" class="product-subtotal"><span
                                                 class="font-xl text-brand fw-900">₹{{subTotal}}</span>
-                                        </td>  --}}
+                                        </td> --}}
                                         <td colspan="2" class="product-subtotal"><span id="new_sub_total"><span
                                                     class="font-xl text-brand fw-900" id="total">₹{{add subTotal
                                                     50}}</span></span>
@@ -69,7 +69,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    <div class="mb-30 mt-50">
+                        <div class="mb-30 mt-50">
                             <div class="heading_s1 mb-3">
                                 <h4>Apply Coupon</h4>
                             </div>
@@ -101,7 +101,9 @@
                             </div>
                             <div class="col-lg-4">
 
-                                <button type="button" class="btn btn-fill-out btn-block " data-bs-toggle="collapse" data-bs-target="#couponList" aria-expanded="false" aria-controls="couponList"> <i class="fi-rs-label mr-10"></i> Show Available Coupons</button>
+                                <button type="button" class="btn btn-fill-out btn-block " data-bs-toggle="collapse"
+                                    data-bs-target="#couponList" aria-expanded="false" aria-controls="couponList"> <i
+                                        class="fi-rs-label mr-10"></i> Show Available Coupons</button>
 
                                 <div class="panel-collapse1 collapse coupon_form " id="couponList">
                                     <div class="panel-body">
@@ -362,10 +364,26 @@
 
 
 
+    let paymentStatus = true;
 
     const Cod = async () => {
         const selectAddress = document.querySelector('#selectedAddress').value
         const subTotal = Number(document.getElementsByName('subTotal')[0].value)
+
+
+        let requestBody = {
+            selectedAddress: selectAddress,
+            selectedPayment: paymentMethod,
+            amount: subTotal,
+            couponData: couponData,
+            couponName: couponEl,
+            updateWallet: updateWallet
+        };
+
+        // Check payment status and modify the request body accordingly
+        if (!paymentStatus) {
+            requestBody.status = "Payment Failed";
+        }
 
         const datas = await fetch('/placeorder', {
             method: 'POST',
@@ -373,25 +391,29 @@
                 'Content-Type': "application/json",
             },
 
-            body: JSON.stringify({
-
-                selectedAddress: selectAddress,
-                selectedPayment: paymentMethod,
-                amount: subTotal,
-                couponData: couponData,
-                couponName: couponEl,
-                updateWallet: updateWallet
-            })
+            body: JSON.stringify(requestBody)
         })
 
         const placeOrderData = await datas.json()
         console.log(datas.COD, datas, "placeOrderData")
 
         if (placeOrderData) {
-            console.log(' hiiii am from place oreder data')
-
-            //const wallet = document.getElementById('update_wallet').innerText = updateWallet
-            window.location.href = '/orderPlaced'
+            console.log('Received placeOrderData:', placeOrderData);
+            if (paymentStatus) {
+                window.location.href = '/order_sucess';
+            } else {
+                // Show an alert and redirect to the payment_failed route
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: 'Your payment could not be processed. Please try again later or use a different payment method.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/payment_failed';
+                    }
+                });
+            }
         }
         if (!COD) {
             Swal.fire({
@@ -405,17 +427,17 @@
     }
 
     const online = () => {
-        if(ct===0) {
+        if (ct === 0) {
             subTotal = Number(document.getElementsByName('subTotal')[0].value) + 50
-        }else{
-            subTotal = Number(document.getElementsByName('subTotal')[0].value) 
+        } else {
+            subTotal = Number(document.getElementsByName('subTotal')[0].value)
         }
-        
+
 
 
         var options = {
             "key": "rzp_test_OsDtnewxAfAwm0", // Enter the Key ID generated from the Dashboard
-            "amount": (subTotal)* 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "amount": parseInt(subTotal) * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             "currency": "INR",
             "image": "/images/logo/Logo_CH.png",
 
@@ -423,42 +445,38 @@
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",*/
 
-            "order_id":  undefined, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "order_id": undefined, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
             "handler": function (response) {
                 //console.log(response.razorpayOrder, status);
-              //  verifyPayment(response.razorpayOrder, status, response.razorpayOrder.id, response.orderId);
+                //  verifyPayment(response.razorpayOrder, status, response.razorpayOrder.id, response.orderId);
                 Cod()
             },
 
         };
         var rzp1 = new Razorpay(options);
-        rzp1.open();
         // Handle errors
-         rzp1.on('payment.failed', function (response) {
-            console.error('Payment failed:', response.error.code, response.error.description);
-            // Handle payment failure here
-            $.ajax({
-                url: '/handle-failure',
-                method: 'post',
-                data: {
-                    error: response.error,
-                    payment_method: paymentMethod,
-                    order_id: options.order_id // Make sure to pass the correct order ID
-                },
-                success: (result) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Payment Failed',
-                        text: 'Payment has failed. Please try again.'
-                    }).then(function () {
-                        window.location.href = '/orderFailed'; // Redirect to an order failed page
-                    });
+        rzp1.on('payment.failed', function (response) {
+            paymentStatus = false;
+            Cod()
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Failed',
+                text: 'Your payment could not be processed. Please try again later or use a different payment method.',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/payment_failed';
                 }
             });
-        });
 
+        })
+        rzp1.open();
 
     }
+
+
+
+
     const useWallet = () => {
         const wallet = document.getElementsByName('wallet')[0].value
         const subTotal = Number(document.getElementsByName('subTotal')[0].value)
@@ -480,93 +498,93 @@
     let couponStatus
     let originalSubTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-   const validateCoupon = async () => {
-    couponEl = document.getElementById('copon').value;
-    subTotal = Number(document.getElementsByName('subTotal')[0].value);
+    const validateCoupon = async () => {
+        couponEl = document.getElementById('copon').value;
+        subTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-    console.log(couponEl);
-    console.log('heloooo from validate coupon...............');
-    const response = await fetch('/validate_coupon', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            couponVal: couponEl,
-            subTotal: subTotal
-        })
-    });
+        console.log(couponEl);
+        console.log('heloooo from validate coupon...............');
+        const response = await fetch('/validate_coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                couponVal: couponEl,
+                subTotal: subTotal
+            })
+        });
 
-    console.log('hiiiii from coupon status........;;;;;;');
-    couponData = await response.json();
-    console.log(couponData);
-};
-
-const toggleCoupon = async () => {
-    ct += 1
-    console.log(ct, "ctttttttttttttttttttttttttttt")
-    couponEl = document.getElementById('copon').value;
-    currentStatus = document.getElementById('couponBtn').innerText.trim();
-    endpoint = currentStatus === 'Apply' ? '/apply_coupon' : '/remove_coupon';
-
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ couponVal: couponEl, subTotal: originalSubTotal })
-    });
-
-    couponData = await response.json();
-
-    const setCouponStatus = (msg, element) => {
-        element.innerHTML = `<p>${msg}</p>`;
-        setTimeout(() => {
-            element.style.opacity = 0;
-            element.innerHTML = '';
-        }, 2000);
+        console.log('hiiiii from coupon status........;;;;;;');
+        couponData = await response.json();
+        console.log(couponData);
     };
 
-    const couponMsg = document.getElementById('couponMsg');
-    const sCoponMsg = document.getElementById('sCoponMsg');
+    const toggleCoupon = async () => {
+        ct += 1
+        console.log(ct, "ctttttttttttttttttttttttttttt")
+        couponEl = document.getElementById('copon').value;
+        currentStatus = document.getElementById('couponBtn').innerText.trim();
+        endpoint = currentStatus === 'Apply' ? '/apply_coupon' : '/remove_coupon';
 
-    if (couponData.status === 'invalid') {
-        ct = 0
-        setCouponStatus('Invalid coupon', couponMsg);
-    } else if (couponData.status === 'expired') {
-        ct = 0
-        setCouponStatus('Coupon has expired!', couponMsg);
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'This coupon has expired!',
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ couponVal: couponEl, subTotal: originalSubTotal })
         });
-    } else if (couponData.status === 'already_used') {
-        ct = 0
-        setCouponStatus('Coupon already used!', couponMsg);
-        Swal.fire({
-            icon: 'info',
-            title: 'Coupon Already Used',
-            text: 'You have already used this coupon!',
-        });
-    } else if (couponData.status === 'not_used') {
-        ct = 0
-        setCouponStatus('Coupon not used yet!', couponMsg);
-    } else if (couponData.status === 'removed') {
-        setCouponStatus('Coupon removed successfully', couponMsg);
-        document.getElementById('couponBtn').innerHTML = '<i class="fi-rs-label mr-10"></i>Apply';
-    } else if (couponData.status === 'applied') {
-        setCouponStatus('Coupon applied successfully', sCoponMsg);
-        document.getElementById('couponBtn').innerHTML = '<i class="fi-rs-label mr-10"></i>Remove';
-    }
 
-    if (couponData.status === 'applied' || couponData.status === 'removed') {
-        document.getElementById('new_sub_total').innerHTML = `<strong>${couponData.newTotal + 50}</strong>`;
-        document.getElementsByName('subTotal')[0].value = couponData.newTotal + 50;
-        document.getElementById('copoun_code').innerHTML = `<small>${couponEl}</small>`;
-        document.getElementById('discount_amt').innerHTML = `<span class="text-success">-${couponData.discountAmt}</span>`;
-    }
-};
+        couponData = await response.json();
+
+        const setCouponStatus = (msg, element) => {
+            element.innerHTML = `<p>${msg}</p>`;
+            setTimeout(() => {
+                element.style.opacity = 0;
+                element.innerHTML = '';
+            }, 2000);
+        };
+
+        const couponMsg = document.getElementById('couponMsg');
+        const sCoponMsg = document.getElementById('sCoponMsg');
+
+        if (couponData.status === 'invalid') {
+            ct = 0
+            setCouponStatus('Invalid coupon', couponMsg);
+        } else if (couponData.status === 'expired') {
+            ct = 0
+            setCouponStatus('Coupon has expired!', couponMsg);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'This coupon has expired!',
+            });
+        } else if (couponData.status === 'already_used') {
+            ct = 0
+            setCouponStatus('Coupon already used!', couponMsg);
+            Swal.fire({
+                icon: 'info',
+                title: 'Coupon Already Used',
+                text: 'You have already used this coupon!',
+            });
+        } else if (couponData.status === 'not_used') {
+            ct = 0
+            setCouponStatus('Coupon not used yet!', couponMsg);
+        } else if (couponData.status === 'removed') {
+            setCouponStatus('Coupon removed successfully', couponMsg);
+            document.getElementById('couponBtn').innerHTML = '<i class="fi-rs-label mr-10"></i>Apply';
+        } else if (couponData.status === 'applied') {
+            setCouponStatus('Coupon applied successfully', sCoponMsg);
+            document.getElementById('couponBtn').innerHTML = '<i class="fi-rs-label mr-10"></i>Remove';
+        }
+
+        if (couponData.status === 'applied' || couponData.status === 'removed') {
+            document.getElementById('new_sub_total').innerHTML = `<strong>${couponData.newTotal + 50}</strong>`;
+            document.getElementsByName('subTotal')[0].value = couponData.newTotal + 50;
+            document.getElementById('copoun_code').innerHTML = `<small>${couponEl}</small>`;
+            document.getElementById('discount_amt').innerHTML = `<span class="text-success">-${couponData.discountAmt}</span>`;
+        }
+    };
 
 
 
@@ -694,31 +712,29 @@ const toggleCoupon = async () => {
 </script>
 
 <script>
-    $(document).ready(function() {
-    function updateAddressDetails() {
-        var selectedOption = $('#selectedAddress').find(':selected');
+    $(document).ready(function () {
+        function updateAddressDetails() {
+            var selectedOption = $('#selectedAddress').find(':selected');
 
-        var name = selectedOption.data('name');
-        var mobile = selectedOption.data('mobile');
-        var addressLine1 = selectedOption.data('address-line1');
-        var city = selectedOption.data('city');
+            var name = selectedOption.data('name');
+            var mobile = selectedOption.data('mobile');
+            var addressLine1 = selectedOption.data('address-line1');
+            var city = selectedOption.data('city');
 
-        $('#displayName').text(name || 'N/A');
-        $('#displayMobile').text(mobile || 'N/A');
-        $('#displayAddress1').text(addressLine1 || 'N/A');
-        $('#displayCity').text(city || 'N/A');
-    }
+            $('#displayName').text(name || 'N/A');
+            $('#displayMobile').text(mobile || 'N/A');
+            $('#displayAddress1').text(addressLine1 || 'N/A');
+            $('#displayCity').text(city || 'N/A');
+        }
 
-    // Initialize details based on the default selected option
-    updateAddressDetails();
-
-    // Update details when a new address is selected
-    $('#selectedAddress').on('change', function() {
+        // Initialize details based on the default selected option
         updateAddressDetails();
+
+        // Update details when a new address is selected
+        $('#selectedAddress').on('change', function () {
+            updateAddressDetails();
+        });
     });
-});
 
 
 </script>
-
-

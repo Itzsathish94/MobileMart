@@ -187,14 +187,22 @@ const placeorder = async (req, res) => {
 
         let saveOrder = async () => {
 
+            let orderData = {
+                userId: ID,
+                product: productDet,
+                address: addressId,
+                orderId: ordeId,
+                total: totalamount+50,
+                paymentMethod: payMethod
+            };
+
+            if (req.body.status) {
+                orderData.status = "Payment Failed";
+            }
+
             if (req.body.couponData) {
                 const order = new Order({
-                    userId: ID,
-                    product: productDet,
-                    address: addressId,
-                    orderId: ordeId,
-                    total: totalamount+50,
-                    paymentMethod: payMethod,
+                    ...orderData,
                     discountAmt: req.body.couponData.discountAmt,
                     amountAfterDscnt: req.body.couponData.newTotal+50,
                     coupon: req.body.couponName,
@@ -206,14 +214,7 @@ const placeorder = async (req, res) => {
                 console.log(ordered, "ordersaved DATAAAA with coupon")
                 
             } else {
-                const order = new Order({
-                    userId: ID,
-                    product: productDet,
-                    address: addressId,
-                    orderId: ordeId,
-                    total: totalamount+50,
-                    paymentMethod: payMethod,
-                })
+                const order = new Order(orderData)
 
                 const ordered = await order.save()
                 console.log(ordered, "ordersaved DATAAAA")
@@ -238,7 +239,7 @@ const placeorder = async (req, res) => {
 
         if (addressId) {
             if (payMethod === 'cash-on-delivery') {
-                if (totalamount > 1000000) {
+                if (totalamount > 1000) {
                    return res.json({
                         COD: false
                     })
@@ -331,6 +332,18 @@ const placeorder = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 }
+
+
+const paymentFailed = async(req,res)=>{
+    try {
+        res.render('user/paymentFailed')
+    }catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+
 const orderSuccess = async (req, res) => {
     try {
 
@@ -466,5 +479,6 @@ module.exports = {
     orderSuccess,
     validateCoupon,
     applyCoupon,
-    removeCoupon
+    removeCoupon,
+    paymentFailed
 }

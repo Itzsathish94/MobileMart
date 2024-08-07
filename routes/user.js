@@ -21,11 +21,13 @@ const {
     changepassword,
     changepass,
     cancelorder,
-    walletpage
+    walletpage,
+  
 } = require('../controllers/user-controllers/profile.js')
-const { cancelOrder,returnOrder, cancelOneProduct , returnOneProduct,getInvoice}= require('../controllers/user-controllers/ordercontroller')
+const { cancelOrder,returnOrder, cancelOneProduct , returnOneProduct, retryPayment, getInvoice}= require('../controllers/user-controllers/ordercontroller')
 const { loadCartPage, addToCart, removeFromCart, updateCart } = require('../controllers/user-controllers/cart')
-const { loadCheckoutPage, placeorder, orderSuccess , validateCoupon , removeCoupon , applyCoupon} = require('../controllers/user-controllers/checkoutManagement')
+  
+const { loadCheckoutPage, placeorder, orderSuccess , validateCoupon , removeCoupon , applyCoupon, paymentFailed} = require('../controllers/user-controllers/checkoutManagement')
 const { addMoneyToWallet , verifyPayment }= require('../controllers/user-controllers/walletController')
 const { showWishlistPage, addToWishList, removeFromWishList } = require('../controllers/user-controllers/wishlistManagement')
 
@@ -83,6 +85,7 @@ router.post('/verify_Payment', logedin, isBlocked,verifyPayment)
 /////order
 router.post('/placeorder', placeorder)
 router.get('/orderPlaced', logedin, isBlocked, orderSuccess)
+router.get('/payment_failed', logedin, isBlocked, paymentFailed)
 router.get('/orderDetails/:id', logedin, isBlocked, orderDetails)
 router.post('/cancelorder/:id', cancelorder)
 router.post('/validate_coupon', logedin, isBlocked, validateCoupon)
@@ -114,6 +117,10 @@ router.get('/cart/checkout', logedin, isBlocked, loadCheckoutPage)
  router.put('/cancel-one-product', cancelOneProduct);
  router.put('/return-one-product', returnOneProduct);
  router.post('/cancelOneProduct', cancelOneProduct)
+
+ //retry payment
+
+ router.post('/retry_payment' ,logedin , isBlocked , retryPayment)
 
  //// wishlist
 router.get('/wishlist', logedin, isBlocked, showWishlistPage)
