@@ -99,7 +99,7 @@
 
                             </div>
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-4">
                                         <label class="form-label">Price</label>
                                         <div class="row gx-2">
@@ -111,7 +111,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
                                         <input name="stock" class="form-control" placeholder="Quantity" type="number"
@@ -119,11 +119,19 @@
                                     </div>
                                     <h6 class="alertAddProduct mt-1" style="color: red" id="qtyAlert"></h6>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
                                         {{#each categories}}
                                         <option value="{{this._id}}">{{this.category}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label class="form-label">Brands:</label>
+                                    <select name="brand" id="brand" class="form-select">
+                                        {{#each brandData}}
+                                        <option value="{{this._id}}">{{this.brand}}</option>
                                         {{/each}}
                                     </select>
                                 </div>
@@ -280,44 +288,44 @@
 
 
 <script>
-    function Validation() {
-        var fileInput = document.getElementById('file-1');
-        var previewImage = document.getElementById('file-1-preview').querySelector('img');
+   function Validation() {
+    var fileInput = document.getElementById('file-1');
+    var previewImage = document.getElementById('file-1-preview').querySelector('img');
 
-        let productName = document.getElementById("productName").value;
-        let longdescription = document.getElementById("longdescription").value;
-        let Qty = document.getElementById("Qty").value;
-        let price = document.getElementById("price").value;
+    let productName = document.getElementById("productName").value;
+    let longdescription = document.getElementById("longdescription").value;
+    let Qty = document.getElementById("Qty").value;
+    let price = document.getElementById("price").value;
 
-        let productNameRegex = /^\s*.*\S.*\s*$/;
-        let number = /^[1-9]\d*$/;
-        let descriptionRegex = /^(?!\s*$)[\s\S]{1,100}$/;
+    let productNameRegex = /^[a-zA-Z0-9\s'-]+$/; // Allows alphanumeric, spaces, apostrophes, and hyphens
+    let number = /^[1-9]\d*$/; // Positive integers only
+    let descriptionRegex = /^(?!\s*$)[\s\S]{1,100}$/; // Length between 1 and 100 characters, excluding only whitespace
 
-        let productNameAlert = document.getElementById("productNameAlert");
-        let qtyAlert = document.getElementById("qtyAlert");
-        let priceAlert = document.getElementById("priceAlert");
-        let longAlert = document.getElementById("longAlert");
-        let imgAlert = document.getElementById('imgAlert');
+    let productNameAlert = document.getElementById("productNameAlert");
+    let qtyAlert = document.getElementById("qtyAlert");
+    let priceAlert = document.getElementById("priceAlert");
+    let longAlert = document.getElementById("longAlert");
+    let imgAlert = document.getElementById('imgAlert');
 
-        if (!productName.match(productNameRegex)) {
-            productNameAlert.innerHTML = "Name Not Valid";
-            return false;
-        } else if (!Qty.match(number)) {
-            qtyAlert.innerHTML = "Please Check Qty Again";
-            return false;
-        } else if (!price.match(number)) {
-            priceAlert.innerHTML = "Please Check Price Again";
-            return false;
-        } else if (!longdescription.match(descriptionRegex)) {
-            longAlert.innerHTML = "Please Check Description Again";
-            return false;
-        } else if (fileInput.files.length === 0) {
-            imgAlert.innerHTML = "Please choose an image";
-            return false;
-        } else {
-            return true;
-        }
+    if (!productName.match(productNameRegex)) {
+        productNameAlert.innerHTML = "Name Not Valid";
+        return false;
+    } else if (!Qty.match(number)) {
+        qtyAlert.innerHTML = "Please Check Qty Again";
+        return false;
+    } else if (!price.match(number)) {
+        priceAlert.innerHTML = "Please Check Price Again";
+        return false;
+    } else if (!longdescription.match(descriptionRegex)) {
+        longAlert.innerHTML = "Please Check Description Again";
+        return false;
+    } else if (fileInput.files.length === 0) {
+        imgAlert.innerHTML = "Please choose an image";
+        return false;
+    } else {
+        return true;
     }
+}
 
     function previewBeforeUpload(id) {
         document.querySelector("#" + id).addEventListener("change", function (e) {

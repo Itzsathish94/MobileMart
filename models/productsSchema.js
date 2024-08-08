@@ -48,6 +48,11 @@ const productSchema=new Schema({
     bestSelling:{
         type:Number,
         default:0
+    },
+    brand: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'brand',
+        required: true
     }
     
 })

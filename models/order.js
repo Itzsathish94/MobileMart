@@ -59,20 +59,10 @@ const orderSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  // coupon: [
-  //   {
-  //     name: {
-  //       type: String,
-  //     },
-  //     offer: {
-  //       type: Number,
-  //     },
-  //   },
-  // ],
-
+  
   status: {
     type: String,
-    enum: ["pending", "Payment Failed", "Shipped", "Delivered", 'Cancelled', 'Returned'],
+    enum: ["pending", "Payment Failed", "Shipped", "Delivered", 'Cancelled', 'Returned','Rejected',"Requested"],
     default: "pending",
   },
 

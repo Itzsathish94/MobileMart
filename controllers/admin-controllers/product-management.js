@@ -1,5 +1,6 @@
-const { Product } = require('../../models/productsSchema') 
+const { Product } = require('../../models/productsSchema')
 const { Category } = require('../../models/categorySchema');
+const { Brand } = require('../../models/brands');
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
 
@@ -10,15 +11,17 @@ const showproductslist = async (req, res) => {
     // Ensure that the database connection is established
     console.log("Fetching products...");
     const products = await Product.aggregate([
-      {$lookup:{
-        from:'category',
-        localField:'category',
-        foreignField:'_id',
-        as:'category'
-      }},
-      {$unwind:'$category'},
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      { $unwind: '$category' },
     ])
-    res.render('admin/products', { products, admin: true ,layout:'adminlayout'});
+    res.render('admin/products', { products, admin: true, layout: 'adminlayout' });
   } catch (error) {
     console.log("Something went wrong", error);
     res.status(500).send("Internal Server Error");
@@ -29,8 +32,19 @@ const showproductslist = async (req, res) => {
 const addproduct_page = async (req, res) => {
   try {
     const categories = await Category.find().lean()
+
+
+    const brandData = await Brand.aggregate([
+      {
+        $match: {
+          isListed: true
+        }
+      }
+    ]);
+
+    console.log(brandData);
     //console.log(categories)
-    res.render('admin/addProduct', { admin: true, categories ,layout:'adminlayout' })
+    res.render('admin/addProduct', { admin: true, categories, brandData, layout: 'adminlayout' })
 
   } catch (error) {
     console.log(error);
@@ -45,13 +59,14 @@ const addproduct = async (req, res) => {
       const image = file.filename;
       images.push(image);
     });
-  
+    
     const newProduct = new Product({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       category: req.body.category,
       stock: req.body.stock,
+      brand : req.body.brand,
       image: images
     });
     await newProduct.save().then(result => {
@@ -68,7 +83,7 @@ const addproduct = async (req, res) => {
 
 const deleteproduct = async (req, res) => {
   try {
-    const {id} = req.body
+    const { id } = req.body
     console.log(req.body);
     const productdata = await Product.findById(id)
     const isBlocked = productdata.is_blocked;
@@ -80,7 +95,7 @@ const deleteproduct = async (req, res) => {
           is_blocked: !isBlocked,
         },
       })
-    res.json({success:true})
+    res.json({ success: true })
   } catch (error) {
     console.log(error)
 
@@ -88,15 +103,15 @@ const deleteproduct = async (req, res) => {
 }
 
 /////complete delete of product
-const fullDeleteProd=async(req,res)=>{
+const fullDeleteProd = async (req, res) => {
   try {
-    let {id}=req.body
+    let { id } = req.body
     await Product.findByIdAndDelete(id)
-    res.json({success:true})
-    
+    res.json({ success: true })
+
   } catch (error) {
     console.log(error)
-    
+
   }
 }
 
@@ -106,61 +121,69 @@ const showeditprodpage = async (req, res) => {
 
     const prodid = req.params.id
     console.log(prodid)
-    const product = await Product.findById({_id:prodid}).populate('category','category').lean()
+    const product = await Product.findById({ _id: prodid }).populate('category', 'category').lean()
     console.log(product)
     const category = await Category.find().lean()
     console.log(category)
-    res.render('admin/editProduct', {admin:true, product, category,layout:'adminlayout' })
+    const brandData = await Brand.aggregate([
+      {
+        $match: {
+          isListed: true
+        }
+      }
+    ]);
+    res.render('admin/editProduct', { admin: true, product, category, brandData, layout: 'adminlayout' })
 
   } catch (error) {
     console.log(error)
   }
 }
-const editProduct=async(req,res)=>{
+const editProduct = async (req, res) => {
   try {
-    const Files=req.files
+    const Files = req.files
     // const catdata=req.params
     const prodid = new mongoose.Types.ObjectId(req.params.id)
-    console.log(prodid,'qweqweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+    console.log(prodid, 'qweqweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
     const product = await Product.findById(prodid).lean()
-    console.log(product,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-    const extimages=product.image
-    let updImages=[]
-    if(Files && Files.length>0){
+    console.log(product, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    const extimages = product.image
+    let updImages = []
+    if (Files && Files.length > 0) {
       const newImages = req.files.map((file) => file.filename);
       updImages = [...extimages, ...newImages];
-      
-    }
-    else{
-      updImages=extimages
-    }
-    console.log(req.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    const { name, price, description, category, stock } = req.body
-  
 
-      await Product.findByIdAndUpdate(prodid,
+    }
+    else {
+      updImages = extimages
+    }
+    console.log(req.body, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+    const { name, price, description, category, stock , brand} = req.body
+
+
+    await Product.findByIdAndUpdate(prodid,
       {
-        name:name,
-        price:price,
-        description:description,
-        category:category,
-        image:updImages,
-        stock:stock,
-        isBlocked:false
-        
-        
-      },
-    {new: true})
-      res.redirect('/admin/products')
+        name: name,
+        price: price,
+        description: description,
+        category: category,
+        image: updImages,
+        stock: stock,
+        isBlocked: false,
+        brand : brand
 
-    
+
+      },
+      { new: true })
+    res.redirect('/admin/products')
+
+
   } catch (error) {
     console.log(error)
   }
 }
 
 
-const deleteProdImage =  async (req, res) => {
+const deleteProdImage = async (req, res) => {
   try {
 
     const { id, image } = req.query
@@ -176,16 +199,16 @@ const deleteProdImage =  async (req, res) => {
   }
 }
 
-const blockProducts=async(req,res)=>{
+const blockProducts = async (req, res) => {
   try {
-    const {id}=req.body
+    const { id } = req.body
     console.log(req.body)
-    const product=await Product.findById(id)
-    let newisBlocked=!product.isBlocked
+    const product = await Product.findById(id)
+    let newisBlocked = !product.isBlocked
 
-    await Product.findByIdAndUpdate(id,{isBlocked:newisBlocked})
-    res.json({success:true})
-    
+    await Product.findByIdAndUpdate(id, { isBlocked: newisBlocked })
+    res.json({ success: true })
+
   } catch (error) {
     console.log(error)
   }

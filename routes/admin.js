@@ -13,6 +13,14 @@ const { couponPage, addCouponPage , addCouponPost , deleteCoupon}=require('../co
 const {  getSales,loadDashboard,
     getChartData,generateSalesReportPDF}=require('../controllers/admin-controllers/dashBoards')
 
+const { deleteBrand,
+    updateBrand,
+    addNewBrand,
+    addBrandPage,
+    editBrandPage,
+
+    loadBrands} = require('../controllers/admin-controllers/brands')
+
 // router.get('/',isLogin ,adminlogin)
 router.get('/', isLogin, loadDashboard)
 
@@ -60,5 +68,13 @@ router.delete('/delete_coupon',isLogin,deleteCoupon)
 // ///chart
 router.get('/get_sales',isLogin, getSales)
 router.get('/get_chart_data',isLogin, getChartData)
+
+//brand
+router.get('/brands' , loadBrands)
+router.get('/add_brands', isLogin, addBrandPage)
+router.post('/add_brands', isLogin, Upload.single('image'), addNewBrand)
+router.post('/delete_brands', isLogin, deleteBrand)
+router.get('/edit_brands/:id', isLogin, editBrandPage)
+router.post('/update_brands/:id', isLogin, Upload.single('image'), updateBrand)
 
 module.exports = router;

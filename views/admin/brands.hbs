@@ -1,0 +1,118 @@
+<head>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+</head>
+
+
+     <main class="main-wrap">
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Brand </h2>
+                    <p>Brand and vendor management</p>
+                </div>
+                <div>
+                    <a href="/admin/add_brands" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Add New Brand</a>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="row gx-3">
+                        {{#each brandData}}
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6">
+                            <figure class="card border-1">
+                                <div class="card-header bg-white text-center">
+                                    <img height="76" src="/images/products/{{this.brandImageUrl}}" class="img-fluid" alt="Logo">
+                                </div>
+                                <figcaption class="card-body text-center">
+                                    <h6 class="card-title m-0">{{this.brandName}}</h6>
+                                    <a href="#"> {{this.productCount}} products </a>
+                                </figcaption>
+                                 
+                            </figure>
+                            <a href="/admin/edit_brands/{{this.brandId}}" class="btn btn-pill font-sm rounded btn-brand" style="width: 90px;">
+                                    <i class="material-icons md-edit"></i> Edit
+                                </a>
+                          
+                            
+    {{#if this.isListed}}
+      <a data-product-id="{{this.brandId}}" class="btn btn-pill font-sm rounded btn-brand toggle-listing" style="width: 90px;">
+        <i class="material-icons md-edit"></i>Unlist
+      </a>
+    {{else}}
+      <a data-product-id="{{this.brandId}}" class="btn btn-pill font-sm rounded btn-brand toggle-listing" style="width: 90px;">
+        <i class="material-icons md-edit"></i>List
+      </a>
+    {{/if}}
+                        </div>
+                        {{/each}} <!-- col.// -->
+                    </div> <!-- row.// -->
+                </div> <!-- card-body end// -->
+            </div> <!-- card end// -->
+        </section> <!-- content-main end// -->
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©, Evara - HTML Ecommerce Template .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script>
+    $(document).ready(function () {
+        $(document).on('click', '.toggle-listing', function(e){
+            e.preventDefault();
+            var id = $(this).data('product-id');
+            var $this = $(this);
+            var action = $this.text().trim() === 'Unlist' ? 'unlist' : 'list';
+            var confirmText = action === 'unlist' ? 'unlist' : 'list';
+            var successMessage = action === 'unlist' ? 'unlisted' : 'listed';
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: `Do you want to ${confirmText} this brand?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/delete_brands',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (data) {
+                            console.log(`Brand ${successMessage}`);
+                            Swal.fire({
+                                title: 'Done!',
+                                text: `Brand successfully ${successMessage}!`,
+                                icon: 'success',
+                                confirmButtonText: 'okay'
+                            }).then(() => window.location.reload());
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(`Error ${action}ing brand:`, error);
+                            Swal.fire("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

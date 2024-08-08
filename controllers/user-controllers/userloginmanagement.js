@@ -289,6 +289,16 @@ const getproducts = async (req, res) => {
         if(product.stock){
             outOfStock = false
         }
+        await Product.updateOne(
+            {
+                _id: item
+            },
+            {
+                $inc: {
+                    popularity: 1
+                }
+            }
+        )
         const relatedProducts = await Product.aggregate([
             {
                 $match: {

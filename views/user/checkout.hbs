@@ -400,7 +400,7 @@
         if (placeOrderData) {
             console.log('Received placeOrderData:', placeOrderData);
             if (paymentStatus) {
-                window.location.href = '/order_sucess';
+                window.location.href = '/orderPlaced';
             } else {
                 // Show an alert and redirect to the payment_failed route
                 Swal.fire({

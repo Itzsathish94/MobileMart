@@ -96,7 +96,7 @@
                                     value="{{product.description}}" required></input>
                             </div>
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-4">
                                         <label class="form-label">Price</label>
                                         <div class="row gx-2">
@@ -105,14 +105,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
                                         <input name="stock" value="{{product.stock}}" class="form-control"
                                             placeholder="Quantity" type="text" id="Qty">
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
                                         <option value="{{product.category._id}}" selected>{{product.category.category}}</option>
@@ -121,6 +121,14 @@
                                         {{#if (Noteq this.category ../product.category.category)}}
                                         <option value="{{this._id}}">{{this.category}}</option>
                                         {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label class="form-label">Brands:</label>
+                                    <select name="brand" id="brand" class="form-select">
+                                        {{#each brandData}}
+                                        <option value="{{this._id}}">{{this.brand}}</option>
                                         {{/each}}
                                     </select>
                                 </div>
