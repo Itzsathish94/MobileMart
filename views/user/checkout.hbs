@@ -340,10 +340,10 @@
             if (result.isConfirmed) {
                 subTotal = Number(document.getElementsByName('subTotal')[0].value);
                 if (paymentMethod === 'cash-on-delivery') {
-                    if (subTotal > 1000000) {
+                    if (subTotal > 1000) {
                         Swal.fire({
                             title: 'Error',
-                            text: 'Cash on delivery is not available for orders above ₹1000000',
+                            text: 'Cash on delivery is not available for orders above ₹1000',
                             icon: 'error',
                             showCancelButton: false,
 
@@ -488,8 +488,12 @@
             console.log(updateWallet, 'my name is update wallet...........')
             Cod()
         } else {
-            alertify.set('notifier', 'position', 'bottom-center');
-            alertify.success('you dont have sufficient balance in ur wallet choose another payment method')
+          Swal.fire({
+        icon: 'error',
+        title: 'Insufficient Balance',
+        text: 'You don’t have sufficient balance in your wallet. Please choose another payment method.',
+        confirmButtonText: 'OK'
+      });
         }
     }
 

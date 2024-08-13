@@ -434,18 +434,18 @@
                                             <a href="#">{{this.category.category}}</a>
                                         </div>
                                         <h2><a href="/productDetails/{{this._id}}">{{name}}</a></h2>
-                                        <div class="rating-result" title="90%">
+                                        <div >
                                             <span>
-                                                <span>90%</span>
+                                                {{!-- <span>90%</span> --}}
                                             </span>
                                         </div>
                                         <div class="product-price">
                                             <span>₹{{price}}</span>
-                                            <span class="old-price">₹{{price}}</span>
+                                            {{!-- <span class="old-price">₹{{price}}</span> --}}
                                         </div>
-                                        <div class="product-action-1 show">
+                                        {{!-- <div class="product-action-1 show">
                                             <a aria-label="Add To Cart" class="action-btn hover-up" href="#"><i class="fi-rs-shopping-bag-add"></i></a>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -574,9 +574,9 @@
 
                         <div class="card-1">
                             <figure class=" img-hover-scale overflow-hidden">
-                                <a href="/filterByCategory/{{this._id}}"><img src="/images/products/{{image}}" alt=""></a>
+                                <a href="/shop"><img src="/images/products/{{image}}" alt=""></a>
                             </figure>
-                            <h5><a href="/filterByCategory/{{this._id}}">{{category}}</a></h5>
+                            <h5><a href="/shop">{{category}}</a></h5>
                         </div>
 
                         {{/each}}

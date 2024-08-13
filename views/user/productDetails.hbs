@@ -117,23 +117,30 @@
 
                                     </span>
 
-
-
                                     {{else}}
+                                        {{#if userData}}
                                     <span id="addcart">
                                         <button id="addcart-btn" data-product-id={{product._id}}
                                             class="button button-add-to-cart">Add to cart</button>
 
                                     </span>
+                                    {{else}}
+                                    <span id="addcart">
+                                        <button id="addcart-btn" onclick="window.location.href='/cart'"
+                                            class="button button-add-to-cart">Add to cart</button>
+
+                                    </span>
+                                    {{/if}}
+                                    
                                     {{/if}}
 
 
 
                                     {{/if}}
-                                    <a aria-label="Add To Wishlist" class="action-btn hover-up"
-                                        href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
-                                    <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i
-                                            class="fi-rs-shuffle"></i></a>
+                                    {{!-- <a aria-label="Add To Wishlist" class="action-btn hover-up"
+                                        href="shop-wishlist.html"><i class="fi-rs-heart"></i></a> --}}
+                                    {{!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i
+                                            class="fi-rs-shuffle"></i></a> --}}
                                 </div>
                             </div>
 
@@ -166,7 +173,7 @@
                                                             alt="">
                                                     </a>
                                                 </div>
-                                                <div class="product-action-1">
+                                                {{!-- <div class="product-action-1">
                                                     <a aria-label="Quick view" class="action-btn hover-up"
                                                         data-bs-toggle="modal" data-bs-target="#quickViewModal"><i
                                                             class="fi-rs-eye"></i></a>
@@ -174,7 +181,7 @@
                                                         href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
                                                     <a aria-label="Compare" class="action-btn hover-up"
                                                         href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>
-                                                </div>
+                                                </div> --}}
                                                 <div class="product-badges product-badges-position product-badges-mrg">
                                                     <span class="hot">Hot</span>
                                                 </div>
@@ -185,19 +192,19 @@
                                                 </div>
                                                 <h2><a href="/productDetails/{{this._id}}">{{this.name}}</a>
                                                 </h2>
-                                                <div class="rating-result" title="90%">
+                                                {{!-- <div class="rating-result" title="90%">
                                                     <span>
                                                         <span>90%</span>
                                                     </span>
-                                                </div>
+                                                </div> --}}
                                                 <div class="product-price">
                                                     <span>₹{{price}}</span>
-                                                    <span class="old-price">₹{{price}}</span>
+                                                    {{!-- <span class="old-price">₹{{price}}</span> --}}
                                                 </div>
 
                                                 <div class="product-action-1 show">
-                                                    <a aria-label="Add To Cart" class="action-btn hover-up"
-                                                        href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
+                                                    {{!-- <a aria-label="Add To Cart" class="action-btn hover-up"
+                                                        href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a> --}}
                                                 </div>
                                             </div>
                                         </div>
