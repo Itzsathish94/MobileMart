@@ -1,6 +1,7 @@
 const { User } = require('../../models/userSchema')
 const { Category } = require('../../models/categorySchema')
 const { Product } = require('../../models/productsSchema')
+const { Wallet }= require('../../models/walletSchema')
 const userHelper = require('../../helpers/user_helper')
 const argon2 = require('argon2')
 const mongoose = require('mongoose')
@@ -251,7 +252,16 @@ const submitotp = async (req, res) => {
             isBlocked: false,
             
         })
+        
         await user.save()
+        const userWalletData=await User.findOne({ email: userRegestData.email});
+
+        const wallet= new Wallet({
+            userId:new mongoose.Types.ObjectId(userWalletData._id),
+        })
+        await wallet.save()
+        
+
         req.session.regSuccessMsg = true
         
         res.redirect('/login')

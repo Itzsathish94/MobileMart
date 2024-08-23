@@ -134,3 +134,4 @@ router.post('/removeFromWishList', logedin, isBlocked, removeFromWishList)
 });
 
 module.exports = router;
+

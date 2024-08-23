@@ -29,6 +29,7 @@ const loadCartPage = async (req, res) => {
                     value: 1,
                     productName: { $arrayElemAt: ["$productData.name", 0] },
                     productPrice: { $arrayElemAt: ["$productData.price", 0] },
+                    productdiscountPrice: { $arrayElemAt: ["$productData.discountprice", 0] },
                     productDescription: { $arrayElemAt: ["$productData.description", 0] },
                     productImage: { $arrayElemAt: ["$productData.image", 0] }
 
@@ -125,11 +126,12 @@ const addToCart = async (req, res) => {
             },
             {
                 quantity: quantity,
-                price: sampProd.price,
-                value: sampProd.price * quantity
+                price: sampProd.discountprice || sampProd.price,
+                value: (sampProd.discountprice || sampProd.price) * quantity
             },
             { new: true, upsert: true }
         );
+        
 
         console.log("Cart Data:", cartData);
 
@@ -175,7 +177,7 @@ const updateCart = async (req, res) => {
         console.log(cartIdForUpdate, oldCart)
 
 
-        const price = oldCart.price;
+        const price = oldCart.discountprice || oldCart.price;
 
         const newValue = req.body.newValue * price;
         console.log(cartIdForUpdate, newValue)

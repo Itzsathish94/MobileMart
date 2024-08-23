@@ -46,6 +46,11 @@ const orderSchema = new Schema({
   
   },
 
+  discountAfterCoupon: {
+    type: Number,
+  
+  },
+
   coupon: {
     type: String,
   },
@@ -74,7 +79,11 @@ const orderSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+
+ 
 });
+
+
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

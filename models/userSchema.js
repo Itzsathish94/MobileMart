@@ -29,13 +29,6 @@ const userSchema=new Schema({
     image:{
         type:Array,
     },
-    wallet: {
-        type: Number,
-        default: 0
-    },
-    history: {
-        type: Array
-    },
     registeredOn: {
         type:Date,
         default:  Date.now

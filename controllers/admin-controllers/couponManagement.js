@@ -3,30 +3,34 @@ const Coupon=require('../../models/couponSchema')
 
 
 
-const couponPage= async(req,res)=>{
+const couponPage = async (req, res) => {
     try {
-        const couponData = await Coupon.find().lean();
-
-       // const now = moment();
-    
-        // const couponData = coupon.map((cpn) => {
-        //   const formattedDate = moment(cpn.expiryDate).format("MMMM D, YYYY");
-    
-        //   return {
-        //     ...cpn,
-        //     expiryDate: formattedDate,
-        //   };
-        // });
-    
-    
-        res.render('admin/coupon',{couponData, title:"Admin",layout:'adminlayout'})
+      // Ensure that the database connection is established
+      console.log("Fetching coupons...");
+      var page = 1;
+      if (req.query.page) {
+        page = parseInt(req.query.page);
+      }
+      console.log(page);
+      
+      let limit = 5;
+      const coupons = await Coupon.aggregate([
+        { $skip: (page - 1) * limit },
+        { $limit: limit }
+      ]);
+  
+      const count = await Coupon.countDocuments(); // Updated method to count documents
+      const totalPages = Math.ceil(count / limit);
+      const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  
+      console.log(coupons);
+      res.render('admin/coupon', { couponData:coupons, pages, currentPage: page, title: "Admin", layout: 'adminlayout' });
     } catch (error) {
-
-        console.log(error.message);
-        res.status(500).send("Internal Server Error");
-        
+      console.log("Something went wrong", error);
+      res.status(500).send("Internal Server Error");
     }
-}
+  };
+  
 
 const addCouponPage= async(req,res)=>{
     const couponMsg = "Coupon added successfuly..!!";

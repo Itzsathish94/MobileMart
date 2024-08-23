@@ -10,6 +10,12 @@ const showproductslist = async (req, res) => {
   try {
     // Ensure that the database connection is established
     console.log("Fetching products...");
+    var page = 1
+    if (req.query.page) {
+      page = req.query.page
+    }
+    console.log(page)
+    let limit = 5
     const products = await Product.aggregate([
       {
         $lookup: {
@@ -20,8 +26,18 @@ const showproductslist = async (req, res) => {
         }
       },
       { $unwind: '$category' },
+      {
+        $skip: (page - 1) * limit
+      },
+      {
+        $limit: limit * 1
+      }
     ])
-    res.render('admin/products', { products, admin: true, layout: 'adminlayout' });
+    const count = await Product.find({}).count()
+    const totalPages = Math.ceil(count / limit)  // Example value
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    console.log(products);
+    res.render('admin/products', { products, pages, currentPage: page, admin: true, layout: 'adminlayout' });
   } catch (error) {
     console.log("Something went wrong", error);
     res.status(500).send("Internal Server Error");
@@ -67,7 +83,8 @@ const addproduct = async (req, res) => {
       category: req.body.category,
       stock: req.body.stock,
       brand : req.body.brand,
-      image: images
+      image: images,
+      discountprice:req.body.discountprice
     });
     await newProduct.save().then(result => {
       res.redirect('/admin/products')
@@ -157,7 +174,7 @@ const editProduct = async (req, res) => {
       updImages = extimages
     }
     console.log(req.body, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    const { name, price, description, category, stock , brand} = req.body
+    const { name, price, description, category, stock , brand, discountprice} = req.body
 
 
     await Product.findByIdAndUpdate(prodid,
@@ -169,9 +186,8 @@ const editProduct = async (req, res) => {
         image: updImages,
         stock: stock,
         isBlocked: false,
-        brand : brand
-
-
+        brand : brand,
+        discountprice:discountprice
       },
       { new: true })
     res.redirect('/admin/products')

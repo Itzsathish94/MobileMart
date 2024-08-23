@@ -99,7 +99,7 @@
 
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Price</label>
                                         <div class="row gx-2">
@@ -111,7 +111,19 @@
 
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
+                                    <div class="mb-4">
+                                        <label class="form-label">Discount Price</label>
+                                        <div class="row gx-2">
+                                            <input placeholder="$" type="number" id="discountprice" name="discountprice"
+                                                class="form-control">
+                                        </div>
+                                        <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
                                         <input name="stock" class="form-control" placeholder="Quantity" type="number"
@@ -119,7 +131,7 @@
                                     </div>
                                     <h6 class="alertAddProduct mt-1" style="color: red" id="qtyAlert"></h6>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
                                         <option value="" disabled selected hidden>Select a category</option>
@@ -128,7 +140,7 @@
                                         {{/each}}
                                     </select>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <label class="form-label">Brands:</label>
                                     <select name="brand" id="brand" class="form-select">
                                          <option value="" disabled selected hidden>Select a Brand</option>

@@ -22,6 +22,10 @@ const CartSchema=new Schema({
     price:{
         type:Number,
         default:0
+    },
+    discountprice:{
+        type:Number,
+        default:0
     }
 
 })

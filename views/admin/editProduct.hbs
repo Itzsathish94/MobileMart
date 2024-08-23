@@ -96,7 +96,7 @@
                                     value="{{product.description}}" required></input>
                             </div>
                             <div class="row">
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Price</label>
                                         <div class="row gx-2">
@@ -105,18 +105,31 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
+                                    <div class="mb-4">
+                                        <label class="form-label">Discount Price</label>
+                                        <div class="row gx-2">
+                                            <input placeholder="$" type="number" value="{{product.discountprice}}" id="discountprice" name="discountprice"
+                                                class="form-control">
+                                        </div>
+                                        <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
                                         <input name="stock" value="{{product.stock}}" class="form-control"
                                             placeholder="Quantity" type="text" id="Qty">
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <label class="form-label">Category:</label>
                                     <select name="category" id="category" class="form-select">
-                                        <option value="{{product.category._id}}" selected>{{product.category.category}}</option>
- <option value="" disabled selected hidden>Select a category</option>
+                                        <option value="{{product.category._id}}" selected>{{product.category.category}}
+                                        </option>
+                                        <option value="" disabled selected hidden>Select a category</option>
                                         {{#each category}}
                                         {{#if (Noteq this.category ../product.category.category)}}
                                         <option value="{{this._id}}">{{this.category}}</option>
@@ -124,10 +137,10 @@
                                         {{/each}}
                                     </select>
                                 </div>
-                                <div class="col-lg-3">
+                                <div class="col-lg-2">
                                     <label class="form-label">Brands:</label>
                                     <select name="brand" id="brand" class="form-select">
-                                         <option value="" disabled selected hidden>Select a Brand</option>
+                                        <option value="" disabled selected hidden>Select a Brand</option>
                                         {{#each brandData}}
                                         <option value="{{this._id}}">{{this.brand}}</option>
                                         {{/each}}
@@ -160,7 +173,7 @@
                                             <p class="close-button" data-image-index="{{@index}}"
                                                 style="text-decoration: none;">×</p>
                                         </div>
-                                        <img src="/images/products/{{this}}"  alt="images"
+                                        <img src="/images/products/{{this}}" alt="images"
                                             style="width: 80px; height: auto;" class="m-2 pro-image"
                                             data-image-index="{{@index}}">
                                     </div>

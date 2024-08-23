@@ -6,12 +6,14 @@ const Order = require('../../models/order')
 const moment = require('moment')
 const easyinvoice = require('easyinvoice');
 const mongoose = require('mongoose')
-
+const {Wallet} = require('../../models/walletSchema');
+const { Category } = require('../../models/categorySchema')
 
 
 
 const cancelOrder = async (req, res) => {
     try {
+        let userData = req.session.user
         const id = req.params.id;
         console.log(id);
 
@@ -42,43 +44,49 @@ const cancelOrder = async (req, res) => {
                     { $set: { 'product.$.isCancelled': true } }
                 );
             }
-
-
         }
-        if (['wallet', 'razorpay'].includes(canceledOrder.paymentMethod)) {
-            for (const data of canceledOrder.product) {
-                //await Product.updateOne({ _id: data._id }, { $inc: { stock: data.quantity } });
-                await User.updateOne(
-                    { _id: req.session.user._id },
-                    { $inc: { wallet: data.price * data.quantity } }
-                );
-                notCancelledAmt += data.price * data.quantity;
+        await Coupon.updateOne(
+            { code: canceledOrder.coupon },
+            {
+                $pull: { usedBy: userData._id }
             }
+        );
 
-            await User.updateOne(
-                { _id: req.session.user._id },
+        if (['wallet', 'razorpay'].includes(canceledOrder.paymentMethod)) {
+            // for (const data of canceledOrder.product) {
+            //     //await Product.updateOne({ _id: data._id }, { $inc: { stock: data.quantity } });
+                
+            //     notCancelledAmt += data.price * data.quantity;
+            // }
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
+                { $inc: { wallet: canceledOrder.amountAfterDscnt } }
+            );
+
+            await Wallet.updateOne(
+                {userId: req.session.user._id },
                 {
                     $push: {
                         history: {
-                            amount: notCancelledAmt,
+                            amount: canceledOrder.amountAfterDscnt,
                             status: 'refund for Order Cancellation',
                             date: Date.now()
                         }
                     }
                 }
             );
-        }
-
 
         res.json({
             success: true,
             message: 'Successfully cancelled Order'
         });
-    } catch (error) {
+    }
+ } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
     }
 };
+
 
 // Return entire order
 const returnOrder = async (req, res) => {
@@ -91,7 +99,7 @@ const returnOrder = async (req, res) => {
         let notCancelledAmt = 0;
 
         let returnedOrder = await Order.findOne({ _id: ID }).lean();
-        console.log(returnedOrder, "returnedOrder")
+        console.log(returnedOrder, "returnedOrder");
 
         const returnedorder = await Order.findByIdAndUpdate(ID, { $set: { status: 'Returned' } }, { new: true });
         for (const product of returnedorder.product) {
@@ -106,39 +114,36 @@ const returnOrder = async (req, res) => {
                     { $set: { 'product.$.isReturned': true } }
                 );
             }
-
-
         }
+
         if (['wallet', 'razorpay'].includes(returnedOrder.paymentMethod)) {
             for (const data of returnedOrder.product) {
-                //await Product.updateOne({ _id: data._id }, { $inc: { stock: data.quantity } });
-                await User.updateOne(
-                    { _id: req.session.user._id },
-                    { $inc: { wallet: data.price * data.quantity } }
-                );
                 notCancelledAmt += data.price * data.quantity;
             }
 
-            await User.updateOne(
-                { _id: req.session.user._id },
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
+                { $inc: { wallet: returnedOrder.amountAfterDscnt } }
+            );
+
+            await Wallet.updateOne(
+                {userId: req.session.user._id },
                 {
                     $push: {
                         history: {
-                            amount: notCancelledAmt,
-                            status: 'refund of Order Return',
+                            amount: returnedOrder.amountAfterDscnt,
+                            status: 'refund for Return',
                             date: Date.now()
                         }
                     }
                 }
             );
         }
-
-
+        
 
         res.json({
             success: true,
             message: 'Successfully Returned Order'
-
         });
     } catch (error) {
         console.log(error.message);
@@ -146,10 +151,11 @@ const returnOrder = async (req, res) => {
     }
 };
 
+
 const cancelOneProduct = async (req, res) => {
     try {
         const { id, prodId } = req.body;
-        console.log(id, prodId)
+        console.log(id, prodId);
 
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(prodId)) {
             return res.status(400).json({ error: 'Invalid order or product ID' });
@@ -174,23 +180,25 @@ const cancelOneProduct = async (req, res) => {
         ).lean();
 
         const productQuantity = result.product[0].quantity;
-        const productprice = result.product[0].price * productQuantity
+        const productprice = result.product[0].price * productQuantity;
 
         await Product.findOneAndUpdate(
             { _id: PRODID },
             { $inc: { stock: productQuantity } }
         );
+
         if (updatedOrder.couponUsed) {
             const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
             const discountAmt = (productprice * coupon.discount) / 100;
             const newTotal = productprice - discountAmt;
-            await User.updateOne(
-                { _id: req.session.user._id },
+
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 { $inc: { wallet: newTotal } }
             );
 
-            await User.updateOne(
-                { _id: req.session.user._id },
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 {
                     $push: {
                         history: {
@@ -201,14 +209,14 @@ const cancelOneProduct = async (req, res) => {
                     }
                 }
             );
-
         } else {
-            await User.updateOne(
-                { _id: req.session.user._id },
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 { $inc: { wallet: productprice } }
             );
-            await User.updateOne(
-                { _id: req.session.user._id },
+
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 {
                     $push: {
                         history: {
@@ -229,11 +237,13 @@ const cancelOneProduct = async (req, res) => {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
     }
-};
+}
+``
+
 const returnOneProduct = async (req, res) => {
     try {
         const { id, prodId } = req.body;
-        console.log(id, prodId)
+        console.log(id, prodId);
 
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(prodId)) {
             return res.status(400).json({ error: 'Invalid order or product ID' });
@@ -258,7 +268,7 @@ const returnOneProduct = async (req, res) => {
         ).lean();
 
         const productQuantity = result.product[0].quantity;
-        const productprice = result.product[0].price * productQuantity
+        const productprice = result.product[0].price * productQuantity;
 
         await Product.findOneAndUpdate(
             { _id: PRODID },
@@ -269,36 +279,37 @@ const returnOneProduct = async (req, res) => {
             const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
             const discountAmt = (productprice * coupon.discount) / 100;
             const newTotal = productprice - discountAmt;
-            await User.updateOne(
-                { _id: req.session.user._id },
+
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 { $inc: { wallet: newTotal } }
             );
 
-            await User.updateOne(
-                { _id: req.session.user._id },
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 {
                     $push: {
                         history: {
                             amount: newTotal,
-                            status: `${result.product[0].name} returned`,
+                            status: `refund of: ${result.product[0].name}`,
                             date: Date.now()
                         }
                     }
                 }
             );
-
         } else {
-            await User.updateOne(
-                { _id: req.session.user._id },
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 { $inc: { wallet: productprice } }
             );
-            await User.updateOne(
-                { _id: req.session.user._id },
+
+            await Wallet.updateOne(
+                { userId: req.session.user._id },
                 {
                     $push: {
                         history: {
                             amount: productprice,
-                            status: `${result.product[0].name} returned`,
+                            status: `refund of: ${result.product[0].name}`,
                             date: Date.now()
                         }
                     }
@@ -308,13 +319,13 @@ const returnOneProduct = async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Successfully removed product'
+            message: 'Successfully returned product'
         });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
     }
-}
+};
 
 const getInvoice = async (req, res) => {
     try {

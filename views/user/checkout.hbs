@@ -181,10 +181,10 @@
                                 <div class="hotline d-none d-lg-block">
 
                                     <p class="my-2 mx-2">Wallet Balance : <strong><span id="update_wallet">
-                                                ₹{{userData.wallet}}</span>
+                                                ₹{{walletBalance}}</span>
                                         </strong></p>
 
-                                    <input type="hidden" value="{{userData.wallet}}" name="wallet">
+                                    <input type="hidden" value="{{walletBalance}}" name="wallet">
                                 </div>
                             </div>
                         </div>
@@ -475,28 +475,28 @@
     }
 
 
+const useWallet = () => {
+    let wallet = document.getElementsByName('wallet')[0].value;
+    wallet = Number(wallet); // Convert to number
+    
+    const subTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-
-    const useWallet = () => {
-        const wallet = document.getElementsByName('wallet')[0].value
-        const subTotal = Number(document.getElementsByName('subTotal')[0].value)
-        console.log(wallet, 'walletttttttttttt', subTotal)
-
-        if (wallet > subTotal) {
-            updateWallet = wallet - subTotal
-
-            console.log(updateWallet, 'my name is update wallet...........')
-            Cod()
-        } else {
-          Swal.fire({
-        icon: 'error',
-        title: 'Insufficient Balance',
-        text: 'You don’t have sufficient balance in your wallet. Please choose another payment method.',
-        confirmButtonText: 'OK'
-      });
-        }
+    if (isNaN(wallet)) {
+        wallet = 0; // Default to 0 if NaN
     }
 
+    if (wallet > subTotal) {
+        updateWallet = wallet - subTotal;
+        Cod();
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Insufficient Balance',
+            text: 'You don’t have sufficient balance in your wallet. Please choose another payment method.',
+            confirmButtonText: 'OK'
+        });
+    }
+};
 
 
     let couponStatus
