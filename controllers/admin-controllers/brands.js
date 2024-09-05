@@ -7,7 +7,7 @@ const ObjectId = require('mongoose')
 const loadBrands = async (req, res) => {
     try {
       const brandData = await Product.aggregate([
-        { $match: { isBlocked: false } }, // Changed from is_blocked to isBlocked
+        { $match: { isBlocked: false } }, 
         {
           $lookup: {
             from: 'brands',
@@ -43,8 +43,8 @@ const loadBrands = async (req, res) => {
       res.render('admin/brands', { brandData, layout: 'adminlayout' });
   
     } catch (error) {
-      console.error(error); // Add error handling
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error'); 
     }
   };
   
@@ -60,16 +60,16 @@ const loadBrands = async (req, res) => {
   
       if (req.session.brandSave) {
         res.render("admin/add_brand", { brandSaveMsg: "Brand saved successfully!", layout: 'adminlayout' });
-        req.session.brandSave = false; // Reset the session flag
+        req.session.brandSave = false; 
       } else if (req.session.brandExist) {
         res.render("admin/add_brand", { brandExistMsg, layout: 'adminlayout' });
-        req.session.brandExist = false; // Reset the session flag
+        req.session.brandExist = false;
       } else {
         res.render("admin/add_brand", { layout: 'adminlayout' });
       }
     } catch (error) {
-      console.error(error); // Improved error logging
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error'); 
     }
   };
   
@@ -99,8 +99,8 @@ const loadBrands = async (req, res) => {
   
       res.redirect("/admin/add_brands");
     } catch (error) {
-      console.error(error); // Improved error logging
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error'); 
     }
   };
   
@@ -111,7 +111,7 @@ const loadBrands = async (req, res) => {
     const brandId = req.params.id;
   
     try {
-      const brandData = await Brand.findById(brandId).lean(); // Simplified the findById method
+      const brandData = await Brand.findById(brandId).lean(); 
       const brandExistMsg = "Brand already exists..!!";
       console.log(brandData);
   
@@ -121,7 +121,7 @@ const loadBrands = async (req, res) => {
           brandExistMsg,
           layout: 'adminlayout',
         });
-        req.session.brandExist = false; // Reset the session flag
+        req.session.brandExist = false; 
       } else {
         res.render("admin/edit_brand", {
           brandData,
@@ -129,8 +129,8 @@ const loadBrands = async (req, res) => {
         });
       }
     } catch (error) {
-      console.error(error); // Improved error logging
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error'); 
     }
   };
   
@@ -171,8 +171,8 @@ const loadBrands = async (req, res) => {
         res.redirect("/admin/brands");
       }
     } catch (error) {
-      console.error(error); // Improved error logging
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error');
     }
   };
   
@@ -193,8 +193,8 @@ const loadBrands = async (req, res) => {
   
       res.redirect('/admin/brands');
     } catch (error) {
-      console.error(error); // Improved error logging
-      res.status(500).send('Internal Server Error'); // Send an error response
+      console.error(error); 
+      res.status(500).send('Internal Server Error'); 
     }
   };
   

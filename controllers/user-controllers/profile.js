@@ -20,7 +20,7 @@ const walletpage = async (req, res) => {
 
         // Pagination setup
         let page = req.query.page ? parseInt(req.query.page) : 1;
-        const limit = 5;
+        const limit = 10;
         const skip = (page - 1) * limit;
 
         // Fetch wallet data and history
@@ -159,7 +159,7 @@ const addAddressPost = async (req, res) => {
         })
 
         const adressData = await adress.save()
-        res.redirect('/addresses')
+        res.redirect('/cart/checkout')
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");;
@@ -227,7 +227,7 @@ const myorders = async (req, res) => {
         if (req.query.page) {
             page = req.query.page;
         }
-        let limit = 10;
+        let limit = 15;
         const skip = (page - 1) * limit;
 
         console.log(userData, "userdata")
@@ -263,8 +263,8 @@ const myorders = async (req, res) => {
             
         ])
         const count = await Order.find({}).count()
-    const totalPages = Math.ceil(count / limit)  // Example value
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+        const totalPages = Math.ceil(count / limit)  // Example value
+        const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
         console.log(myOrders, "myOrders")
         res.render('user/myOrders', { userData: userData, myOrders ,pages, currentPage: page })
@@ -336,6 +336,9 @@ const orderDetails = async (req, res) => {
             }
         ).lean()
         console.log(address,"address")
+
+        console.log(orderedProDet,"mmmmmmmmmmmmmmmmmmmmmm");
+        
 
         console.log("myOrderDetails:", myOrderDetails);
         offerprice-=(myOrderDetails.total)

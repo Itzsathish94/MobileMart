@@ -5,7 +5,6 @@ const Coupon=require('../../models/couponSchema')
 
 const couponPage = async (req, res) => {
     try {
-      // Ensure that the database connection is established
       console.log("Fetching coupons...");
       var page = 1;
       if (req.query.page) {
@@ -19,7 +18,7 @@ const couponPage = async (req, res) => {
         { $limit: limit }
       ]);
   
-      const count = await Coupon.countDocuments(); // Updated method to count documents
+      const count = await Coupon.countDocuments(); 
       const totalPages = Math.ceil(count / limit);
       const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
   

@@ -38,6 +38,7 @@ const loadCartPage = async (req, res) => {
             
         ])
         console.log(cartProd.length,"llllllllllllllllll")
+        console.log(cartProd,"llllllllllllllllll")
         
         const subTotal = await Cart.aggregate([
             {
@@ -126,8 +127,9 @@ const addToCart = async (req, res) => {
             },
             {
                 quantity: quantity,
-                price: sampProd.discountprice || sampProd.price,
-                value: (sampProd.discountprice || sampProd.price) * quantity
+                discountprice : sampProd.discountprice,
+                price: sampProd.price ,
+                value: ( sampProd.price- sampProd.discountprice) * quantity
             },
             { new: true, upsert: true }
         );
@@ -177,9 +179,11 @@ const updateCart = async (req, res) => {
         console.log(cartIdForUpdate, oldCart)
 
 
-        const price = oldCart.discountprice || oldCart.price;
+        const price =  oldCart.price - oldCart.discountprice;
 
         const newValue = req.body.newValue * price;
+        console.log(",,,,,,,,,,,");
+        
         console.log(cartIdForUpdate, newValue)
         let cartquant=await Product.findOne({_id:oldCart.product_Id},{stock:1,_id:0}).lean()
         console.log(cartquant.stock,"cartquant--------------------------------------------------------------")
@@ -225,7 +229,7 @@ const updateCart = async (req, res) => {
 
         updatedCart.forEach(data => {
 
-            const newDataItem = { ...data }; // Create a copy of the original object
+            const newDataItem = { ...data }; 
 
             if (data.totalAmount) {
                 newDataItem.totalAmount = newValue;
@@ -244,9 +248,6 @@ const updateCart = async (req, res) => {
             cartProd: newData,
             items: newData,
             cartValue: subTotal,
-            
-            
-
         }
         )
 

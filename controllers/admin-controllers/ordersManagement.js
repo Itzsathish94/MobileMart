@@ -19,7 +19,7 @@ const ordersPage = async (req, res) => {
 
         const ordersData = await Order.find().sort({date:-1}).skip((page - 1) * limit).limit(limit * 1).lean()
         const count = await Product.find({}).count()
-    const totalPages = Math.ceil(count / limit)  // Example value
+    const totalPages = Math.ceil(count / limit)  
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
         console.log(ordersData)
         res.render('admin/orders', { admin: true,pages , currentPage: page, ordersData, layout: 'adminlayout' })
@@ -46,7 +46,7 @@ const orderDetails = async (req, res) => {
                 $unwind: "$product"
             },
             {
-                $unwind: "$product" // Unwind the nested array
+                $unwind: "$product" 
             },
             {
                 $project: {
@@ -55,9 +55,6 @@ const orderDetails = async (req, res) => {
 
                 }
             }
-
-
-
         ])
         console.log(orderedProDet)
         res.render('admin/order_Details', { admin: true, orderedProDet, layout: 'adminlayout', address, myOrderDetails })

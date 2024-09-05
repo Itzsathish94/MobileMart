@@ -158,10 +158,10 @@
                                                                         <div class="info">{{this.product.name}}</div>
                                                                     </a>
                                                                 </td>
-                                                                <td> ₹{{this.product.price}} </td>
+                                                                <td> ₹{{subtract this.product.price this.product.discountprice}} </td>
                                                                 <td>{{this.product.quantity}} </td>
                                                                 <td class="text-end">₹{{multiply this.product.quantity
-                                                                    this.product.price }}</td>
+                                                                    (subtract this.product.price this.product.discountprice)  }}</td>
 
                                                                 <td class="text-end">
                                                                     {{!-- ["pending", "Payment Failed", "Shipped",
@@ -188,7 +188,7 @@
                                                                     {{/ifCond}}
                                                                     {{#ifCond ../myOrderDetails.status '=='
                                                                     'Shipped'}}
-                                                                    <button id="retry-btn"
+                                                                    <button id="cancelOrder"
                                                                         class="btn btn-primary btn-sm cancel-btn"
                                                                         data-order-id="{{../myOrderDetails._id}}"
                                                                         data-prod-id="{{this.product._id}}">Cancel</button>
@@ -394,6 +394,7 @@ $('body').on('click', '.cancel-btn', function () {
                             url: `/cancel-order/${orderId}`,
                             contentType: 'application/json',
                             success: function (response) {
+                                console.log('Response.......:', response);
                                 if (response.success) {
                                     Swal.fire({
                                         icon: 'success',

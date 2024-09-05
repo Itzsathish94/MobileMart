@@ -61,8 +61,6 @@ const loadDashboard = async (req, res) => {
 
         const sales = await Sale.find({}).lean();
 
-        // console.log(sales, 'salessssssssssssssssss');
-
         const salesByMonth = {};
 
         sales.forEach((sale) => {
@@ -110,14 +108,6 @@ const loadDashboard = async (req, res) => {
         let bestSellings = await Product.find().sort({ bestSelling: -1 }).limit(5).lean();
         let popuarProducts = await Product.find().sort({ popularity: -1 }).limit(5).lean();
         let bestSellingCategory = await Category.find().sort({ bestSelling: -1 }).limit(5).lean();
-
-        // console.log(thisMonthOrder, thisMonthSales);
-
-        // console.log(months);
-        // console.log(odersByMonth);
-        // console.log(revnueByMonth);
-        // console.log(totalRevnue);
-        // console.log(totalSales);
 
         res.render('admin/dashBoard', {
             revnueByMonth,

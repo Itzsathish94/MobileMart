@@ -146,6 +146,7 @@ const loadCheckoutPage = async (req, res) => {
                     value: 1,
                     productName: { $arrayElemAt: ["$productData.name", 0] },
                     productPrice: { $arrayElemAt: ["$productData.price", 0] },
+                    productDiscountPrice: { $arrayElemAt: ["$productData.discountprice", 0] },
                     productDescription: { $arrayElemAt: ["$productData.description", 0] },
                     productImage: { $arrayElemAt: ["$productData.image", 0] }
                 }
@@ -164,6 +165,8 @@ const loadCheckoutPage = async (req, res) => {
             coupon,
             walletBalance: walletData ? walletData.wallet : 0 // Including wallet balance
         });
+
+        console.log(subTotal,"nnnnnnnnnnnnnnnnnnnnnnn")
 
     } catch (error) {
         console.log(error.message);
@@ -235,6 +238,8 @@ const placeorder = async (req, res) => {
                     value: 1,
                     productName: { $arrayElemAt: ["$productData.name", 0] },
                     productPrice: { $arrayElemAt: ["$productData.price", 0] },
+                    discountprice : { $arrayElemAt: ["$productData.discountprice", 0] },
+
                     productDescription: { $arrayElemAt: ["$productData.description", 0] },
                     productImage: { $arrayElemAt: ["$productData.image", 0] }
                 }
@@ -246,13 +251,14 @@ const placeorder = async (req, res) => {
                 _id: item.product_Id,
                 name: item.productName,
                 price: item.productPrice,
+                discountprice : item.discountprice,
                 quantity: item.quantity,
                 image: item.productImage[0],
             };
         });
 
         console.log(productInCart, "aggregated cart prods");
-        console.log(productDet, "aggregated cart prods");
+        console.log(productDet, "ooooooooooooooooooooooooooooooooooooooooo");
         console.log(SampproductInCart, "aggregated cart prods");
         console.log(productDet, "11111111111 aggregated cart prods");
 
@@ -269,12 +275,12 @@ const placeorder = async (req, res) => {
             if (req.body.status) {
                 orderData.status = "Payment Failed";
             }
-
+            console.log(req.body.couponData, "coooponnnnnnnnnnnnn")
             if (req.body.couponData) {
                 const order = new Order({
                     ...orderData,
                     discountAmt: req.body.couponData.discountAmt,
-                    amountAfterDscnt: req.body.couponData.newTotal + 50,
+                    amountAfterDscnt: req.body.couponData.newTotal+50,
                     coupon: req.body.couponName,
                     couponUsed: true
                 });
@@ -398,7 +404,7 @@ const placeorder = async (req, res) => {
             /// payment method wallet function
             if (payMethod === 'wallet') {
                 let newWallet = req.body.updateWallet;
-
+                console.log(newWallet,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 // Ensure the value is a valid number
                 newWallet = Number(newWallet);
                 if (isNaN(newWallet)) {
@@ -422,7 +428,7 @@ const placeorder = async (req, res) => {
                         {
                             $push: {
                                 history: {
-                                    amount: req.body.couponData.newTotal + 50,
+                                    amount: req.body.couponData.newTotal+50,
                                     status: 'debited',
                                     date: Date.now()
                                 }
@@ -435,7 +441,7 @@ const placeorder = async (req, res) => {
                         {
                             $push: {
                                 history: {
-                                    amount: totalamount,
+                                    amount: totalamount + 50,
                                     status: 'debited',
                                     date: Date.now()
                                 }

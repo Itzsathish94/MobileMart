@@ -14,6 +14,7 @@ const orderSchema = new Schema({
       id: { type: mongoose.Schema.Types.ObjectId, ref: "products" },
       name: { type: String },
       price: { type: Number },
+      discountprice :{ type: Number },
       quantity: { type: Number },
       image: { type: String },
       isCancelled:{type:Boolean , default:false},

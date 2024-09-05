@@ -22,7 +22,6 @@ const {
     changepass,
     cancelorder,
     walletpage,
-  
 } = require('../controllers/user-controllers/profile.js')
 const { cancelOrder,returnOrder, cancelOneProduct , returnOneProduct, retryPayment, getInvoice}= require('../controllers/user-controllers/ordercontroller')
 const { loadCartPage, addToCart, removeFromCart, updateCart } = require('../controllers/user-controllers/cart')

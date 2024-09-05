@@ -65,7 +65,7 @@
                                     <div class="clearfix product-price-cover">
                                         <div class="product-price primary-color float-left">
                                             {{!-- {{#isGreaterThanZero product.stock}} --}}
-                                            <ins><span class="text-brand">₹{{product.price}}</span></ins>
+                                            <ins><span class="text-brand">₹{{subtract product.price product.discountprice}}</span></ins>
                                             <ins><span class="old-price font-md ml-15">₹{{
                                             product.price}}</span></ins>
                                         </div>

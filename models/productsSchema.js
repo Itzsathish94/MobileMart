@@ -1,5 +1,4 @@
 const mongoose=require("mongoose");
-// const { array } = require('../multer/product_control')
 
 const Schema=mongoose.Schema
 

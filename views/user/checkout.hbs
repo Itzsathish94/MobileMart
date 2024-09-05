@@ -32,9 +32,11 @@
                                                 src="/images/products/{{productImage.[0]}}" alt="#"></td>
                                         <td>
                                             <h5><a href="shop-product-full.html">{{this.productName}}</a></h5> <span
-                                                class="product-qty"> {{this.productPrice }} x {{this.quantity }}</span>
+                                                class="product-qty"> {{subtract this.productPrice
+                                                this.productDiscountPrice }} x {{this.quantity }}</span>
                                         </td>
-                                        <td>₹{{multiply this.productPrice this.quantity }}</td>
+                                        <td>₹{{multiply this.quantity (subtract this.productPrice
+                                            this.productDiscountPrice) }}</td>
                                     </tr>
                                     {{/each}}
                                     <tr>
@@ -475,28 +477,33 @@
     }
 
 
-const useWallet = () => {
-    let wallet = document.getElementsByName('wallet')[0].value;
-    wallet = Number(wallet); // Convert to number
-    
-    const subTotal = Number(document.getElementsByName('subTotal')[0].value);
+    const useWallet = () => {
+        let wallet = document.getElementsByName('wallet')[0].value;
+        wallet = Number(wallet); // Convert to number
 
-    if (isNaN(wallet)) {
-        wallet = 0; // Default to 0 if NaN
-    }
+        const subTotal = Number(document.getElementsByName('subTotal')[0].value);
 
-    if (wallet > subTotal) {
-        updateWallet = wallet - subTotal;
-        Cod();
-    } else {
-        Swal.fire({
-            icon: 'error',
-            title: 'Insufficient Balance',
-            text: 'You don’t have sufficient balance in your wallet. Please choose another payment method.',
-            confirmButtonText: 'OK'
-        });
-    }
-};
+        if (isNaN(wallet)) {
+            wallet = 0; // Default to 0 if NaN
+        }
+
+        if (wallet > subTotal) {
+            if (couponEl) {
+                updateWallet = wallet - (subTotal);
+            } else {
+                updateWallet = wallet - (subTotal + 50);
+
+            }
+            Cod();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Insufficient Balance',
+                text: 'You don’t have sufficient balance in your wallet. Please choose another payment method.',
+                confirmButtonText: 'OK'
+            });
+        }
+    };
 
 
     let couponStatus

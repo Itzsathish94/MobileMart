@@ -8,7 +8,6 @@ const ObjectId = require('mongoose')
 ////render products list page in admin page
 const showproductslist = async (req, res) => {
   try {
-    // Ensure that the database connection is established
     console.log("Fetching products...");
     var page = 1
     if (req.query.page) {
@@ -34,7 +33,7 @@ const showproductslist = async (req, res) => {
       }
     ])
     const count = await Product.find({}).count()
-    const totalPages = Math.ceil(count / limit)  // Example value
+    const totalPages = Math.ceil(count / limit) 
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     console.log(products);
     res.render('admin/products', { products, pages, currentPage: page, admin: true, layout: 'adminlayout' });
@@ -59,7 +58,6 @@ const addproduct_page = async (req, res) => {
     ]);
 
     console.log(brandData);
-    //console.log(categories)
     res.render('admin/addProduct', { admin: true, categories, brandData, layout: 'adminlayout' })
 
   } catch (error) {
@@ -158,7 +156,6 @@ const showeditprodpage = async (req, res) => {
 const editProduct = async (req, res) => {
   try {
     const Files = req.files
-    // const catdata=req.params
     const prodid = new mongoose.Types.ObjectId(req.params.id)
     console.log(prodid, 'qweqweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
     const product = await Product.findById(prodid).lean()

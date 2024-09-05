@@ -113,7 +113,7 @@
                                 </div>
                                 <div class="col-lg-2">
                                     <div class="mb-4">
-                                        <label class="form-label">Discount Price</label>
+                                        <label class="form-label">Discount Amount</label>
                                         <div class="row gx-2">
                                             <input placeholder="$" type="number" id="discountprice" name="discountprice"
                                                 class="form-control">
@@ -380,23 +380,23 @@
     var priceInput = document.getElementById('price');
     var priceMsg = document.getElementById('priceAlert');
 
-    function validateProductName() {
-        var productName = productNameInput.value.trim();
-        var pattern = /^[a-zA-Z\s]{3,20}$/;
+        function validateProductName() {
+            var productName = productNameInput.value.trim();
+            var pattern = /^[a-zA-Z0-9\s]{3,20}$/;
 
-        if (!pattern.test(productName)) {
-            validationMessage.textContent = 'Product title is invalid';
-            return false;
-        } else {
-            validationMessage.textContent = '';
-            return true;
-        }
+            if (!pattern.test(productName)) {
+                validationMessage.textContent = 'Product title is invalid';
+                return false;
+            } else {
+                validationMessage.textContent = '';
+                return true;
+            }
 
-        if (productName === '') {
-            validationMessage.textContent = 'Product title is required';
-            return false;
+            if (productName === '') {
+                validationMessage.textContent = 'Product title is required';
+                return false;
+            }
         }
-    }
 
     function validatePrice() {
         var price = priceInput.value;

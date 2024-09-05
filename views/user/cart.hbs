@@ -35,7 +35,7 @@
                                         {{!-- <p class="font-xs">{{productDescription}}
                                         </p> --}}
                                     </td>
-                                    <td class="price" data-title="Price"><span>₹{{productPrice}} </span></td>
+                                    <td class="price" data-title="Price"><span>₹{{subtract productPrice productdiscountPrice}} </span></td>
 
                                     <td class="column-4">
                                         <div class="wrap-num-product flex-w m-l-auto m-r-0" id="quantityContainer">
@@ -55,7 +55,7 @@
                                     </td>
                                     <td class="text-right" data-title="Cart">
                                         <span id="totalPerItem-{{this._id}}">₹{{multiply this.quantity
-                                            this.productPrice}}</span>
+                                            (subtract this.productPrice this.productdiscountPrice)}}</span>
                                     </td>
                                     <td class="action" data-product-id="{{_id}}" data-title="Remove"><a href="#"
                                             class="text-muted"><i class="fi-rs-trash"></i></a></td>
@@ -81,6 +81,7 @@
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tbody>
+                                            
                                             <tr>
                                                 <td class="cart_total_label">Cart Subtotal</td>
                                                 <td class="cart_total_amount"><span id="Subtotal"
@@ -220,6 +221,7 @@
             $('.shopping-summery tbody tr').each(function () {
                 const itemTotal = parseFloat($(this).find('td[data-title="Cart"] span').text().replace('₹', ''));
                 subtotal += isNaN(itemTotal) ? 0 : itemTotal;
+                console.log(subtotal,"Subtotalllllllllllllll")
             });
             $('#Subtotal').text(`₹${subtotal}`);
             $('#total').text(`₹${subtotal}`);

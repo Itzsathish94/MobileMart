@@ -26,6 +26,8 @@ const cancelOrder = async (req, res) => {
 
         let canceledOrder = await Order.findOne({ _id: ID });
 
+        console.log(".........",canceledOrder)
+
         if (!canceledOrder) {
             return res.status(404).json({ error: 'Order not found' });
         }
@@ -60,7 +62,7 @@ const cancelOrder = async (req, res) => {
             // }
             await Wallet.updateOne(
                 { userId: req.session.user._id },
-                { $inc: { wallet: canceledOrder.amountAfterDscnt } }
+                { $inc: { wallet: canceledOrder.total - 50 } }
             );
 
             await Wallet.updateOne(
@@ -68,7 +70,7 @@ const cancelOrder = async (req, res) => {
                 {
                     $push: {
                         history: {
-                            amount: canceledOrder.amountAfterDscnt,
+                            amount: canceledOrder.total - 50,
                             status: 'refund for Order Cancellation',
                             date: Date.now()
                         }
@@ -120,24 +122,43 @@ const returnOrder = async (req, res) => {
             for (const data of returnedOrder.product) {
                 notCancelledAmt += data.price * data.quantity;
             }
+            if(returnedorder.coupon){
+                await Wallet.updateOne(
+                    { userId: req.session.user._id },
+                    { $inc: { wallet: returnedOrder.total - returnedOrder.discountAmt } }
+                );
 
-            await Wallet.updateOne(
-                { userId: req.session.user._id },
-                { $inc: { wallet: returnedOrder.amountAfterDscnt } }
-            );
+                await Wallet.updateOne(
+                    {userId: req.session.user._id },
+                    {
+                        $push: {
+                            history: {
+                                amount: returnedOrder.total - returnedOrder.discountAmt,
+                                status: 'refund for Return',
+                                date: Date.now()
+                            }
+                        }
+                    }
+                );
 
-            await Wallet.updateOne(
+            }else{
+                await Wallet.updateOne(
+                    { userId: req.session.user._id },
+                    { $inc: { wallet: returnedOrder.total - 50} }
+                );
+                await Wallet.updateOne(
                 {userId: req.session.user._id },
                 {
                     $push: {
                         history: {
-                            amount: returnedOrder.amountAfterDscnt,
+                            amount: returnedOrder.total - 50,
                             status: 'refund for Return',
                             date: Date.now()
                         }
                     }
                 }
             );
+            }
         }
         
 
@@ -180,7 +201,7 @@ const cancelOneProduct = async (req, res) => {
         ).lean();
 
         const productQuantity = result.product[0].quantity;
-        const productprice = result.product[0].price * productQuantity;
+        const productprice = (result.product[0].price - result.product[0].discountprice)  * productQuantity ;
 
         await Product.findOneAndUpdate(
             { _id: PRODID },
@@ -264,11 +285,11 @@ const returnOneProduct = async (req, res) => {
 
         const result = await Order.findOne(
             { _id: ID, 'product._id': PRODID },
-            { 'product.$': 1 }
+            { 'product.$': 1,'amountAfterDscnt':1 }
         ).lean();
 
         const productQuantity = result.product[0].quantity;
-        const productprice = result.product[0].price * productQuantity;
+        const productprice = (result.product[0].price - result.product[0].discountprice)  * productQuantity ;
 
         await Product.findOneAndUpdate(
             { _id: PRODID },
@@ -277,8 +298,8 @@ const returnOneProduct = async (req, res) => {
 
         if (updatedOrder.couponUsed) {
             const coupon = await Coupon.findOne({ code: updatedOrder.coupon });
-            const discountAmt = (productprice * coupon.discount) / 100;
-            const newTotal = productprice - discountAmt;
+            const discountAmt = (productprice / result.amountAfterDscnt) * 100;
+            const newTotal = Math.round(productprice - discountAmt);
 
             await Wallet.updateOne(
                 { userId: req.session.user._id },
