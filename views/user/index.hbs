@@ -440,8 +440,13 @@
                                             </span>
                                         </div>
                                         <div class="product-price">
+                                            {{#if discountprice}}
                                             <span>₹{{subtract price discountprice}}</span>
                                             <span class="old-price">₹{{price}}</span>
+                                            {{else}}
+                                            <span>₹{{price}}</span>
+                                            
+                                            {{/if}}
                                         </div>
             
                                         {{!-- <div class="product-action-1 show">

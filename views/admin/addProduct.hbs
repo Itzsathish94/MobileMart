@@ -87,13 +87,13 @@
                             <div class="mb-4">
                                 <label for="product_name" class="form-label">Product Name</label>
                                 <input type="text" placeholder="Type here" name="name" 
-                                    class="form-control" id="productName">
+                                    class="form-control" id="productName" required>
                                 <h6 class="alertAddProduct mt-1" style="color: red" id="productNameAlert"></h6>
 
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Full description</label>
-                                <textarea placeholder="Type here" name="description" id="longdescription"
+                                <textarea placeholder="Type here" name="description" id="longdescription" required
                                     class="form-control" rows="5"></textarea>
                                 <h6 class="alertAddProduct mt-1" style="color: red" id="longAlert"></h6>
 
@@ -103,7 +103,7 @@
                                     <div class="mb-4">
                                         <label class="form-label">Price</label>
                                         <div class="row gx-2">
-                                            <input placeholder="$" type="number" id="price" name="price"
+                                            <input placeholder="$" type="number" id="price" name="price" required
                                                 class="form-control">
                                         </div>
                                         <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
@@ -118,7 +118,7 @@
                                             <input placeholder="$" type="number" id="discountprice" name="discountprice"
                                                 class="form-control">
                                         </div>
-                                        <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
+                                        <h6 class="alertAddProduct mt-1" style="color: red" id="discountAlert"></h6>
 
 
                                     </div>
@@ -310,6 +310,7 @@
     let Qty = document.getElementById("Qty").value;
     let price = document.getElementById("price").value;
 
+
     let productNameRegex = /^[a-zA-Z0-9\s'-]+$/; // Allows alphanumeric, spaces, apostrophes, and hyphens
     let number = /^[1-9]\d*$/; // Positive integers only
     let descriptionRegex = /^(?!\s*$)[\s\S]{1,100}$/; // Length between 1 and 100 characters, excluding only whitespace
@@ -378,7 +379,9 @@
     var productNameInput = document.getElementById('productName');
     var validationMessage = document.getElementById('productNameAlert');
     var priceInput = document.getElementById('price');
+    var discountPrice = document.getElementById('discountprice');
     var priceMsg = document.getElementById('priceAlert');
+    var discountpriceMsg = document.getElementById('discountAlert');
 
         function validateProductName() {
             var productName = productNameInput.value.trim();
@@ -409,8 +412,25 @@
         }
     }
 
+     function validateDiscountAmount() {
+    var price = parseFloat(priceInput.value); // Convert to a float number
+    var discountprice = parseFloat(discountPrice.value); // Convert to a float number
+
+    if (isNaN(discountprice) || discountprice < 0) {
+        discountpriceMsg.textContent = "Invalid discount amount";
+        return false;
+    } else if (discountprice >= price) {
+        discountpriceMsg.textContent = "Discount amount cannot exceed price";
+        return false;
+    } else {
+        discountpriceMsg.textContent = ""; // Clear the message if the validation passes
+        return true;
+    }
+}
+
+
     function handleSubmit(event) {
-        if (!validateProductName() || !validatePrice()) {
+        if (!validateProductName() || !validatePrice() || !validateDiscountAmount() ) {
             event.preventDefault();
         }
     }

@@ -1,7 +1,7 @@
 const { Product } = require('../../models/productsSchema') ////proper import of model from schema is needed /// npm i -D handlebars@4.5.0
 const { Category } = require('../../models/categorySchema')
 const { User } = require('../../models/userSchema')
-const Cart=require("../../models/cart")
+const Cart = require("../../models/cart")
 const Wishlist = require('../../models/wishlist')
 const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
@@ -24,31 +24,62 @@ const showWishlistPage = async (req, res) => {
         const cartProductIds = cartItems.map(item => item.product_Id.toString());
 
         // Aggregate the wishlist products
+        // const WishListProd = await Wishlist.aggregate([
+        //     {
+        //         $match: { user: new mongoose.Types.ObjectId(userId) }
+        //     },
+        //     {
+        //         $unwind: '$productId'
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'products',
+        //             foreignField: '_id',
+        //             localField: 'productId',
+        //             as: 'product'
+        //         }
+        //     }
+        // ]);
+
+        //const userId = '66d80315bcd026be63344730'; // Replace with dynamic userId
+
         const WishListProd = await Wishlist.aggregate([
             {
-                $match: { user: new mongoose.Types.ObjectId(userId) }
+                $match: { user: new mongoose.Types.ObjectId(userId) } // Match user's wishlist
             },
             {
-                $unwind: '$productId'
+                $unwind: '$productId' // Unwind the array of product IDs
             },
             {
                 $lookup: {
-                    from: 'products',
-                    foreignField: '_id',
-                    localField: 'productId',
-                    as: 'product'
+                    from: 'products', // Join with products collection
+                    localField: 'productId', // Field from wishlist
+                    foreignField: '_id', // Field from products
+                    as: 'product' // Output array with matched products
                 }
             },
             {
+                $unwind: '$product' // Flatten the products array
+            },
+            {
                 $project: {
-                    _id: 1,
-                    productId: 1,
-                    productName: { $arrayElemAt: ['$product.name', 0] },
-                    productImage: { $arrayElemAt: ['$product.image', 0] },
-                    productPrice: { $arrayElemAt: ['$product.price', 0] },
-                    productQuantity: { $arrayElemAt: ['$product.stock', 0] },
-                    outOfStock: { $cond: { if: { $lte: [{ $arrayElemAt: ['$product.stock', 0] }, 0] }, then: true, else: false } },
-                    ProductExistInCart: { $in: [{ $toString: '$productId' }, cartProductIds] }
+                    _id: 1, // include wishlist ID
+                    productId: 1, // Include product ID
+                    product: {
+                        _id: 1,
+                        name: 1,
+                        price: 1,
+                        discountprice: 1,
+                        description: 1,
+                        category: 1,
+                        image: 1,
+                        stock: 1,
+                        isBlocked: 1,
+                        popularity: 1,
+                        bestSelling: 1,
+                        brand: 1,
+                        createdOn: 1
+                    } // Include desired fields from product
                 }
             }
         ]);
@@ -68,7 +99,9 @@ const showWishlistPage = async (req, res) => {
 
 const addToWishList = async (req, res) => {
     try {
-        let { id } = (req.body)
+        let { id } = req.body
+        console.log(req.body, "reqqqqqqqqqqqqqqq")
+        console.log(id, "id to remove")
         // const Id = id.toString()
         const userId = req.session.user
         // console.log(Id)
@@ -110,14 +143,14 @@ const addToWishList = async (req, res) => {
 const removeFromWishList = async (req, res) => {
     try {
         let { id, wishId } = req.body
-        console.log(id, wishId)
+        console.log("this is pr id :", id, wishId, "iddddddddddd")
 
 
 
         let productIdToRemove = new mongoose.Types.ObjectId(id);
         const wishListId = new mongoose.Types.ObjectId(wishId);
 
-       
+
         let wishlistUpdateResult = await Wishlist.updateOne(
             { _id: wishListId },
             { $pull: { productId: productIdToRemove } }
@@ -128,7 +161,7 @@ const removeFromWishList = async (req, res) => {
             res.json({ success: false });
         }
 
-        
+
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");

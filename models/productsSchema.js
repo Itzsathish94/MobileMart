@@ -13,7 +13,7 @@ const productSchema=new Schema({
     },
     discountprice:{
         type:Number,
-        required:true
+        
     },
     description:{
         type:String,

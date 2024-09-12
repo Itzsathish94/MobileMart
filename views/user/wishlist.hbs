@@ -25,11 +25,11 @@
                             <tbody>
                                 {{#each WishListProd}}
                                 <tr>
-                                    <td class="image product-thumbnail"><a href="/productDetails/{{this.productId}}"><img src="/images/products/{{this.productImage.[0]}}" alt="#"></a></td>
+                                    <td class="image product-thumbnail"><a href="/productDetails/{{this.product._id}}"><img src="/images/products/{{this.product.image.[0]}}" alt="#"></a></td>
                                     <td class="product-des product-name">
-                                        <h5 class="product-name"><a href="/productDetails/{{this.productId}}">{{this.productName}}</a></h5>
+                                        <h5 class="product-name"><a href="/productDetails/{{this.product._id}}">{{this.product.name}}</a></h5>
                                     </td>
-                                    <td class="price" data-title="Price"><span>₹{{this.productPrice}} </span></td>
+                                    <td class="price" data-title="Price"><span>₹{{this.product.price}} </span></td>
                                     <td class="text-right" data-title="Cart">
                                         {{#if this.outOfStock}}
                                             <span id="outofstock">

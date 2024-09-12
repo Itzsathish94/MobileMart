@@ -128,7 +128,11 @@
 
                                 <td width="10%">{{stock}}</td>
                                 <td width="10%">{{price}}</td>
+                                {{#if discountprice}}
                                 <td width="10%">{{discountprice}}</td>
+                                {{else}}
+                                <td width="10%">Not Avaliable</td>
+                                {{/if}}
                                 <td width="20%">
                                     {{#if this.isBlocked}}
                                     <a id="blockProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light flex-end"

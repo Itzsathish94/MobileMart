@@ -188,7 +188,7 @@ const updateCart = async (req, res) => {
         let cartquant=await Product.findOne({_id:oldCart.product_Id},{stock:1,_id:0}).lean()
         console.log(cartquant.stock,"cartquant--------------------------------------------------------------")
         
-        if(cartquant.stock<=req.body.newValue){
+        if(cartquant.stock<req.body.newValue){
             return res.json({
                 success: false,
                 message: 'Product stock limit reached!'
