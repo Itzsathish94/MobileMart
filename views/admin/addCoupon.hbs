@@ -96,7 +96,7 @@
             errors.push('Coupon code is not valid');
         }
 
-        if (discount <= 0 || discount > 100) {
+        if (discount <= 0 || discount >= 100) {
             errors.push('Give discount percentage below 100 and greater than zero');
         }
         if (minpurchase < 0) {

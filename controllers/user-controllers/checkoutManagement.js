@@ -746,6 +746,7 @@ const validateCoupon = async (req, res) => {
             res.json('expired');
         } else if (subTotal < coupon.minPurchase) {
             res.json('Minimum Amount Required');
+            console.log('Minimum Amount Required')
         } else {
             const couponId = coupon._id;
             const discount = coupon.discount;

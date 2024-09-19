@@ -193,65 +193,64 @@
         //  totall-product.html('<h2 class="m-5">No product available</h2>');
 
 
-        products.forEach((product) => {
-            const productHtml = `
-            <div class="col-lg-4 col-md-4 col-12 col-sm-6">
-                <div class="product-cart-wrap mb-30">
-                    <div class="product-img-action-wrap">
-                        <div class="product-img product-img-zoom">
-                            <a href="/productDetails/${product._id}">
-                                <img class="default-img" src="/images/products/${product.image[0]}" alt="">
-                                <img class="hover-img" src="/images/products/${product.image[1]}" alt="">
-                            </a>
-                        </div>
-                        <div class="product-action-1">
-                            <a aria-label="Quick view" class="action-btn hover-up"
-                               href="/productDetails/${product._id}" data-bs-target="#quickViewModal">
-                                <i class="fi-rs-search"></i></a>
-                            <a data-id="${product._id}" aria-label="Add To Wishlist"
-                                                    class="wish action-btn hover-up" href="#"><i
-                                                        class="fi-rs-heart"></i></a>
-                            
-                        </div>
-                        <div class="product-badges product-badges-position product-badges-mrg">
-                            <span class="hot">Hot</span>
-                        </div>
-                    </div>
-                    <div class="product-content-wrap">
-                        <div class="product-category">
-                            <a href="shop-grid-right.html">${product.category.category}</a>
-                        </div>
-                        <h2><a href="/productDetails/${product._id}">${product.name}</a>
-                        </h2>
-                        {{!-- <div class="rating-result" title="90%">
-                            <span><span>90%</span></span>
-                        </div> --}}
-                        <div class="product-price">
-                            <span>₹${product.price}</span>
-                            <span class="old-price">${product.price}</span>
-                        </div>
-                       
-                        <div >
-                            ${product.stock > 0
-                    ? `<span><span>Available in stock: ${product.stock}</span></span>`
-                    : `<span><span>Out of Stock</span></span>`
-                }
+       products.forEach((product) => {
+    // Check if discountPrice exists and is greater than 0
 
-                        </div>
-                        <div class="product-action-1 show">
-                                            <span>
-                                                <a data-id="${product._id}" aria-label="Add To Wishlist"
-                                                    class="wish action-btn hover-up" href="#"><i
-                                                        class="fi-rs-heart"></i></a>
-                                            </span>
-                                           
-                                        </div>
+    console.log(`Product: ${product.name}, Price: ${product.price}, Discount Price: ${product.discountprice}`);
+
+    const hasDiscount = product.discountprice && product.discountprice > 0;
+    // Calculate the final price: if there's a discount, subtract it from the product price
+    const finalPrice = hasDiscount ? product.price - product.discountprice : product.price;
+
+    const productHtml = `
+        <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+            <div class="product-cart-wrap mb-30">
+                <div class="product-img-action-wrap">
+                    <div class="product-img product-img-zoom">
+                        <a href="/productDetails/${product._id}">
+                            <img class="default-img" src="/images/products/${product.image[0]}" alt="">
+                            <img class="hover-img" src="/images/products/${product.image[1]}" alt="">
+                        </a>
+                    </div>
+                    <div class="product-action-1">
+                        <a aria-label="Quick view" class="action-btn hover-up"
+                           href="/productDetails/${product._id}" data-bs-target="#quickViewModal">
+                            <i class="fi-rs-search"></i></a>
+                        <a data-id="${product._id}" aria-label="Add To Wishlist"
+                           class="wish action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                    </div>
+                    <div class="product-badges product-badges-position product-badges-mrg">
+                        <span class="hot">Hot</span>
+                    </div>
+                </div>
+                <div class="product-content-wrap">
+                    <div class="product-category">
+                        <a href="shop-grid-right.html">${product.category.category}</a>
+                    </div>
+                    <h2><a href="/productDetails/${product._id}">${product.name}</a></h2>
+                    <div class="product-price">
+                        <span>₹${finalPrice}</span>
+                        ${hasDiscount ? `<span class="old-price">₹${product.price}</span>` : ''}
+                    </div>
+                    <div>
+                        ${product.stock > 0 
+                            ? `<span><span>Available in stock: ${product.stock}</span></span>` 
+                            : `<span><span>Out of Stock</span></span>`}
+                    </div>
+                    <div class="product-action-1 show">
+                        <span>
+                            <a data-id="${product._id}" aria-label="Add To Wishlist"
+                               class="wish action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
+                        </span>
                     </div>
                 </div>
             </div>
-        `;
-            productList.append(productHtml);
-        });
+        </div>
+    `;
+    
+    productList.append(productHtml);
+});
+
     };
     // count.innerHTML=totalProducts
 

@@ -65,7 +65,7 @@ const searchAndSort= async (req, res) => {
     const { searchQuery, sortOption, categoryFilter, page, limit } = req.body;
 
     // Construct the match stage
-    const matchStage = { $match: {} };
+    const matchStage = { $match: {isBlocked: false} };
     if (searchQuery) {
          matchStage.$match.name = { $regex: searchQuery, $options: 'i' };
     }
@@ -120,7 +120,7 @@ const searchAndSort= async (req, res) => {
         skipStage,
         limitStage
     ]);
-   // console.log(products)
+   console.log(products)
 
     const totalProducts = await Product.countDocuments(matchStage.$match);
 

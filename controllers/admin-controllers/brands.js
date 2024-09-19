@@ -1,13 +1,13 @@
 const { Product } = require('../../models/productsSchema') 
 const { Brand } = require('../../models/brands');
 const mongoose = require('mongoose')
-const ObjectId = require('mongoose')
+const ObjectId = require('mongoose');
+const { isBlocked } = require('../../middleware/usersAuth');
 
 
 const loadBrands = async (req, res) => {
     try {
-      const brandData = await Product.aggregate([
-        { $match: { isBlocked: false } }, 
+      const brandData = await Product.aggregate([ 
         {
           $lookup: {
             from: 'brands',
@@ -190,6 +190,8 @@ const loadBrands = async (req, res) => {
       const newListed = !brand.isListed;
   
       await Brand.findByIdAndUpdate(id, { isListed: newListed }, { new: true });
+
+      await Product.updateMany({brand : id }, {$set: {isBlocked: !newListed}})
   
       res.redirect('/admin/brands');
     } catch (error) {

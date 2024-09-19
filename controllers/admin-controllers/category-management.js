@@ -1,4 +1,5 @@
 const { Category } = require('../../models/categorySchema')
+const { Product } = require('../../models/productsSchema')
 
 ///// show category page
 const categoryPage = async (req, res) => {
@@ -115,7 +116,11 @@ const unListCategory = async (req, res) => {
         },
             { new: true })
         res.json({success:true})
-    } catch (error) {
+
+        await Product.updateMany({category:id},{$set:{isBlocked: newListed }})
+
+        console.log(error)
+    }catch(error){
         console.log(error)
     }
 }

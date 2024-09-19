@@ -570,7 +570,17 @@
                 title: 'Oops...',
                 text: 'This coupon has expired!',
             });
-        } else if (couponData.status === 'already_used') {
+        }
+        else if (couponData.status === 'min_purchase_not_met') {
+            ct = 0
+            setCouponStatus('Minimum Amount Required!', couponMsg);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Minimum Amount Required!',
+            });
+        }
+            else if (couponData.status === 'already_used') {
             ct = 0
             setCouponStatus('Coupon already used!', couponMsg);
             Swal.fire({
