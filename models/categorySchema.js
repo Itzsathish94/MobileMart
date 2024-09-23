@@ -18,6 +18,11 @@ const CategorySchema=new Schema({
     bestSelling:{
         type:Number,
         default:0
+    },
+    categoryOffer:{
+        type : Number ,
+        default : 0 ,
+        required:true
     }
 },{ collection:'category'})
 

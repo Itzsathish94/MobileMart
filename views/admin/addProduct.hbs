@@ -79,7 +79,6 @@
             <div class="col-lg-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Basic</h4>
                     </div>
                     <div class="card-body">
                         <form method="post" id = "product_form" class="form-add-product" action="/admin/addProduct"
@@ -111,18 +110,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="mb-4">
-                                        <label class="form-label">Discount Amount</label>
-                                        <div class="row gx-2">
-                                            <input placeholder="$" type="number" id="discountprice" name="discountprice"
-                                                class="form-control">
-                                        </div>
-                                        <h6 class="alertAddProduct mt-1" style="color: red" id="discountAlert"></h6>
-
-
-                                    </div>
-                                </div>
+                              
                                 <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
@@ -150,21 +138,10 @@
                                     </select>
                                 </div>
 
-
-                                {{!-- <div class="col-lg-3">
-                                    <div class="form-element m-2">
-                                        <input type="file" id="file-1" name="image" accept="image/*">
-                                        <label for="file-1" id="file-1-preview">
-                                            <img src="/assetsAdmin/imgs/theme/upload.svg" alt="">
-                                            <div>
-                                                <span>+</span>
-                                            </div>
-                                        </label>
-                                    </div> <!-- card end// -->
-
-                                </div> --}}
-
                             </div>
+                              
+                                 
+                               
                             <div class="row">
                                 <div class="col-md-4 " style="width:250px ;height:400px">
                                     <div class="card-body" style="width:250px ;height:400px">
@@ -379,9 +356,8 @@
     var productNameInput = document.getElementById('productName');
     var validationMessage = document.getElementById('productNameAlert');
     var priceInput = document.getElementById('price');
-    var discountPrice = document.getElementById('discountprice');
     var priceMsg = document.getElementById('priceAlert');
-    var discountpriceMsg = document.getElementById('discountAlert');
+    
 
         function validateProductName() {
             var productName = productNameInput.value.trim();
@@ -412,25 +388,11 @@
         }
     }
 
-     function validateDiscountAmount() {
-    var price = parseFloat(priceInput.value); // Convert to a float number
-    var discountprice = parseFloat(discountPrice.value); // Convert to a float number
-
-    if (isNaN(discountprice) || discountprice < 0) {
-        discountpriceMsg.textContent = "Invalid discount amount";
-        return false;
-    } else if (discountprice >= price) {
-        discountpriceMsg.textContent = "Discount amount cannot exceed price";
-        return false;
-    } else {
-        discountpriceMsg.textContent = ""; // Clear the message if the validation passes
-        return true;
-    }
-}
+ 
 
 
     function handleSubmit(event) {
-        if (!validateProductName() || !validatePrice() || !validateDiscountAmount() ) {
+        if (!validateProductName() || !validatePrice() ) {
             event.preventDefault();
         }
     }

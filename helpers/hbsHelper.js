@@ -118,6 +118,16 @@ function mulHelper(Handlebars) {
     });
 }
 
+function divHelper(Handlebars) {
+
+    Handlebars.registerHelper('divide', function (value1, value2) {
+        return value1 / value2;
+    });
+}
+
+
+
+
 function subHelper(Handlebars) {
 
     Handlebars.registerHelper('subtract', function (value1, value2) {
@@ -232,5 +242,6 @@ module.exports = {
     singleIsCancelled,eq,
     Noteq,
     formatTime,
-    isGreaterThanZero
+    isGreaterThanZero,
+    divHelper
 }

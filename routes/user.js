@@ -1,9 +1,9 @@
 var express = require('express');
 require('../middleware/googleAuth')
 const passport = require('passport');
-const {loadProfile } = require('../controllers/user-controllers/profile')
+const {loadProfile   } = require('../controllers/user-controllers/profile')
 const { logedout, logedin, isBlocked } = require('../middleware/usersAuth')
-const { resendOtp, gethome, showloginpage, dologin, getotppage, dosignup, showsigninpage, submitotp, getproducts, doLogout, aboutpage,googleCallback } = require('../controllers/user-controllers/userloginmanagement')
+const { resendOtp, gethome, showloginpage, dologin, getotppage, dosignup, showsigninpage, submitotp, getproducts, doLogout, aboutpage,googleCallback ,loadReferalPage  , verifyReferelCode } = require('../controllers/user-controllers/userloginmanagement')
 const { submitMail, submitMailPost, forgotOtppage, forgotOtpSubmit, resetPasswordPage, resetPassword } = require('../controllers/user-controllers/forgotPassword')
 const { shopPage,searchAndSort } = require('../controllers/user-controllers/shopManagement')
 const {
@@ -80,6 +80,13 @@ router.post('/changepass', logedin, isBlocked, changepass)
 router.get('/wallet', logedin, isBlocked,walletpage)
 router.post('/addmoneytowallet', logedin, isBlocked,addMoneyToWallet)
 router.post('/verify_Payment', logedin, isBlocked,verifyPayment)
+
+
+//referals
+
+router.get('/referals' , logedout, loadReferalPage )
+
+router.post('/verifyReferalCode', verifyReferelCode )
 
 /////order
 router.post('/placeorder', placeorder)

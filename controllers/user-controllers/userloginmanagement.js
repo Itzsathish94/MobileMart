@@ -2,6 +2,8 @@ const { User } = require('../../models/userSchema')
 const { Category } = require('../../models/categorySchema')
 const { Product } = require('../../models/productsSchema')
 const { Wallet }= require('../../models/walletSchema')
+const {Referral} = require('../../models/referralSchema')
+const { v4: uuidv4 } = require("uuid");
 const userHelper = require('../../helpers/user_helper')
 const argon2 = require('argon2')
 const mongoose = require('mongoose')
@@ -14,6 +16,9 @@ let usermail
 let hashedPassword
 let userRegestData
 let userData
+let redeemAmount
+let referalAmount
+let OwnerId
 
 
 const gethome = async (req, res) => {
@@ -201,6 +206,8 @@ const doLogout = async (req, res) => {
 ///render signup page
 const showsigninpage = async (req, res) => {
     try {
+        //const referalCodes = await Referral.find({},{referralCode:1,_id:0}).lean();
+        //console.log(referalCodes)
         res.render('user/signup')
     } catch (err) {
         console.log(err)
@@ -218,16 +225,105 @@ const dosignup = async (req, res) => {
         const userExist = await User.findOne({ email: usermail }).lean()
         if (!userExist) {
             otp = await userHelper.verifyEmail(usermail)
-            res.redirect('/submit_otp')
+            res.redirect('/referals')
+
+            // res.redirect('/submit_otp')
         } else {
             res.render('user/login', {msg: "User already Exists"})
         }
-
     } catch (error) {
         console.log(error)
 
     }
 }
+
+//referral
+
+
+const loadReferalPage = async(req, res) => {
+    try {
+       
+        res.render('user/referals' )
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+const verifyReferelCode = async (req, res) => {
+    try {
+        const referalCode = req.body.referalCode
+        console.log("referalCode  " , referalCode)
+        // const currentUser = await User.findOne({ _id: req.session.user })
+        // console.log('Current Usr ' , currentUser)
+        const Owner = await Referral.findOne({referralCode : referalCode })
+        OwnerId = Owner.userId
+
+        console.log("Owner----->" , Owner)
+
+        // if (currentUser.redeemed === true) {
+        //     console.log("You have already redeemed a referral code before!");
+        //     res.json({ message: "You have already redeemed a referral code before!" })
+        //     return
+        // }
+
+        // if (!Owner || Owner._id.equals(currentUser._id)) {
+        //     console.log("Invalid referral code!");
+        //     res.json({ message: "Invalid referral code!" })
+        //     return
+        // }
+
+        // const alreadyRedeemed = Owner.redeemedUsers.includes(currentUser._id)
+
+        if (!Owner) {
+            console.log("You have already used this referral code!");
+            res.json({ message: "Invalid referral code!" })
+            return
+        } else {
+
+            // await User.updateOne(
+            //     { _id: req.session.user },
+            //     { $set: { redeemed: true } }
+            // )
+
+            referalAmount = 200;
+            redeemAmount = 100;
+
+            // await Referral.updateOne(
+            //     { userId: Owner.userId },
+            //     { $push: { redeemedUsers: currentUser._id } }
+            // )
+
+            // await Wallet.updateOne(
+            //     { userId: req.session.user },
+            //     {
+            //         $inc: { wallet: 100 },
+            //         $push: {
+            //             history: {
+            //                 amount: 100,
+            //                 status: "Redeemed",
+            //                 date: Date.now()
+            //             }
+            //         }
+            //     }
+            // )
+            //     .then(data => console.log("currentUser Wallet = > ", data))
+
+
+
+
+            res.json({ message: "Referral code verified successfully!" })
+            return
+        }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+
 ////////get otp page
 const getotppage = async (req, res) => {
     try {
@@ -252,15 +348,63 @@ const submitotp = async (req, res) => {
             isBlocked: false,
             
         })
-        
+
         await user.save()
         const userWalletData=await User.findOne({ email: userRegestData.email});
 
-        const wallet= new Wallet({
-            userId:new mongoose.Types.ObjectId(userWalletData._id),
-        })
+        const walletData = {
+            userId: new mongoose.Types.ObjectId(userWalletData._id),
+            wallet: 0,  // Initialize wallet amount
+            history: [] // Initialize history as an empty array
+          };
+
+          if (redeemAmount) {
+            walletData.wallet = redeemAmount; // Set the wallet amount to redeemAmount
+            walletData.history.push({
+              amount: redeemAmount, 
+              status: "Referred", 
+              date: Date.now() // Push redeemAmount and status to the history
+            });
+
+
+
+            await Wallet.updateOne(
+                {  userId : OwnerId},
+                {
+                    $inc: { wallet: referalAmount },
+                    $push: {
+                        history: {
+                            amount: referalAmount,
+                            status: "Referred",
+                            date: Date.now()
+                        }
+                    }
+                }
+            )
+                .then(data => console.log("codeOwner Wallet = > ", data))
+    
+          }
+
+        const wallet = new Wallet(walletData)
         await wallet.save()
+
+        // const wallet= new Wallet({
+        //     userId:new mongoose.Types.ObjectId(userWalletData._id),
+        // })
+
+
         
+      
+
+
+        const generateReferalCode = uuidv4()
+
+        const referalCollection = new Referral({
+            userId:new mongoose.Types.ObjectId(userWalletData._id),
+            referralCode: generateReferalCode
+        })
+
+        await referalCollection.save()
 
         req.session.regSuccessMsg = true
         
@@ -271,6 +415,8 @@ const submitotp = async (req, res) => {
     }
 
 }
+
+
 const resendOtp = async (req, res) => {
     try {
         otp = await userHelper.verifyEmail(usermail)
@@ -284,21 +430,20 @@ const resendOtp = async (req, res) => {
 
 ////detailed product view
 const getproducts = async (req, res) => {
-   
     try {
-        userData=req.session.user
-        console.log(userData)
-        const item = req.params.id
-        console.log(item)
-        let ProductExistInCart
-       
-        
-        const product = await Product.findById(item).lean()
+        userData = req.session.user;
+        console.log(userData);
+        const item = req.params.id;
+        console.log(item);
+        let ProductExistInCart;
+
+        const product = await Product.findById(item).lean();
         let outOfStock = true;
 
-        if(product.stock){
-            outOfStock = false
+        if (product.stock) {
+            outOfStock = false;
         }
+
         await Product.updateOne(
             {
                 _id: item
@@ -308,13 +453,11 @@ const getproducts = async (req, res) => {
                     popularity: 1
                 }
             }
-        )
+        );
+
         const relatedProducts = await Product.aggregate([
             {
-                $match: {
-                    
-                }
-
+                $match: {}
             },
             {
                 $lookup: {
@@ -328,44 +471,76 @@ const getproducts = async (req, res) => {
                 $unwind: '$category'
             },
             {
-                $limit:4
+                $limit: 4
             }
-        ])
+        ]);
 
-        if(userData){
-            
-        const ProductExist = await Cart.find({
-            userId: userData._id,
-            product_Id: item
-        })
-        console.log(ProductExist)
-        if (ProductExist.length === 0) {
-            ProductExistInCart = false
+        // Aggregation to find category offer based on catId (category ID)
+        const catId = new ObjectId(product.category);
+        const categoryOfferData = await Category.aggregate([
+            {
+                $match: { _id: catId }
+            },
+            {
+                $project: {
+                    categoryOffer: 1,  // Include categoryOffer field
+                    _id: 0             // Exclude _id field if not needed
+                }
+            }
+        ]);
+
+        // Initialize categoryOffer as 0 if no offer exists
+        let categoryOffer = 0;
+        if (categoryOfferData[0] && categoryOfferData[0].categoryOffer) {
+            categoryOffer = categoryOfferData[0].categoryOffer;  // Use the value directly
+        }
+
+        if (userData) {
+            const ProductExist = await Cart.find({
+                userId: userData._id,
+                product_Id: item
+            });
+            console.log(ProductExist);
+
+            if (ProductExist.length === 0) {
+                ProductExistInCart = false;
+            } else {
+                ProductExistInCart = true;
+            }
+
+            console.log(product, "productttttttttttt");
+            console.log(catId, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+            console.log(relatedProducts, "RELATED PRODUCTSSSSSS");
+            console.log(categoryOffer,'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc')
+
+            // Render with user data, product info, and category offer
+            res.render('user/productDetails', {
+                product,
+                ProductExistInCart,
+                relatedProducts,
+                outOfStock,
+                userData,
+                layout: 'layout',
+                categoryOffer  // Added categoryOffer here
+            });
+
         } else {
-            ProductExistInCart = true
+            // Render without user data but with category offer
+            res.render('user/productDetails', {
+                product,
+                relatedProducts,
+                outOfStock,
+                layout: 'layout',
+                categoryOffer  // Added categoryOffer here
+            });
         }
-
-        console.log(product , "productttttttttttt")
-        const catId = new ObjectId(product.category)
-        
-        console.log(relatedProducts, "RELATED PRODUCTSSSSSS")
-
-         res.render('user/productDetails', { product ,ProductExistInCart, relatedProducts , outOfStock , userData, layout: 'layout' })
-
-
-        }else{
-            res.render('user/productDetails', { product , relatedProducts , outOfStock , layout: 'layout' })
-
-        }
-
-
-
 
     } catch (error) {
-        console.log(error)
-
+        console.log(error);
     }
-}
+};
+
+
 
 const googleCallback = async (req, res) => {
     try {
@@ -413,7 +588,9 @@ module.exports = {
     getproducts,
     googleCallback,
     //////// other pages //////
-    aboutpage
+    aboutpage,
+    loadReferalPage,
+    verifyReferelCode
 
 }
 

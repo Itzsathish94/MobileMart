@@ -35,7 +35,22 @@
                                         {{!-- <p class="font-xs">{{productDescription}}
                                         </p> --}}
                                     </td>
-                                    <td class="price" data-title="Price"><span>₹{{subtract productPrice productdiscountPrice}} </span></td>
+
+                                    <td class="price" data-title="Price">
+                                        {{#if productdiscountPrice}}
+                                        <span>₹{{subtract productPrice productdiscountPrice}}</span>
+                                        {{else if categoryOffer}}
+                                        <span>₹{{subtract productPrice (multiply productPrice (divide categoryOffer
+                                            100))}}</span>
+                                        {{else}}
+                                        <span>₹{{productPrice}}</span>
+                                        {{/if}}
+                                    </td>
+
+
+
+
+
 
                                     <td class="column-4">
                                         <div class="wrap-num-product flex-w m-l-auto m-r-0" id="quantityContainer">
@@ -52,16 +67,29 @@
                                                 <i class="fa-solid fa-plus"></i>
                                             </div>
                                         </div>
-                                    </td>
                                     <td class="text-right" data-title="Cart">
-                                        <span id="totalPerItem-{{this._id}}">₹{{multiply this.quantity
-                                            (subtract this.productPrice this.productdiscountPrice)}}</span>
+                                        {{#if this.productdiscountPrice}}
+                                        <span id="totalPerItem-{{this._id}}">
+                                            ₹{{multiply this.quantity (subtract this.productPrice
+                                            this.productdiscountPrice)}}
+                                        </span>
+                                        {{else if this.categoryOffer}}
+                                        <span id="totalPerItem-{{this._id}}">
+                                            ₹{{multiply this.quantity (subtract this.productPrice (multiply
+                                            this.productPrice (divide this.categoryOffer 100)))}}
+                                        </span>
+                                        {{else}}
+                                        <span id="totalPerItem-{{this._id}}">
+                                            ₹{{multiply this.quantity this.productPrice}}
+                                        </span>
+                                        {{/if}}
                                     </td>
+
                                     <td class="action" data-product-id="{{_id}}" data-title="Remove"><a href="#"
                                             class="text-muted"><i class="fi-rs-trash"></i></a></td>
                                 </tr>
                                 {{/each}}
-                             
+
 
                             </tbody>
                         </table>
@@ -72,7 +100,7 @@
                     </div>
                     <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
                     <div class="row mb-50">
-                        
+
                         <div class="col-lg-12 col-md-12">
                             <div class="border p-md-4 p-30 border-radius cart-totals">
                                 <div class="heading_s1 mb-3">
@@ -81,7 +109,7 @@
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tbody>
-                                            
+
                                             <tr>
                                                 <td class="cart_total_label">Cart Subtotal</td>
                                                 <td class="cart_total_amount"><span id="Subtotal"
@@ -89,13 +117,14 @@
                                             </tr>
                                             <tr>
                                                 <td class="cart_total_label">Shipping</td>
-                                                <td class="cart_total_amount"><span 
-                                                        class="font-lg fw-900 text-brand">₹ 50</span></td>
+                                                <td class="cart_total_amount"><span class="font-lg fw-900 text-brand">₹
+                                                        50</span></td>
                                             </tr>
                                             {{!-- <tr>
                                                 <td class="cart_total_label">Total</td>
                                                 <td class="cart_total_amount"><strong><span id="total"
-                                                            class="font-xl fw-900 text-brand">₹{{add subTotal 50}}</span></strong>
+                                                            class="font-xl fw-900 text-brand">₹{{add subTotal
+                                                            50}}</span></strong>
                                                 </td>
                                             </tr> --}}
                                         </tbody>
@@ -156,39 +185,39 @@
             });
         });
 
-       $('.fa-plus, .fa-minus').click(function () {
-    const $row = $(this).closest('tr');
-    const cartId = $row.find('.num-product').prop('id');
-    const stock = parseInt($row.data('stock'));
-    const currentValue = parseInt($(`#${cartId}`).val());
-    const newValue = $(this).hasClass('fa-plus') ? currentValue + 1 : currentValue - 1;
-    const maxQuantity = 10; // Maximum allowed quantity
+        $('.fa-plus, .fa-minus').click(function () {
+            const $row = $(this).closest('tr');
+            const cartId = $row.find('.num-product').prop('id');
+            const stock = parseInt($row.data('stock'));
+            const currentValue = parseInt($(`#${cartId}`).val());
+            const newValue = $(this).hasClass('fa-plus') ? currentValue + 1 : currentValue - 1;
+            const maxQuantity = 10; // Maximum allowed quantity
 
-    // Check stock before incrementing
-    if ($(this).hasClass('fa-plus')) {
-        if (newValue > stock) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: `Cannot exceed available stock of ${stock}.`,
-            });
-            return; // Do not allow increment if it exceeds stock
-        }
-        if (newValue > maxQuantity) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Limit Reached',
-                text: `Cannot add more than ${maxQuantity} items.`,
-            });
-            return; // Do not allow increment if it exceeds max quantity
-        }
-    }
+            // Check stock before incrementing
+            if ($(this).hasClass('fa-plus')) {
+                if (newValue > stock) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: `Cannot exceed available stock of ${stock}.`,
+                    });
+                    return; // Do not allow increment if it exceeds stock
+                }
+                if (newValue > maxQuantity) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Limit Reached',
+                        text: `Cannot add more than ${maxQuantity} items.`,
+                    });
+                    return; // Do not allow increment if it exceeds max quantity
+                }
+            }
 
-    if (newValue > 0) {
-        $(`#${cartId}`).val(newValue);
-        updateCartItemQuantity(cartId, newValue);
-    }
-});
+            if (newValue > 0) {
+                $(`#${cartId}`).val(newValue);
+                updateCartItemQuantity(cartId, newValue);
+            }
+        });
 
 
         function updateCartItemQuantity(cartId, newValue) {
@@ -221,7 +250,7 @@
             $('.shopping-summery tbody tr').each(function () {
                 const itemTotal = parseFloat($(this).find('td[data-title="Cart"] span').text().replace('₹', ''));
                 subtotal += isNaN(itemTotal) ? 0 : itemTotal;
-                console.log(subtotal,"Subtotalllllllllllllll")
+                console.log(subtotal, "Subtotalllllllllllllll")
             });
             $('#Subtotal').text(`₹${subtotal}`);
             $('#total').text(`₹${subtotal}`);

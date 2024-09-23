@@ -66,17 +66,18 @@
                                         <div class="product-price primary-color float-left">
                                             {{!-- {{#isGreaterThanZero product.stock}} --}}
                                             {{#if product.discountprice}}
-                                                <ins><span class="text-brand">₹{{subtract product.price
+                                            <ins><span class="text-brand">₹{{subtract product.price
                                                     product.discountprice}}</span></ins>
-                                                <ins><span class="old-price font-md ml-15">₹{{
-                                                    product.price}}</span></ins>
+                                                <ins><span class="old-price font-md ml-15">₹{{product.price}}</span></ins>
+                                            {{else if categoryOffer}}
+                                            <ins><span class="text-brand">₹{{subtract product.price (multiply
+                                                    product.price (divide
+                                                    categoryOffer 100))}}</span></ins>
+                                            <ins><span class="old-price font-md ml-15">₹{{product.price}}</span></ins>
                                             {{else}}
-
-                                            <ins><span class="text-brand">₹{{product.price
-                                                    }}</span></ins>
-
+                                            <ins><span class="text-brand">₹{{product.price}}</span></ins>
                                             {{/if}}
-                                            
+
                                         </div>
 
 
@@ -224,12 +225,15 @@
                                                     </div> --}}
                                                     <div class="product-price">
                                                         {{#if discountprice}}
-                                                        <span>₹{{subtract price discountprice }}</span>
+                                                        <span>₹{{subtract price discountprice}}</span>
                                                         <span class="old-price">₹{{price}}</span>
-
+                                                        <!-- Show the old price when discount exists -->
+                                                        {{else if category.categoryOffer}}
+                                                        <span>₹{{subtract price (multiply price (divide
+                                                            category.categoryOffer 100))}}</span>
+                                                        <span class="old-price">₹{{price}}</span>
                                                         {{else}}
-
-                                                            <span>₹{{price}}</span>
+                                                        <span>₹{{price}}</span>
                                                         {{/if}}
                                                     </div>
 

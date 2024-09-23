@@ -194,13 +194,28 @@
 
 
        products.forEach((product) => {
-    // Check if discountPrice exists and is greater than 0
-
     console.log(`Product: ${product.name}, Price: ${product.price}, Discount Price: ${product.discountprice}`);
 
     const hasDiscount = product.discountprice && product.discountprice > 0;
-    // Calculate the final price: if there's a discount, subtract it from the product price
-    const finalPrice = hasDiscount ? product.price - product.discountprice : product.price;
+    const categoryOffer = product.category.categoryOffer; // Accessing category offer
+    const hasCategoryOffer = categoryOffer && categoryOffer > 0;
+
+    let finalPrice;
+    let originalPrice;
+
+    if (hasDiscount) {
+        // If there's a product discount
+        finalPrice = product.price - product.discountprice;
+        originalPrice = product.price;
+    } else if (hasCategoryOffer) {
+        // If there's a category offer
+        finalPrice = product.price - (product.price * (categoryOffer / 100)); // Assuming it's a percentage
+        originalPrice = product.price;
+    } else {
+        // No offers exist
+        finalPrice = product.price;
+        originalPrice = null; // No original price to show
+    }
 
     const productHtml = `
         <div class="col-lg-4 col-md-4 col-12 col-sm-6">
@@ -229,8 +244,8 @@
                     </div>
                     <h2><a href="/productDetails/${product._id}">${product.name}</a></h2>
                     <div class="product-price">
-                        <span>₹${finalPrice}</span>
-                        ${hasDiscount ? `<span class="old-price">₹${product.price}</span>` : ''}
+                        <span>₹${Math.round(finalPrice)}</span>
+                        ${originalPrice ? `<span class="old-price">₹${Math.round(originalPrice)}</span>` : ''}
                     </div>
                     <div>
                         ${product.stock > 0 
@@ -251,9 +266,10 @@
     productList.append(productHtml);
 });
 
-    };
-    // count.innerHTML=totalProducts
 
+
+    };
+    
     $(document).ready(function () {
         const userId = "";
 

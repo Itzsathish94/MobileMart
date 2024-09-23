@@ -64,7 +64,7 @@
                                 {{#each orderedProDet}}
                                 <tr>
                                     <td scope="row" class="text-center">{{this.product.name}}</td>
-                                    <td class="text-center">₹{{this.product.price}}</td>
+                                    <td class="text-center">₹{{subtract this.product.price this.product.discountprice}}</td>
                                     <td class="text-center">{{this.product.quantity}}</td>
                                     <td class="text-center"><img style="width: 50px; height: auto;" src="/images/products/{{this.product.image}}"
                                             alt="product image">

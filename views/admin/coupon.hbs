@@ -60,43 +60,46 @@
             </header> <!-- card-header end// -->
             <div class="card-body ">
                 <div class="table-responsive ">
-                    <table class="table table-hover ">
-                        <thead>
+                    <table class="table table-hover table-striped">
+                        <thead class="thead-dark">
                             <tr>
                                 <th class="text-center">Coupon Code</th>
-                                <th class="text-center">Discount Percentage</th>
+                                <th class="text-center">Discount (%)</th>
                                 <th class="text-center">Expiry Date</th>
-                                <th class="text-center">Action</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
-                        {{#each couponData}}
                         <tbody>
+                            {{#each couponData}}
                             <tr>
-                                <td width="20%" class="text-center">
-                                    <div class="info pl-3">
-                                        <h6 class="mb-0 title">{{this.code}}</h6>
-                                    </div>
-                                </td>
-                                <td class="text-center" width="20%">{{this.discount}}%</td>
-                                <td class="text-center" width="20%">{{formatDate this.expiryDate}}</td>
-
-
-                               <td class="text-center" width="20%">
-                                    <a data-coupon-id="{{this._id}}" id="deletecoupon" type="button" class="btn btn-primary">
-                                        Delete
-                                    </a>
-                                </td>
+                                <td class="text-center">{{this.code}}</td>
+                                <td class="text-center">{{this.discount}}%</td>
+                                <td class="text-center">{{formatDate this.expiryDate}}</td>
+                                <td class="text-center">
+    <a href="/admin/edit_coupon/{{this._id}}" class="btn btn-primary btn-sm me-2" style="width: 140px;">
+        Edit
+    </a>
+    {{#if this.status}}
+    <a data-coupon-id="{{this._id}}" id="blockcoupon" class="btn btn-primary btn-sm" style="width: 140px;">
+        Block
+    </a>
+    {{else}}
+    <a data-coupon-id="{{this._id}}" id="unblockcoupon" class="btn btn-primary btn-sm" style="width: 140px;">
+        Unblock
+    </a>
+    {{/if}}
+</td>
 
 
                             </tr>
-
+                            {{/each}}
                         </tbody>
-                        {{/each}}
-                    </table> <!-- table-responsive.// -->
+                    </table>
+                    <!-- table-responsive.// -->
                 </div>
             </div> <!-- card-body end// -->
         </div> <!-- card end// -->
-       <div class="pagination-area mt-15 mb-50">
+        <div class="pagination-area mt-15 mb-50">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-start">
                     {{#each pages}}
@@ -132,20 +135,20 @@
 
 <script>
     ////////////delete Coupon
-           $(document).ready(function () {
-        $(document).on('click','#deletecoupon',function(e){
+    $(document).ready(function () {
+        $(document).on('click', '#blockcoupon', function (e) {
             e.preventDefault();
             var id = $(this).data('coupon-id');
             var $this = $(this);
 
             Swal.fire({
                 title: "Are you sure?",
-                text: "You won't be able to revert this!",
+                text: "You want to block this coupon?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#088178",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Yes"
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -153,7 +156,7 @@
                         url: '/admin/delete_coupon',
                         contentType: 'application/json',
                         data: JSON.stringify({ id: id }),
-                        success: function (productData) {                         
+                        success: function (productData) {
                             $this.closest('tr').remove(); // Use $this instead of $(this)                               
                         },
                         error: function (xhr, status, error) {
@@ -162,14 +165,59 @@
                         }
                     });
                     Swal.fire({
-                        title: "Deleted!",
-                        text: "Coupon Deleted Succesfully!",
+                        title: "Blocked!",
+                        text: "Coupon blocked Succesfully!",
                         icon: "success"
-                    }).then(()=> window.location.reload());
+                    }).then(() => window.location.reload());
                 }
             });
 
 
         });
     });
+
+
+
+        $(document).ready(function () {
+        $(document).on('click', '#unblockcoupon', function (e) {
+            e.preventDefault();
+            var id = $(this).data('coupon-id');
+            var $this = $(this);
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You want to unblock this coupon",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '/admin/delete_coupon',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ id: id }),
+                        success: function (productData) {
+                            $this.closest('tr').remove(); // Use $this instead of $(this)                               
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error removing product from wishlist:", error);
+                            swal("Error", "Something went wrong. Please try again later.", "error");
+                        }
+                    });
+                    Swal.fire({
+                        title: "Unblocked!",
+                        text: "Coupon unblocked Succesfully!",
+                        icon: "success"
+                    }).then(() => window.location.reload());
+                }
+            });
+
+
+        });
+    });
+
+    
 </script>

@@ -68,7 +68,7 @@
         <div class="row">
             <div class="col-9">
                 <div class="content-header">
-                    <h2 class="content-title">Add New Product</h2>
+                    <h2 class="content-title">Edit Product</h2>
                     {{!-- <div>
                         <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
                         <button class="btn btn-md rounded font-sm hover-up">Publich</button>
@@ -78,7 +78,7 @@
             <div class="col-lg-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Basic</h4>
+                       
                     </div>
                     <div class="card-body">
                         <form method="post" class="form-add-product" action="/admin/update_product/{{product._id}}"
@@ -87,6 +87,8 @@
                                 <label for="product_name" class="form-label">Product Name</label>
                                 <input type="text" value="{{product.name}}" placeholder="Type here" name="name"
                                     class="form-control" id="productName">
+                    <h6 class="alertAddProduct mt-1" style="color: red" id="productNameAlert"></h6>
+
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Full description</label>
@@ -105,18 +107,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-2">
-                                    <div class="mb-4">
-                                        <label class="form-label">Discount Price</label>
-                                        <div class="row gx-2">
-                                            <input placeholder="$" type="number" value="{{product.discountprice}}" id="discountprice" name="discountprice"
-                                                class="form-control">
-                                        </div>
-                                        <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
-
-
-                                    </div>
-                                </div>
+                             
                                 <div class="col-lg-2">
                                     <div class="mb-4">
                                         <label class="form-label">Stock</label>
@@ -129,7 +120,7 @@
                                     <select name="category" id="category" class="form-select">
                                         <option value="{{product.category._id}}" selected>{{product.category.category}}
                                         </option>
-                                        <option value="" disabled selected hidden>Select a category</option>
+                                        {{!-- <option value="" disabled selected hidden>Select a category</option> --}}
                                         {{#each category}}
                                         {{#if (Noteq this.category ../product.category.category)}}
                                         <option value="{{this._id}}">{{this.category}}</option>
@@ -140,9 +131,13 @@
                                 <div class="col-lg-2">
                                     <label class="form-label">Brands:</label>
                                     <select name="brand" id="brand" class="form-select">
-                                        <option value="" disabled selected hidden>Select a Brand</option>
+                                        {{!-- <option value="" disabled selected hidden>Select a Brand</option> --}}
+                                        <option value="{{product.brand._id}}" selected>{{product.brand.brand}}
+                                        </option>
                                         {{#each brandData}}
+                                        {{#if (Noteq this.brand ../product.brand.brand)}}
                                         <option value="{{this._id}}">{{this.brand}}</option>
+                                         {{/if}}
                                         {{/each}}
                                     </select>
                                 </div>
@@ -185,7 +180,7 @@
 
                             <div class="d-flex g-2">
                                 <div class="m-2">
-                                    <button type="submit" class="btn btn-primary">Add Product</button>
+                                    <button type="submit" class="btn btn-primary">Save Product</button>
 
                                 </div>
                                 <div class="m-2">
@@ -269,27 +264,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     function Validation() {
 
 
-        let productName = document.getElementById("productName").value;
+        let productName = document.getElementById("productName").value.trim();
 
         let longdescription = document.getElementById("longdescription").value;
         let Qty = document.getElementById("Qty").value;
@@ -307,8 +285,6 @@
         let productNameAlert = document.getElementById("productNameAlert");
         let qtyAlert = document.getElementById("qtyAlert");
         let priceAlert = document.getElementById("priceAlert");
-
-
         let longAlert = document.getElementById("longAlert");
         let imgAlert = document.getElementById('imgAlert')
 

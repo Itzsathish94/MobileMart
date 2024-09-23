@@ -9,6 +9,7 @@ const mongoose = require('mongoose')
 const ObjectId = require('mongoose')
 
 const { Wallet } = require('../../models/walletSchema');
+const { Referral } = require('../../models/referralSchema')
 
 const walletpage = async (req, res) => {
     try {
@@ -53,8 +54,10 @@ const viewUserProfile = async (req, res) => {
         const id = user._id
         const userData = await User.findById(id);
         const userDataObject = userData.toObject();
-        res.render('user/profile', { userData: userDataObject });
-        console.log(userData)
+        const referralData = await Referral.find({userId: id},{referralCode:1}).lean()
+        console.log(referralData)
+        res.render('user/profile', { userData: userDataObject , referralData});
+
         // res.render('user/profile',{userData})
     } catch (error) {
         console.log(error.message);
@@ -431,6 +434,7 @@ const cancelorder = async (req, res) => {
                 notcancelledAmt += data.price * data.quantity;
 
             }
+
             await User.updateOne(
                 { _id: req.session.user._id },
 
@@ -509,6 +513,10 @@ const cancelOneProduct = async (req, res) => {
     }
 }
 
+
+
+
+
 // const walletpage = async (req, res) => {
 //     try {
 //         const user = req.session.user;
@@ -580,6 +588,9 @@ const cancelOneProduct = async (req, res) => {
 
 
 
+
+
+
 module.exports = {
     viewUserProfile,
     EditUserProfile,
@@ -599,6 +610,7 @@ module.exports = {
     changepassword,
     changepass,
     /////Wallet
-    walletpage
+    walletpage,
+
 
 }

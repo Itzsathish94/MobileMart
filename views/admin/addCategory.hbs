@@ -32,6 +32,11 @@
                                 <input type="text" placeholder="Type here" class="form-control" name="name" id="categoryName" required />
                                 <div id="categoryNameAlert" class="text-danger mt-1"></div>
                             </div>
+                            <div class="mb-4"></div>
+                                <label for="categoryOffer" class="form-label">Category Offer:</label>
+                                <input type="text" placeholder="Type here" class="form-control" name="categoryOffer" id="categoryOffer" required />
+                                <div id="categoryOfferAlert" class="text-danger mt-1"></div>
+                            </div>
                             <div class="mb-4">
                                 <label for="categoryImage" class="form-label">Category Image:</label>
                                 <input type="file" class="form-control-file" name="image" id="categoryImage" required />
@@ -60,12 +65,15 @@
 <script>
     function validateCategoryForm() {
         const categoryName = document.getElementById("categoryName").value.trim();
+        const categoryOffer = document.getElementById("categoryOffer").value.trim();
         const categoryImage = document.getElementById("categoryImage").files.length;
         const categoryNameAlert = document.getElementById("categoryNameAlert");
+        const categoryOfferAlert = document.getElementById("categoryOfferAlert");
         const categoryImageAlert = document.getElementById("categoryImageAlert");
 
         // Reset alerts
         categoryNameAlert.innerHTML = "";
+        categoryOfferAlert.innerHTML = "";
         categoryImageAlert.innerHTML = "";
 
         // Category Name validation
@@ -75,6 +83,13 @@
             categoryNameAlert.innerHTML = "Category name must be atleast 3 characters.";
             return false;
         }
+
+        const categoryOfferPattern = /^(99|[1-9][0-9]?)$/; // Ensures only numbers from 1 to 100
+
+    if (!categoryOfferPattern.test(categoryOffer)) {
+        categoryOfferAlert.innerHTML = "Category offer must be a valid number between 1 and 100.";
+        return false;
+    }
 
         // Category Image validation
         if (categoryImage === 0) {

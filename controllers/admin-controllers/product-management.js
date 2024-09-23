@@ -33,7 +33,7 @@ const showproductslist = async (req, res) => {
       }
     ])
     const count = await Product.find({}).count()
-    const totalPages = Math.ceil(count / limit) 
+    const totalPages = Math.ceil(count / limit)
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     console.log(products);
     res.render('admin/products', { products, pages, currentPage: page, admin: true, layout: 'adminlayout' });
@@ -73,16 +73,16 @@ const addproduct = async (req, res) => {
       const image = file.filename;
       images.push(image);
     });
-    
+
     const newProduct = new Product({
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
       category: req.body.category,
       stock: req.body.stock,
-      brand : req.body.brand,
+      brand: req.body.brand,
       image: images,
-      discountprice:req.body.discountprice
+      discountprice: req.body.discountprice
     });
     await newProduct.save().then(result => {
       res.redirect('/admin/products')
@@ -136,7 +136,7 @@ const showeditprodpage = async (req, res) => {
 
     const prodid = req.params.id
     console.log(prodid)
-    const product = await Product.findById({ _id: prodid }).populate('category', 'category').lean()
+    const product = await Product.findById({ _id: prodid }).populate('category', 'category').populate('brand', 'brand').lean()
     console.log(product)
     const category = await Category.find().lean()
     console.log(category)
@@ -147,6 +147,11 @@ const showeditprodpage = async (req, res) => {
         }
       }
     ]);
+    console.log("eedit pr category       ", category)
+    console.log(" eedit pr brand  ", brandData)
+    console.log('edit product.......', product)
+
+
     res.render('admin/editProduct', { admin: true, product, category, brandData, layout: 'adminlayout' })
 
   } catch (error) {
@@ -171,7 +176,7 @@ const editProduct = async (req, res) => {
       updImages = extimages
     }
     console.log(req.body, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    const { name, price, description, category, stock , brand, discountprice} = req.body
+    const { name, price, description, category, stock, brand, discountprice } = req.body
 
 
     await Product.findByIdAndUpdate(prodid,
@@ -183,8 +188,8 @@ const editProduct = async (req, res) => {
         image: updImages,
         stock: stock,
         isBlocked: false,
-        brand : brand,
-        discountprice:discountprice
+        brand: brand,
+        discountprice: discountprice
       },
       { new: true })
     res.redirect('/admin/products')
@@ -194,6 +199,33 @@ const editProduct = async (req, res) => {
     console.log(error)
   }
 }
+
+
+const updateProductOffer = async (req, res) => {
+  try {
+    
+    const prodid = new mongoose.Types.ObjectId(req.params.id)
+   
+    const product = await Product.findById(prodid).lean()
+ 
+   
+    const {  discountprice } = req.body
+
+
+    await Product.findByIdAndUpdate(prodid,
+      {
+    
+        discountprice: discountprice
+      },
+      { new: true })
+    res.redirect('/admin/products')
+
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 
 
 const deleteProdImage = async (req, res) => {
@@ -227,6 +259,52 @@ const blockProducts = async (req, res) => {
   }
 }
 
+const showeditprodoffer = async (req, res) => {
+  try {
+
+    const prodid = req.params.id
+    console.log(prodid)
+    const product = await Product.findById({ _id: prodid }).populate('category', 'category').populate('brand', 'brand').lean()
+    console.log(product)
+    const category = await Category.find().lean()
+    console.log(category)
+    const brandData = await Brand.aggregate([
+      {
+        $match: {
+          isListed: true
+        }
+      }
+    ]);
+    console.log("eedit pr category       ", category)
+    console.log(" eedit pr brand  ", brandData)
+    console.log('edit product.......', product)
+
+
+    res.render('admin/editProductOffer', { admin: true, product, category, brandData, layout: 'adminlayout' })
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const removeprodoffer = async (req, res) => {
+  try {
+    const prodid = req.params.id
+    console.log(prodid)
+
+    await Product.findByIdAndUpdate(prodid,
+      {
+        discountprice: 0 
+      },
+      { new: true })
+    res.redirect('/admin/products')
+
+
+  } catch (error) {
+    console.log(error)
+  }
+
+}
 
 module.exports = {
   showproductslist,
@@ -237,7 +315,10 @@ module.exports = {
   showeditprodpage,
   editProduct,
   fullDeleteProd,
-  deleteProdImage
+  deleteProdImage,
+  showeditprodoffer,
+  removeprodoffer,
+  updateProductOffer
 
 }
 

@@ -1,17 +1,16 @@
 const Cart = require('../../models/cart')
 const { Product } = require('../../models/productsSchema')
+const {Category} = require('../../models/categorySchema')
 const mongoose = require('mongoose')
 
 const loadCartPage = async (req, res) => {
     try {
-        let userData = req.session.user
-        const ID = new mongoose.Types.ObjectId(userData._id)
-       
+        let userData = req.session.user;
+        const ID = new mongoose.Types.ObjectId(userData._id);
+
         let cartProd = await Cart.aggregate([
             {
-                $match: {
-                    userId: ID
-                }
+                $match: { userId: ID }
             },
             {
                 $lookup: {
@@ -31,21 +30,44 @@ const loadCartPage = async (req, res) => {
                     productPrice: { $arrayElemAt: ["$productData.price", 0] },
                     productdiscountPrice: { $arrayElemAt: ["$productData.discountprice", 0] },
                     productDescription: { $arrayElemAt: ["$productData.description", 0] },
-                    productImage: { $arrayElemAt: ["$productData.image", 0] }
-
+                    productImage: { $arrayElemAt: ["$productData.image", 0] },
+                    productCategory: { $arrayElemAt: ["$productData.category", 0] }
                 }
             }
-            
-        ])
-        console.log(cartProd.length,"llllllllllllllllll")
-        console.log(cartProd,"llllllllllllllllll")
-        
+        ]);
+
+        console.log(cartProd.length, "Cart Products Length");
+        console.log(cartProd, "Cart Products");
+
+        const categoryIds = cartProd.map(product => new mongoose.Types.ObjectId(product.productCategory));
+        console.log(categoryIds, "Category IDs");
+
+        let categoryOffers = await Category.aggregate([
+            {
+                $match: { _id: { $in: categoryIds } }
+            },
+            {
+                $project: { _id: 1, categoryOffer: 1 }
+            }
+        ]);
+
+        console.log(categoryOffers, 'Category Offers');
+
+        // Create a mapping of category IDs to their offers
+        const offerMap = {};
+        categoryOffers.forEach(offer => {
+            offerMap[offer._id.toString()] = offer.categoryOffer;
+        });
+
+        // Update cartProd to include categoryOffer
+        cartProd = cartProd.map(product => ({
+            ...product,
+            categoryOffer: offerMap[product.productCategory.toString()] || 0
+        }));
+
         const subTotal = await Cart.aggregate([
             {
-                $match: {
-                    userId: ID
-                },
-
+                $match: { userId: ID }
             },
             {
                 $group: {
@@ -54,31 +76,24 @@ const loadCartPage = async (req, res) => {
                 }
             },
             {
-                $project: {
-                    _id: 0,
-                    total: 1
-                }
+                $project: { _id: 0, total: 1 }
             }
+        ]);
 
-        ])
-        console.log(subTotal, "SUBTOTAL")
-        
-        console.log(cartProd)
-        if(cartProd.length>0){
-            res.render('user/cart', { userData, cartProd ,subTotal:subTotal[0].total })
+        console.log(subTotal, "SUBTOTAL");
 
-
-        }else
-        {
-            res.render('user/emptyCart', { userData })
+        if (cartProd.length > 0) {
+            res.render('user/cart', { userData, cartProd, subTotal: subTotal[0].total });
+        } else {
+            res.render('user/emptyCart', { userData });
         }
 
-
     } catch (error) {
-       console.log(error.message);
+        console.log(error.message);
         res.status(500).send("Internal Server Error");
     }
-}
+};
+
 
 const addToCart = async (req, res) => {
     try {

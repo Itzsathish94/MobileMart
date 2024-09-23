@@ -99,6 +99,8 @@ const loadCheckoutPage = async (req, res) => {
         // Fetching address data
         const addressData = await Address.find({ userId: userData._id }).lean();
 
+       
+
         // Fetching wallet data
         const walletData = await Wallet.findOne({ userId: ID }).lean();
 
@@ -154,7 +156,7 @@ const loadCheckoutPage = async (req, res) => {
         ]);
 
         // Fetching coupon data
-        let coupon = await Coupon.find().lean();
+        let coupon = await Coupon.find({status:true}).lean();
 
         // Rendering the checkout page with all data
         res.render('user/checkout', {
@@ -167,6 +169,8 @@ const loadCheckoutPage = async (req, res) => {
         });
 
         console.log(subTotal,"nnnnnnnnnnnnnnnnnnnnnnn")
+        console.log(cart,"..................................oooooooooooooooooooooooooooooooo")
+
 
     } catch (error) {
         console.log(error.message);

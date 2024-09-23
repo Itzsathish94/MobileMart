@@ -49,6 +49,7 @@ const shopPage = async (req, res) => {
        
         const count = await Product.find({ isBlocked: false }).count()
         const categories = await Category.find({ isListed: true }).lean()
+        console.log(categories,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
         //////////////
         const totalPages = Math.ceil(count/limit)  // Example value

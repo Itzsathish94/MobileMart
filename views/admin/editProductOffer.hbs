@@ -1,0 +1,322 @@
+<main class="main-wrap">
+    <header class="main-header navbar">
+        <div class="col-search">
+            <form class="searchform">
+                <div class="input-group">
+                    <input list="search_terms" type="text" class="form-control" placeholder="Search term">
+                    <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+                </div>
+                <datalist id="search_terms">
+                    <option value="Products">
+                    <option value="New orders">
+                    <option value="Apple iphone">
+                    <option value="Ahmed Hassan">
+                </datalist>
+            </form>
+        </div>
+        <div class="col-nav">
+            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i
+                    class="material-icons md-apps"></i> </button>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link btn-icon" href="#">
+                        <i class="material-icons md-notifications animation-shake"></i>
+                        <span class="badge rounded-pill">3</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+                </li>
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage"
+                        aria-expanded="false"><i class="material-icons md-public"></i></a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                        <a class="dropdown-item text-brand" href="#"><img src="assets/imgs/theme/flag-us.png"
+                                alt="English">English</a>
+                        <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-fr.png"
+                                alt="Français">Français</a>
+                        <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-jp.png"
+                                alt="Français">日本語</a>
+                        <a class="dropdown-item" href="#"><img src="assets/imgs/theme/flag-cn.png"
+                                alt="Français">中国人</a>
+                    </div>
+                </li>
+                <li class="dropdown nav-item">
+                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
+                        aria-expanded="false"> <img class="img-xs rounded-circle" src="assets/imgs/people/avatar2.jpg"
+                            alt="User"></a>
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit
+                            Profile</a>
+                        <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Account Settings</a>
+                        <a class="dropdown-item" href="#"><i
+                                class="material-icons md-account_balance_wallet"></i>Wallet</a>
+                        <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>Billing</a>
+                        <a class="dropdown-item" href="#"><i class="material-icons md-help_outline"></i>Help center</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="#"><i
+                                class="material-icons md-exit_to_app"></i>Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title"> Add Product Offer</h2>
+
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="form-add-product" action="/admin/update_product/{{product._id}}"
+                            enctype="multipart/form-data" onsubmit="return Validation()">
+                            <div class="mb-4">
+                                <label for="product_name" class="form-label">Product Name</label>
+                                <input type="text" value="{{product.name}}" placeholder="Type here" name="name"
+                                    class="form-control" id="productName" disabled>
+                                <h6 class="alertAddProduct mt-1" style="color: red" id="productNameAlert"></h6>
+
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+
+                                <input class="form-control" id="longdescription" name="description" rows="3"
+                                    value="{{product.description}}" disabled></input>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <div class="mb-4">
+                                        <label class="form-label">Price</label>
+                                        <div class="row gx-2">
+                                            <input placeholder="$" type="text" value="{{product.price}}" id="price"
+                                                disabled name="price" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2">
+                                    <div class="mb-4">
+                                        <label class="form-label" style="font-size: larger;font-weight: 900;">Enter
+                                            Discount Price *</label>
+                                        <div class="row gx-2">
+                                            <input placeholder="$" type="number" value="{{product.discountprice}}"
+                                                id="discountprice" name="discountprice" class="form-control" required>
+                                        </div>
+                                        <h6 class="alertAddProduct mt-1" style="color: red" id="priceAlert"></h6>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="mb-4">
+                                        <label class="form-label">Stock</label>
+                                        <input name="stock" value="{{product.stock}}" class="form-control" disabled
+                                            placeholder="Quantity" type="text" id="Qty">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label">Category:</label>
+                                    <select name="category" id="category" class="form-select" disabled>
+                                        <option value="{{product.category._id}}" selected>{{product.category.category}}
+                                        </option>
+                                        {{!-- <option value="" disabled selected hidden>Select a category</option> --}}
+                                        {{#each category}}
+                                        {{#if (Noteq this.category ../product.category.category)}}
+                                        <option value="{{this._id}}">{{this.category}}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <label class="form-label">Brands:</label>
+                                    <select name="brand" id="brand" class="form-select" disabled>
+                                        {{!-- <option value="" disabled selected hidden>Select a Brand</option> --}}
+                                        <option value="{{product.brand._id}}" selected>{{product.brand.brand}}
+                                        </option>
+                                        {{#each brandData}}
+                                        {{#if (Noteq this.brand ../product.brand.brand)}}
+                                        <option value="{{this._id}}">{{this.brand}}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="productImage">Product Image:</label>
+                                <div class="d-flex border p-10 m-tb-10">
+                                    <input name="product-id" type="hidden" value="{{product._id}}" disabled>
+                                    {{#each product.image}}
+                                    <div class="image-container">
+                                        <div class="badge rounded-pill alert-danger ">
+                                            <p class="close-button" data-image-index="{{@index}}"
+                                                style="text-decoration: none;">×</p>
+                                        </div>
+                                        <img src="/images/products/{{this}}" alt="images" disabled
+                                            style="width: 80px; height: auto;" class="m-2 pro-image"
+                                            data-image-index="{{@index}}">
+                                    </div>
+
+                                    {{/each}}
+                                </div>
+                                <input type="file" class="form-control-file" id="productImage" multiple name="image">
+                            </div>
+
+                            <div class="d-flex g-2">
+                                <div class="m-2">
+                                    <button type="submit" class="btn btn-primary">Save Product</button>
+
+                                </div>
+                                <div class="m-2">
+                                    <a id="backButton" type="button" class="btn btn-primary">back</a>
+
+                                </div>
+                                <div class="col-lg-4" hidden>
+                                    <label class="form-label">Category:</label>
+                                    <select name="categoryOffer" id="catOffer" class="form-select">
+
+
+                                        {{!-- <option value="" disabled selected hidden>Select a category</option> --}}
+                                        {{#each category}}
+                                        {{#if (eq this.category ../product.category.category)}}
+                                        <option value="{{this._id}}" >{{this.categoryOffer}}</option>
+                                        {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+
+
+
+
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div> <!-- card end// -->
+
+
+
+            </div>
+    </section> <!-- content-main end// -->
+    <footer class="main-footer font-xs">
+        <div class="row pb-30 pt-15">
+            <div class="col-sm-6">
+                <script>
+                    document.write(new Date().getFullYear())
+                </script> ©, MobileMart.
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-end">
+                    All rights reserved
+                </div>
+            </div>
+        </div>
+    </footer>
+</main>
+
+<script>
+    function Validation() {
+    var priceInput = document.getElementById('price');
+    var discountPrice = document.getElementById('discountprice');
+    var discountpriceMsg = document.getElementById('priceAlert'); 
+    var categoryOffer = document.getElementById('catOffer'); 
+
+    // Ensure that a discount price can be set only if the category offer is 0
+    function offerValidation() {
+        var catOfferValue = categoryOffer.options[categoryOffer.selectedIndex].text.trim(); // Get the text (category offer)
+        var catValue = parseFloat(catOfferValue) || 0; // Convert category offer to a number
+
+        console.log("Category Offer Value:", catValue); // Log for debugging
+
+        // Block discount price if category offer is greater than 0
+        if (catValue > 0) {
+            discountpriceMsg.textContent = "Category offer exists. Discount price cannot be set.";
+            return false; // Prevent form submission if category offer > 0
+        } else {
+            discountpriceMsg.textContent = ""; // Clear any error message if category offer is 0
+            return true; // Allow submission
+        }
+    }
+
+    // Validate the discount price value
+    function validateDiscountAmount() {
+        var price = parseFloat(priceInput.value) || 0; // Convert price to a number
+        var discountprice = parseFloat(discountPrice.value) || 0; // Convert discount price to a number
+
+        console.log("Price:", price, "Discount Price:", discountprice); // Log for debugging
+
+        // Validate discount price: it should not be more than price and should be positive
+        if (isNaN(discountprice) || discountprice < 0) {
+            discountpriceMsg.textContent = "Invalid discount amount";
+            return false;
+        } else if (discountprice >= price) {
+            discountpriceMsg.textContent = "Discount amount cannot exceed price";
+            return false;
+        } else {
+            discountpriceMsg.textContent = ""; // Clear the message if validation passes
+            return true;
+        }
+    }
+
+    // Handle form submission validation
+    function handleSubmit(event) {
+        // Perform both validations and prevent submission if either fails
+        if (!validateDiscountAmount() || !offerValidation()) {
+            console.log("Validation failed. Form submission prevented."); // Log for debugging
+            event.preventDefault(); // Stop form submission if validation fails
+        } else {
+            console.log("Validation passed. Form will be submitted."); // Log for debugging
+        }
+    }
+
+    // Attach the validation check to the form submission event
+    document.querySelector('.form-add-product').addEventListener('submit', handleSubmit);
+}
+
+// Initialize validation when the script loads
+Validation();
+
+</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script> ////////////back
+    $(document).ready(function () {
+        $('#backButton').click(function (e) {
+            e.preventDefault();
+
+
+            Swal.fire({
+                title: "Leave the page?",
+                text: "The Data will not be saved",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#088178",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/admin/products";
+
+                }
+            });
+
+
+        });
+    })</script>

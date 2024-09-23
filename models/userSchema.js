@@ -29,6 +29,10 @@ const userSchema=new Schema({
     image:{
         type:Array,
     },
+    redeemed: {
+        type: Boolean,
+        default: false,
+    },
     registeredOn: {
         type:Date,
         default:  Date.now

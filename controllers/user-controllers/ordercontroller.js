@@ -62,7 +62,7 @@ const cancelOrder = async (req, res) => {
             // }
             await Wallet.updateOne(
                 { userId: req.session.user._id },
-                { $inc: { wallet: canceledOrder.total - 50 } }
+                { $inc: { wallet: canceledOrder.total} }
             );
 
             await Wallet.updateOne(
@@ -70,7 +70,7 @@ const cancelOrder = async (req, res) => {
                 {
                     $push: {
                         history: {
-                            amount: canceledOrder.total - 50,
+                            amount: canceledOrder.total,
                             status: 'refund for Order Cancellation',
                             date: Date.now()
                         }

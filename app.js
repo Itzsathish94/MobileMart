@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGODB)
   .catch(err => {
     console.error('MongoDB connection error:', err);
   });
-Handlebars.registerHelper(hbsHelper.eq(Handlebars), hbsHelper.Noteq(Handlebars), hbsHelper.incHelper(Handlebars), hbsHelper.formatTime(Handlebars), hbsHelper.mulHelper(Handlebars), hbsHelper.subHelper(Handlebars),
+Handlebars.registerHelper(hbsHelper.eq(Handlebars), hbsHelper.divHelper(Handlebars),hbsHelper.Noteq(Handlebars), hbsHelper.incHelper(Handlebars), hbsHelper.formatTime(Handlebars), hbsHelper.mulHelper(Handlebars), hbsHelper.subHelper(Handlebars),
   hbsHelper.addHelper(Handlebars), hbsHelper.isequal(Handlebars), hbsHelper.singleIsCancelled(Handlebars), Handlebars.registerHelper(hbsHelper.formatDate(Handlebars)), Handlebars.registerHelper(hbsHelper.ifCondition(Handlebars)), Handlebars.registerHelper(hbsHelper.isCancelled(Handlebars)));
 Handlebars.registerHelper(hbsHelper.isGreaterThanZero(Handlebars), Handlebars.registerHelper(hbsHelper.length(Handlebars)))
 Handlebars.registerHelper('json', function (context) {

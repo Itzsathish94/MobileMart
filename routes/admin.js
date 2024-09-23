@@ -3,13 +3,13 @@ var router = express.Router();
 const Upload=require("../multer/product_control")
 
 //importing module functions from controllers
-const {showproductslist,addproduct_page,addproduct,editProduct,deleteproduct,showeditprodpage,fullDeleteProd,deleteProdImage ,blockProducts}=require('../controllers/admin-controllers/product-management')
-const {unListCategory ,categoryPage,showEditCategory,addcategory,editCategory,addcategory_page,deleteCategory}=require('../controllers/admin-controllers/category-management')
+const {showproductslist,addproduct_page,addproduct,editProduct,deleteproduct,showeditprodpage,fullDeleteProd,updateProductOffer ,deleteProdImage ,blockProducts,showeditprodoffer , removeprodoffer}=require('../controllers/admin-controllers/product-management')
+const {unListCategory ,categoryPage,showEditCategory, showCategoryOffer,addcategory,editCategory , removeCatOffer , editCategoryOffer,addcategory_page,deleteCategory}=require('../controllers/admin-controllers/category-management')
 const {usersPage,blockUser}=require('../controllers/admin-controllers/user-management');
 const { isLogin, isLogout } = require('../middleware/adminAuth');
 const { adminlogin, doAdminLogin,doLogout}=require('../controllers/admin-controllers/adminloginmanagement')
 const { ordersPage, orderDetails, changeStatus } = require('../controllers/admin-controllers/ordersManagement')
-const { couponPage, addCouponPage , addCouponPost , deleteCoupon}=require('../controllers/admin-controllers/couponManagement')
+const { couponPage, addCouponPage , addCouponPost , deleteCoupon, updateCoupon , editCouponPage}=require('../controllers/admin-controllers/couponManagement')
 const {  getSales,loadDashboard,
     getChartData,generateSalesReportPDF}=require('../controllers/admin-controllers/dashBoards')
 
@@ -35,10 +35,14 @@ router.get('/addProduct' ,isLogin ,addproduct_page)
 router.post('/addProduct', isLogin  ,     Upload.array('image',5),addproduct)
 router.get('/edit_product/:id', isLogin  ,Upload.array('image',5),showeditprodpage)
 router.post("/update_product/:id", isLogin  ,Upload.array('image',5),editProduct)
+router.post("/edit_product_offer/:id", isLogin  ,Upload.array('image',5),updateProductOffer)
 router.put('/block_product', isLogin  ,deleteproduct)
 router.put('/delete_product', isLogin  ,fullDeleteProd)
 router.put('/blockProduct',blockProducts)
 router.delete('/product_img_delete', isLogin  , deleteProdImage)
+router.get('/edit_product_offer/:id',isLogin,showeditprodoffer)
+router.get('/remove_product_offer/:id',isLogin,removeprodoffer)
+
 
 
 /////category management routing
@@ -48,6 +52,9 @@ router.post('/editCategory/:id',isLogin  ,Upload.single('image'),editCategory)
 router.post('/unlistCategory',isLogin,unListCategory)
 router.get('/addCategory',isLogin  ,addcategory_page)
 router.post('/addCategory' ,isLogin ,Upload.single('image'),addcategory)
+router.get('/editCategoryOffer/:id',isLogin  ,showCategoryOffer)
+router.post('/editCategoryOffer/:id' ,isLogin ,editCategoryOffer)
+router.get('/remove_category_offer/:id',isLogin,removeCatOffer)
 router.post('/delete_category', isLogin  ,deleteCategory)
 
 ////////////Block User
@@ -63,6 +70,9 @@ router.post('/change_status/:id',isLogin, changeStatus)
 router.get('/coupons',isLogin,couponPage)
 router.get('/addcoupon',isLogin,addCouponPage)
 router.post('/add_coupon',isLogin, addCouponPost)
+router.get('/edit_coupon/:id',isLogin,editCouponPage)
+
+router.post('/edit_coupon/:id',isLogin, updateCoupon)
 router.delete('/delete_coupon',isLogin,deleteCoupon)
 
 // ///chart

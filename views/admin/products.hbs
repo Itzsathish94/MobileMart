@@ -100,6 +100,7 @@
                                 <th>Stock</th>
                                 <th>Price</th>
                                 <th>Discount </th>
+                                <th>Offer </th>
                                 <th class="text-center"> Action </th>
                             </tr>
                         </thead>
@@ -118,7 +119,7 @@
                                         </div>
                                     </a>
                                 </td>
-                                <td width="20%">{{description}}</td>
+                                <td width="10%">{{description}}</td>
                                 {{#if isBlocked}}
                                 <td width="20%"><span class="badge rounded-pill alert-danger">Blocked</span></td>
 
@@ -133,7 +134,19 @@
                                 {{else}}
                                 <td width="10%">Not Avaliable</td>
                                 {{/if}}
+                                <td width="10%">
+                                     {{#if discountprice}}
+                                        <a href="/admin/remove_product_offer/{{_id}}" class="btn btn-sm font-sm rounded btn-brand" style="width: 100px;">
+                                        Remove Offer
+                                    </a>
+                                     {{else}}
+                                     <a href="/admin/edit_product_offer/{{_id}}" class="btn btn-sm font-sm rounded btn-brand" style="width: 100px;">
+                                         Add Offer
+                                    </a>
+                                     {{/if}}
+                                </td>
                                 <td width="20%">
+
                                     {{#if this.isBlocked}}
                                     <a id="blockProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light flex-end"
                                         
@@ -149,9 +162,11 @@
                                     <a href="/admin/edit_product/{{_id}}" class="btn btn-sm font-sm rounded btn-brand">
                                         <i class="material-icons md-edit"></i> Edit
                                     </a>
+                                   
                                     <a id="deleteProduct" data-product-id="{{this._id}}" class="btn btn-sm font-sm btn-light rounded">
                                         <i class="material-icons md-delete_forever" ></i> Delete
                                     </a>
+                                    
                                 </td>
 
                             </tr>

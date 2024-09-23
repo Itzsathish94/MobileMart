@@ -104,12 +104,114 @@ const addCouponPost = async (req, res) => {
 };
 
 
+
+const editCouponPage = async(req, res)=>{
+    try {
+
+      const id = req.params.id;
+      const couponData = await Coupon.findById(id).lean()
+      console.log("edit coupon Data ", couponData)
+      const formattedExpiryDate = couponData.expiryDate.toISOString().split('T')[0];
+      res.render('admin/editCoupon', { layout: 'adminlayout', couponData: { ...couponData, formattedExpiryDate } });
+      
+    } catch (error) {
+      console.error('Error fetching coupon data:', error);
+    }
+}
+
+
+// const editCouponPost = async (req, res) => {
+//   try {
+//       const couponId = req.params.id
+//       const { code, percent, expDate, maxDiscount, minPurchase } = req.body;
+
+
+//       console.log('Received data:', req.body);
+
+   
+//       if (!code || !percent || !expDate || !maxDiscount || !minPurchase) {
+//           throw new Error('All fields are required');
+//       }
+
+//       const discount = parseFloat(percent);
+//       const minPurchaseAmount = parseFloat(minPurchase);
+//       const maxDiscountAmount = parseFloat(maxDiscount);
+
+//       if (isNaN(discount) || discount <= 0 || discount > 100) {
+//           throw new Error('Invalid discount value');
+//       }
+//       if (isNaN(minPurchaseAmount) || minPurchaseAmount < 0) {
+//           throw new Error('Invalid minimum purchase amount');
+//       }
+//       if (isNaN(maxDiscountAmount) || maxDiscountAmount < 0) {
+//           throw new Error('Invalid maximum discount amount');
+//       }
+
+//       const existedCoupon = await Coupon.findOne({ code: code });
+
+//       if(existedCoupon._id != couponId){
+//           cpnExist = true
+//       }
+
+//       if (!cpnExist) {
+
+//         await Coupon.findByIdAndUpdate(couponId, {code: code , discount: discount , expiryDate: expDate , minPurchase: minPurchase , maxDiscount : maxDiscount })
+//       } else {
+//           req.session.couponExMsg = 'Coupon already exists';
+//           res.redirect(`/admin/edit_coupon/${couponId}`);
+//       }
+//   } catch (error) {
+//       console.error('Error adding coupon:', error.message);
+//       res.status(500).send("Internal Server Error");
+//   }
+// };
+
+const updateCoupon = async (req, res) => {
+  try {
+    const c_id = req.params.id;
+    console.log("editc copun idd" , c_id )
+    // const product = await Product.findById(proId);
+
+    const { code , percent , expDate , minPurchase , maxDiscount } = req.body;
+
+    console.log("coupon data  " , req.body)
+
+     // Validate input data
+     if (!code || !percent || !expDate) {
+      throw new Error("Missing required fields");
+    }
+
+    await Coupon.findByIdAndUpdate(
+      c_id,
+      {
+        code: code,
+        discount: percent,
+        expiryDate: expDate,
+        minPurchase : minPurchase ,
+        maxDiscount : maxDiscount 
+      },
+      { new: true }
+    );
+   
+    req.session.coupon = true;
+
+    res.redirect("/admin/coupons");
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   const deleteCoupon= async(req,res)=>{
     try {
 
         const {id}=req.body
         console.log(id,'ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd')
-        await Coupon.findByIdAndDelete(id)
+        // await Coupon.findByIdAndDelete(id)
+        const couponData = await Coupon.findById(id)
+        const currentStatus = couponData.status
+        console.log(currentStatus, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        await Coupon.findByIdAndUpdate(id , {status: !currentStatus })
         
     } catch (error) {
         console.log(error.message);
@@ -122,5 +224,7 @@ module.exports={
     couponPage,
     addCouponPage,
     addCouponPost,
-    deleteCoupon
+    deleteCoupon,
+    editCouponPage,
+    updateCoupon
 }

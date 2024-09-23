@@ -257,3 +257,31 @@ function validatename() {
     }
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById('triggerSwal').addEventListener('click', () => {
+    Swal.fire({
+      title: 'Enter your input',
+      input: 'text',
+      inputPlaceholder: 'Type something...',
+      showCancelButton: true,
+      confirmButtonText: 'Submit',
+      cancelButtonText: 'Skip',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter something or skip';
+        }
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const inputData = result.value;
+        // Pass input data via route (e.g., to /submitData route)
+        window.location.href = `/submitData?input=${encodeURIComponent(inputData)}`;
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // Handle the skip option
+        window.location.href = `/submitData?input=skipped`;
+      }
+    });
+  });
+</script>
